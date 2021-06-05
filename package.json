@@ -1,0 +1,39 @@
+{
+  "name": "pictcr_viz",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
+    "@shahlab/planetarium": "^1.0.12",
+    "d3": "^6.7.0",
+    "d3-array": "^2.12.1",
+    "d3-dsv": "^2.0.0",
+    "d3-hexbin": "^0.2.2",
+    "lodash": "^4.17.21",
+    "react": "^17.0.2",
+    "react-data-table-component": "^6.11.7",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "node build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "prettier": "^2.3.0",
+    "rewire": "^5.0.0"
+  },
+  "homepage": "."
+}
