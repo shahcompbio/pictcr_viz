@@ -5,6 +5,7 @@ import ClonotypeUMAP from "./components/Umap";
 import SubtypeUMAP from "./components/subTypeUmap";
 import ClonotypeExpansion from "./components/ClonotypeExpansion";
 import DEGTable from "./components/DEGTable";
+import RankedOrder from "./components/RankedOrder";
 
 import { Heatmap, ProbabilityHistogram, Layout } from "@shahlab/planetarium";
 
@@ -204,6 +205,16 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
             }}
           />
         </Grid>
+        <Layout
+          title={INFO["RANKED"]["title"]}
+          infoText={INFO["RANKED"]["text"]}
+        >
+          <RankedOrder
+            width={500}
+            height={500}
+            data={metadata.filter((record) => record["clone_id"] !== "None")}
+          />
+        </Layout>
       </Grid>
     </MuiThemeProvider>
   );

@@ -25,7 +25,8 @@ const COLOR_ARRAY = [
   "#ffd470",
 ];
 const POINT_RADIUS = 1;
-const PADDING = 5;
+const PADDING = 22;
+const format = d3.format(".3f");
 
 const RankedOrder = ({ width, height, data }) => {
   // need to calculate rank
@@ -60,7 +61,7 @@ const RankedOrder = ({ width, height, data }) => {
     .scaleLog()
     .domain([1, maxRank])
     .nice()
-    .range([PADDING, width]);
+    .range([PADDING, width - PADDING]);
   const freqScale = d3
     .scaleLog()
     .domain([minFreq, maxFreq])
@@ -82,6 +83,53 @@ const RankedOrder = ({ width, height, data }) => {
   const canvasRef = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
+
+      // draw axis
+
+      const xMin = rankScale(rankScale.domain()[0]);
+      const xMax = rankScale(rankScale.domain()[1]);
+
+      context.font = "normal 10px Helvetica";
+      freqScale.ticks(3).forEach((tick) => {
+        context.globalAlpha = 1;
+        context.textBaseline = "middle";
+        context.fillText(format(tick), xMin - PADDING, freqScale(tick));
+        context.globalAlpha = 0.2;
+        context.lineWidth = 0.5;
+        context.beginPath();
+        context.moveTo(xMin, freqScale(tick));
+        context.lineTo(xMax, freqScale(tick));
+        context.stroke();
+      });
+
+      const yMin = freqScale(freqScale.domain()[0]);
+      const yMax = freqScale(freqScale.domain()[1]);
+
+      rankScale.ticks(3).forEach((tick) => {
+        context.globalAlpha = 1;
+        context.textBaseline = "middle";
+        context.textAlign = "center";
+        context.fillText(tick, rankScale(tick), yMin + 8);
+        context.globalAlpha = 0.2;
+        context.lineWidth = 0.5;
+        context.beginPath();
+        context.moveTo(rankScale(tick), yMin);
+        context.lineTo(rankScale(tick), yMax);
+        context.stroke();
+      });
+
+      context.globalAlpha = 1;
+      context.font = "normal 12px Helvetica";
+      context.textAlign = "center";
+      context.textBaseline = "hanging";
+      context.fillText("Rank", width / 2, height - 10);
+
+      context.save();
+      context.rotate((270 * Math.PI) / 180);
+      context.fillText("Clone Frequency", -(height / 2), 0);
+      context.restore();
+
+      // draw plot
       context.beginPath();
       context.lineWidth = 1;
       context.globalAlpha = 1;
