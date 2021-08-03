@@ -10,13 +10,17 @@ import * as d3 from "d3";
 // import probabilitiesSource from "./large/probabilities.tsv";
 // import degsSource from "./large/degs.tsv";
 
-import metadataSource from "./test2/metadata.tsv";
-import probabilitiesSource from "./test2/probabilities.tsv";
-import degsSource from "./test2/degs.tsv";
+// import metadataSource from "./test2/metadata.tsv";
+// import probabilitiesSource from "./test2/probabilities.tsv";
+// import degsSource from "./test2/degs.tsv";
 
 // import metadataSource from "./metadata.tsv";
 // import probabilitiesSource from "./probabilities.tsv";
 // import degsSource from "./degs.tsv";
+
+import metadataSource from "./ranked/metadata.tsv";
+import probabilitiesSource from "./ranked/probabilities.tsv";
+import degsSource from "./ranked/degs.tsv";
 
 const useFetchData = () => {
   const [data, setData] = useState({});

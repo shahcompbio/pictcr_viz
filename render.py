@@ -18,6 +18,7 @@ PTHRESH = 0.01
 FCTHRESH = 0.01
 TOP_N = 20
 
+
 def get_data(filepath):
     adata = sc.read(filepath)
     metadata = get_metadata(adata).to_dict(orient="records")
@@ -42,10 +43,10 @@ def clean_record(record):
 def get_metadata(adata):
     umap = pd.DataFrame(adata.obsm['X_umap'])
     umap.columns = ['UMAP_1', 'UMAP_2']
-    df = adata.obs[['IR_VDJ_1_cdr3', 'IR_VDJ_1_v_gene', 'subtype']]
+    df = adata.obs[['clone_id', 'subtype']]
     df = df.reset_index()
     df = df.merge(umap, left_index=True, right_index=True)
-    df = df.rename(columns={'IR_VDJ_1_v_gene':'v_gene', 'IR_VDJ_1_cdr3': 'cdr3s_aa', 'index': 'cell_id'})
+    df = df.rename(columns={'index': 'cell_id'})
     df = df.replace(to_replace="nan", value="None")
     return df
 
@@ -74,11 +75,11 @@ def get_degs(adata):
     return data
 
 def get_probabilities(adata):
-    df = adata.obs[["IR_VDJ_1_cdr3", "pgen", "subtype"]]  
-    df = df[(df["IR_VDJ_1_cdr3"] != "None") & (df["pgen"] != "None")]
-    df["log10_probability"] = [math.log10(float(prob)) for prob in df["pgen"].tolist()]
+    df = adata.obs[["clone_id", "pgen", "subtype"]]  
+    df = df[df['clone_id'].notnull() & df['pgen'].notnull()]
+    # df["log10_probability"] = [math.log10(float(prob)) for prob in df["pgen"].tolist()]
 
-    df = df.rename(columns={'IR_VDJ_1_cdr3': 'cdr3s_aa', 'pgen': 'probability'})
+    df = df.rename(columns={'pgen': 'log10_probability'})
     df = df.reset_index(drop=True)
 
     return df
@@ -98,9 +99,17 @@ def get_probabilities(adata):
 #     "degs": degs
 # }
 
+def output_data(filepath, output):
+    adata = sc.read(filepath)
+    get_metadata(adata).to_csv(os.path.join(output, "metadata.tsv"), sep="\t", index=False, na_rep='None')
+    get_degs(adata).to_csv(os.path.join(output, "degs.tsv"), sep="\t", index=False, na_rep='None')
+    get_probabilities(adata).to_csv(os.path.join(output, "probabilities.tsv"), sep="\t", index=False, na_rep='None')
+
 
 if __name__ == "__main__":
     filename = sys.argv[1]
+    # output = sys.argv[2]
+    # output_data(filename, output)
     data = get_data(filename)
     data = json.dumps(data, indent=4)
 

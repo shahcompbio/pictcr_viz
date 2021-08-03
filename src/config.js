@@ -1,7 +1,7 @@
 export const CONSTANTS = {
   xParam: "UMAP_1",
   yParam: "UMAP_2",
-  clonotypeParam: "cdr3s_aa",
+  clonotypeParam: "clone_id",
   cellIdParam: "cell_id",
   subtypeParam: "subtype",
   logProbParam: "log10_probability",
@@ -46,5 +46,9 @@ export const INFO = {
   TABLE: {
     title: "Differentially Expressed Genes",
     text: "Differentially expressed genes for each subtype (1 vs. All) using the Wilcoxon test. The top 50 statistically significant (p < 0.001) with a minimum log fold change of 0.25 and expression found in >= 50% of the subtype cells are included for each subtype. It is possible to sort DEGs by both p-value and log fold change.",
+  },
+  RANKED: {
+    title: "Ranked Order",
+    text: "Ranked order of clonotype frequency for each phenotype",
   },
 };
