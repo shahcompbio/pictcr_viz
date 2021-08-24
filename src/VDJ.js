@@ -56,7 +56,7 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
     .slice(0, 10)
     .map((value, index) => ({
       value,
-      label: `SEQ${index + 1} - ${value}`,
+      label: `Clone ${value}`,
       color: CLONOTYPE_COLORS[index],
     }));
 
@@ -74,7 +74,7 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
             setSelectedClonotype(NULL_SELECTED);
             setSelectedSubtype(NULL_SELECTED);
           }}
-          type={selectedClonotype["selected"] ? "Clonotype" : "Subtype"}
+          type={selectedClonotype["selected"] ? "Clone" : "Phenotype"}
         />
       )}
       <Grid
@@ -210,7 +210,7 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
           infoText={INFO["RANKED"]["text"]}
         >
           <RankedOrder
-            width={500}
+            width={800}
             height={500}
             data={metadata.filter((record) => record["clone_id"] !== "None")}
           />

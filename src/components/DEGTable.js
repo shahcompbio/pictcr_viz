@@ -13,6 +13,13 @@ import DataTable from "react-data-table-component";
 const formatCols = ["adj_pval", "log_fc"];
 const formatDecimal = [(num) => num.toExponential(2), d3.format(",.4f")];
 
+const formatHeader = {
+  gene: "Gene",
+  adj_pval: `Adjusted p-value`,
+  log_fc: "log fold change",
+  subtype: "Phenotype",
+};
+
 const DEGTable = ({ data, chartDim, selectedSubtype }) => {
   const [filterText, setFilterText] = useState("");
   const { subtypeParam } = CONSTANTS;
@@ -67,7 +74,7 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
 
             return formatIndex !== -1
               ? {
-                  name: col,
+                  name: <b>{formatHeader[col]}</b>,
                   selector: col,
                   sortable: true,
                   right: true,
@@ -78,7 +85,7 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
                   ),
                 }
               : {
-                  name: col,
+                  name: <b>{formatHeader[col]}</b>,
                   selector: col,
                   sortable: true,
                   right: true,
