@@ -1,28 +1,30 @@
 import { createMuiTheme } from "@material-ui/core/styles";
 export const theme = createMuiTheme({
-  typography: { fontFamily: "Helvetica" },
+  typography: {
+    fontFamily: ["MyFontRegular", "MyFontBold", "MyFontLight"].join(","),
+  },
   palette: {
     primary: {
       main: "#95d2dc",
-      dark: "#618ba0"
+      dark: "#618ba0",
     },
     secondary: {
-      main: "#f1c023"
+      main: "#f1c023",
     },
     error: {
-      main: "#BC4746"
+      main: "#BC4746",
     },
     background: {
-      default: "#F5F5F5"
+      default: "#F5F5F5",
     },
     overrides: {
       MuiFab: {
         root: {
-          boxShadow: "none"
-        }
-      }
-    }
+          boxShadow: "none",
+        },
+      },
+    },
   },
 
-  spacing: 4
+  spacing: 4,
 });

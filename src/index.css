@@ -1,14 +1,23 @@
+@font-face {
+  font-family: "MyFontBold";
+  src: local("MyFontBold"), url(./theme/Black.otf) format("opentype");
+}
+@font-face {
+  font-family: "MyFontRegular";
+  src: local("MyFontRegular"), url(./theme/Regular.otf) format("opentype");
+}
+@font-face {
+  font-family: "MyFontLight";
+  src: local("MyFontLight"), url(./theme/Light.otf) format("opentype");
+}
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: "MyFontRegular";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: "MyFontRegular";
 }

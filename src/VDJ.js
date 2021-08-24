@@ -6,6 +6,8 @@ import SubtypeUMAP from "./components/subTypeUmap";
 import ClonotypeExpansion from "./components/ClonotypeExpansion";
 import DEGTable from "./components/DEGTable";
 import RankedOrder from "./components/RankedOrder";
+import Doughnut from "./components/Doughnut";
+import MetaData from "./components/MetaData";
 
 import { Heatmap, ProbabilityHistogram, Layout } from "@shahlab/planetarium";
 
@@ -20,7 +22,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardHeader from "@material-ui/core/CardHeader";
 
-import { theme } from "./theme";
+import { theme } from "./theme/theme";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
@@ -30,7 +32,6 @@ const NULL_SELECTED = {
   hover: null,
   selected: null,
 };
-
 const DataWrapper = ({ data }) => (
   <VDJ
     metadata={data["metadata"]}
@@ -61,7 +62,6 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
     }));
 
   const subtypeTotals = _.countBy(metadata, subtypeParam);
-
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
@@ -83,6 +83,31 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
         justify="flex-start"
         alignItems="flex-start"
       >
+        <Grid
+          item
+          container
+          direction="row"
+          justify="flex-start"
+          alignItems="flex-start"
+        >
+          <MetaData width={250} data={metadata} />
+          <Doughnut
+            data={metadata}
+            type={"CLONOTYPEDOUGH"}
+            colors={CLONOTYPE_COLORS}
+            width={250}
+            height={250}
+            subsetParam={CONSTANTS.clonotypeParam}
+          />
+          <Doughnut
+            data={metadata}
+            type={"SUBTYPEDOUGH"}
+            colors={CLONOTYPE_COLORS}
+            width={250}
+            height={250}
+            subsetParam={CONSTANTS.subtypeParam}
+          />
+        </Grid>
         <Grid
           item
           container

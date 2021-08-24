@@ -23,6 +23,14 @@ export const CLONOTYPE_COLORS = [
 ];
 
 export const INFO = {
+  SUBTYPEDOUGH: {
+    title: "Subtype Doughnut",
+    text: "",
+  },
+  CLONOTYPEDOUGH: {
+    title: "Clonotype Doughnut",
+    text: "",
+  },
   UMAP: {
     title: "Clone UMAP",
     text: "UMAP embedding generated from the subset of CD8/CD4 T cells identified with CellAssign. The top 10 clones by frequency are mapped to cells in the embedding. The radius slider allows the user to highlight areas of high density for a given sequence that can be referenced against the phenotype UMAP.",
