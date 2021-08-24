@@ -171,6 +171,11 @@ const UMAP = ({
             height={chartHeight / 2}
             labels={subsetLabels}
             setHighlighted={setHighlighted}
+            fontFamily={{
+              regular: "MyFontLight",
+              bold: "MyFontBold",
+              labelOffset: 3,
+            }}
           />
         </Grid>
         <Grid item>

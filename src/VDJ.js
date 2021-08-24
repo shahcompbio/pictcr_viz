@@ -43,6 +43,7 @@ const DataWrapper = ({ data }) => (
 export const VDJ = ({ metadata, probabilities, degs }) => {
   const [selectedSubtype, setSelectedSubtype] = useState(NULL_SELECTED);
   const [selectedClonotype, setSelectedClonotype] = useState(NULL_SELECTED);
+  const [lassoData, setLassoData] = useState(null);
 
   const { clonotypeParam, subtypeParam, logProbParam } = CONSTANTS;
 
@@ -90,21 +91,27 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
           justify="flex-start"
           alignItems="flex-start"
         >
-          <MetaData width={250} data={metadata} />
+          <MetaData
+            width={250}
+            data={metadata}
+            sample="SAMPLE-TITLE-NDVL"
+            data={metadata}
+            selected={lassoData}
+          />
           <Doughnut
             data={metadata}
             type={"CLONOTYPEDOUGH"}
             colors={CLONOTYPE_COLORS}
-            width={250}
-            height={250}
+            width={450}
+            height={350}
             subsetParam={CONSTANTS.clonotypeParam}
           />
           <Doughnut
             data={metadata}
             type={"SUBTYPEDOUGH"}
             colors={CLONOTYPE_COLORS}
-            width={250}
-            height={250}
+            width={450}
+            height={350}
             subsetParam={CONSTANTS.subtypeParam}
           />
         </Grid>
