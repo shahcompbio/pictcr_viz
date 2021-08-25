@@ -43,7 +43,7 @@ const DataWrapper = ({ data }) => (
 export const VDJ = ({ metadata, probabilities, degs }) => {
   const [selectedSubtype, setSelectedSubtype] = useState(NULL_SELECTED);
   const [selectedClonotype, setSelectedClonotype] = useState(NULL_SELECTED);
-  const [lassoData, setLassoData] = useState(null);
+  const [highlight, setHighlight] = useState(null);
 
   const { clonotypeParam, subtypeParam, logProbParam } = CONSTANTS;
 
@@ -63,7 +63,8 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
     }));
 
   const subtypeTotals = _.countBy(metadata, subtypeParam);
-  console.log(lassoData);
+  console.log(highlight);
+
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
@@ -97,10 +98,10 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
             data={metadata}
             sample="SAMPLE-TITLE-NDVL"
             data={metadata}
-            selected={lassoData}
+            selected={highlight}
           />
           <Doughnut
-            data={lassoData ? lassoData : metadata}
+            data={highlight ? highlight : metadata}
             type={"CLONOTYPEDOUGH"}
             colors={CLONOTYPE_COLORS}
             width={450}
@@ -108,7 +109,7 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
             subsetParam={CONSTANTS.clonotypeParam}
           />
           <Doughnut
-            data={lassoData ? lassoData : metadata}
+            data={highlight ? highlight : metadata}
             type={"SUBTYPEDOUGH"}
             colors={CLONOTYPE_COLORS}
             width={450}
@@ -146,8 +147,10 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
           <SubtypeUMAP
             chartName={"SUBTYPEUMAP"}
             data={metadata}
+            onLasso={setHighlight}
             selectedSubtype={selectedSubtype["selected"]}
             hoveredSubtype={selectedSubtype["hover"]}
+            onLasso={setHighlight}
             setSelectedSubtype={(subtype) => {
               if (subtype["selected"]) {
                 setSelectedClonotype(NULL_SELECTED);

@@ -12,6 +12,7 @@ const DataWrapper = ({
   selectedSubtype,
   hoveredSubtype,
   setSelectedSubtype,
+  onLasso,
 }) => {
   const { xParam, yParam, subtypeParam } = CONSTANTS;
 
@@ -36,6 +37,7 @@ const DataWrapper = ({
         xParam={xParam}
         yParam={yParam}
         subsetParam={subtypeParam}
+        onLasso={onLasso}
         idParam={"cell_id"}
         onLegendHover={(value) => {
           setSelectedSubtype({

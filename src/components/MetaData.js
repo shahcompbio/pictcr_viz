@@ -116,7 +116,7 @@ const MetaData = ({ width, height, data, sample, selected }) => {
           </Card>
           <Card className={classes.root}>
             <CardContent className={classes.content}>
-              {!selected ? (
+              {selected ? (
                 <span>
                   <Typography className={classes.key}>Data Points:</Typography>
                   <Grid
@@ -126,10 +126,10 @@ const MetaData = ({ width, height, data, sample, selected }) => {
                     alignItems="stretch"
                   >
                     <Typography className={classes.selectedCells}>
-                      300
+                      {selected.length}
                     </Typography>
                     <Typography className={classes.overallCells}>
-                      / 8386 selected
+                      / {data.length} selected
                     </Typography>
                   </Grid>
                 </span>

@@ -24,11 +24,11 @@ export const CLONOTYPE_COLORS = [
 
 export const INFO = {
   SUBTYPEDOUGH: {
-    title: "Subtype Doughnut",
+    title: "Phenotype Distribution",
     text: "",
   },
   CLONOTYPEDOUGH: {
-    title: "Clonotype Doughnut",
+    title: "Clone Distribution",
     text: "",
   },
   UMAP: {
