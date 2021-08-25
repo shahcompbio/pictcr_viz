@@ -135,6 +135,7 @@ const RankedOrder = ({ width, height, data }) => {
     height,
     []
   );
+  console.log(subsetValues);
 
   return (
     <Grid container direction="row" style={{ padding: 0 }}>
@@ -145,8 +146,8 @@ const RankedOrder = ({ width, height, data }) => {
         <VerticalLegend
           width={200}
           height={height}
-          labels={subsetLabels}
-          setHighlighted={() => {}}
+          ticks={subsetValues}
+          colorScale={subsetColors}
         />
       </Grid>
     </Grid>

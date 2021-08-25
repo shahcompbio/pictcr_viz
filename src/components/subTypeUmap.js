@@ -15,6 +15,14 @@ const DataWrapper = ({
 }) => {
   const { xParam, yParam, subtypeParam } = CONSTANTS;
 
+  const subset = hoveredSubtype || selectedSubtype;
+
+  const highlightIDs =
+    subset === null
+      ? null
+      : data
+          .filter((datum) => datum[subtypeParam] === subset)
+          .map((datum) => datum["cell_id"]);
   return (
     <Layout
       title={INFO["SUBTYPEUMAP"]["title"]}
@@ -24,7 +32,7 @@ const DataWrapper = ({
         width={chartDim["width"]}
         height={chartDim["height"]}
         data={data}
-        subset={hoveredSubtype || selectedSubtype}
+        highlightIDs={highlightIDs}
         xParam={xParam}
         yParam={yParam}
         subsetParam={subtypeParam}

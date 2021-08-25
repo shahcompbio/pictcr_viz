@@ -67,7 +67,12 @@ const DataWrapper = ({
         yParam={yParam}
         subsetParam={clonotypeParam}
         subsetLabels={clonotypeLabels}
-        setHighlighted={setHighlighted}
+        onHover={(value) => {
+          setSelectedClonotype({ hover: value });
+        }}
+        onClick={(value) => {
+          setSelectedClonotype({ hover: null, selected: value });
+        }}
       />
     </Layout>
   );
@@ -82,7 +87,8 @@ const UMAP = ({
   yParam,
   subsetParam,
   subsetLabels,
-  setHighlighted,
+  onHover,
+  onClick,
 }) => {
   const [radiusRatio, setRadiusRatio] = useState(1);
   const canvasWidth = width - LEGEND_WIDTH - PADDING;
@@ -169,8 +175,10 @@ const UMAP = ({
           <VerticalLegend
             width={LEGEND_WIDTH}
             height={chartHeight / 2}
-            labels={subsetLabels}
-            setHighlighted={setHighlighted}
+            ticks={subsetLabels}
+            colorScale={colorScale}
+            onHover={onHover}
+            onClick={onClick}
             fontFamily={{
               regular: "MyFontLight",
               bold: "MyFontBold",
