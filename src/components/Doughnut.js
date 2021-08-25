@@ -44,10 +44,7 @@ const Doughnut = ({ data, colors, width, height, subsetParam, type }) => {
   const drawArea = (svg) => {
     const pie = d3
       .pie()
-      .value((d) => {
-        console.log(d);
-        return d["value"].length;
-      })
+      .value((d) => d["value"].length)
       .sort(null);
     const arcs = pie(subsets);
 

@@ -92,6 +92,7 @@ const RankedOrder = ({ width, height, data }) => {
         xScale: rankScale,
         yScale: freqScale,
         ticks: 3,
+        font: "MyFontRegular",
         label: "Clone Frequency",
       });
 
@@ -101,6 +102,7 @@ const RankedOrder = ({ width, height, data }) => {
         yScale: freqScale,
         ticks: 3,
         label: "Rank",
+        font: "MyFontRegular",
         orientation: "horizontal",
       });
 
@@ -135,7 +137,6 @@ const RankedOrder = ({ width, height, data }) => {
     height,
     []
   );
-  console.log(subsetValues);
 
   return (
     <Grid container direction="row" style={{ padding: 0 }}>
@@ -144,6 +145,11 @@ const RankedOrder = ({ width, height, data }) => {
       </Grid>
       <Grid item>
         <VerticalLegend
+          fontFamily={{
+            regular: "MyFontLight",
+            bold: "MyFontBold",
+            labelOffset: 3,
+          }}
           width={200}
           height={height}
           ticks={subsetValues}

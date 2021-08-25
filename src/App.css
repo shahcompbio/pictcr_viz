@@ -18,7 +18,9 @@
   height: 40vmin;
   pointer-events: none;
 }
-
+#font {
+  font-family: MyFontLight;
+}
 .App-header {
   background-color: #282c34;
   min-height: 100vh;

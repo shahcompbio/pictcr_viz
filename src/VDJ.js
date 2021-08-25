@@ -63,6 +63,7 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
     }));
 
   const subtypeTotals = _.countBy(metadata, subtypeParam);
+  console.log(lassoData);
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
@@ -99,7 +100,7 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
             selected={lassoData}
           />
           <Doughnut
-            data={metadata}
+            data={lassoData ? lassoData : metadata}
             type={"CLONOTYPEDOUGH"}
             colors={CLONOTYPE_COLORS}
             width={450}
@@ -107,7 +108,7 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
             subsetParam={CONSTANTS.clonotypeParam}
           />
           <Doughnut
-            data={metadata}
+            data={lassoData ? lassoData : metadata}
             type={"SUBTYPEDOUGH"}
             colors={CLONOTYPE_COLORS}
             width={450}
@@ -176,6 +177,7 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
             <Heatmap
               width={750}
               height={550}
+              font={"MyFontLight"}
               data={probabilities}
               column={clonotypeParam}
               row={subtypeParam}

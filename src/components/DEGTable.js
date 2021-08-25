@@ -19,7 +19,23 @@ const formatHeader = {
   log_fc: "log fold change",
   subtype: "Phenotype",
 };
-
+const customStyles = {
+  rows: {
+    style: {
+      fontFamily: "MyFontRegular",
+    },
+  },
+  headCells: {
+    style: {
+      fontFamily: "MyFontBold",
+    },
+  },
+  cells: {
+    style: {
+      fontFamily: "MyFontLight",
+    },
+  },
+};
 const DEGTable = ({ data, chartDim, selectedSubtype }) => {
   const [filterText, setFilterText] = useState("");
   const { subtypeParam } = CONSTANTS;
@@ -58,6 +74,7 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
           overflowY: "hidden",
           width: chartDim["width"],
           height: chartDim["height"],
+          marginTop: 10,
         }}
       >
         <DataTable
@@ -67,6 +84,7 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
           noHeader
           defaultSortAsc
           overflowY
+          customStyles={customStyles}
           subHeaderComponent={subHeaderComponentMemo}
           compact
           columns={columns.map((col) => {

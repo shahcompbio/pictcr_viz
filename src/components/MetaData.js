@@ -19,7 +19,38 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
-    margin: 15,
+    marginTop: 15,
+    marginLeft: 15,
+    paddingBottom: 0,
+  },
+  content: {
+    paddingBottom: 0,
+  },
+  key: {
+    fontWeight: "light",
+    fontSize: 15,
+    color: "#b3b3b3",
+  },
+  value: {
+    fontSize: 20,
+    color: "#81a6f9",
+  },
+  overallCells: {
+    fontSize: 25,
+    fontFamily: "MyFontLight",
+    color: "#81a6f9",
+    marginLeft: 15,
+    paddingTop: 5,
+  },
+  selectedCells: {
+    fontSize: 30,
+    fontFamily: "MyFontRegular",
+    color: "black",
+  },
+  overallCellsValue: {
+    fontSize: 30,
+    fontFamily: "MyFontRegular",
+    color: "black",
   },
   bullet: {
     display: "inline-block",
@@ -79,27 +110,53 @@ const MetaData = ({ width, height, data, sample, selected }) => {
         <Grid item>
           <Card className={classes.root}>
             <CardContent>
-              <Typography
-                className={classes.title}
-                color="textSecondary"
-                gutterBottom
-              >
-                Sample:{sample}
-              </Typography>
+              <Typography className={classes.key}>Sample:</Typography>
+              <Typography className={classes.value}>{sample}</Typography>
             </CardContent>
           </Card>
           <Card className={classes.root}>
-            <CardContent>
-              {selected ? (
-                <Typography className={classes.light}>
-                  {selected.length} / {data.length}
-                </Typography>
+            <CardContent className={classes.content}>
+              {!selected ? (
+                <span>
+                  <Typography className={classes.key}>Data Points:</Typography>
+                  <Grid
+                    container
+                    direction="row"
+                    justify="flex-start"
+                    alignItems="stretch"
+                  >
+                    <Typography className={classes.selectedCells}>
+                      300
+                    </Typography>
+                    <Typography className={classes.overallCells}>
+                      / 8386 selected
+                    </Typography>
+                  </Grid>
+                </span>
               ) : (
-                <Typography className={classes.title}>
-                  {data.length} / 300000 cells
-                </Typography>
+                <Grid
+                  container
+                  direction="row"
+                  justify="flex-start"
+                  alignItems="stretch"
+                >
+                  <Typography className={classes.overallCellsValue}>
+                    {data.length}
+                  </Typography>
+                  <Typography className={classes.overallCells}>
+                    data points
+                  </Typography>
+                </Grid>
               )}
             </CardContent>
+
+            {!selected && (
+              <CardActions>
+                <Button size="small" color="secondary">
+                  Clear
+                </Button>
+              </CardActions>
+            )}
           </Card>
         </Grid>
       </Grid>

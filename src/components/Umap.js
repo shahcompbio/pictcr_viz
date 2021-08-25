@@ -178,6 +178,7 @@ const UMAP = ({
             ticks={subsetLabels}
             colorScale={colorScale}
             onHover={onHover}
+            title={null}
             onClick={onClick}
             fontFamily={{
               regular: "MyFontLight",

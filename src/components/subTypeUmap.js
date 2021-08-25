@@ -42,6 +42,11 @@ const DataWrapper = ({
             hover: value,
           });
         }}
+        fontFamily={{
+          regular: "MyFontLight",
+          bold: "MyFontBold",
+          labelOffset: 3,
+        }}
         onLegendClick={(value) => {
           setSelectedSubtype({ selected: value });
         }}
