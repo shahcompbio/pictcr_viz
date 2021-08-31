@@ -23,12 +23,12 @@ def get_data(filepath):
     adata = sc.read(filepath)
     metadata = get_metadata(adata).to_dict(orient="records")
     degs = get_degs(adata).to_dict(orient="records")
-    probabilities = get_probabilities(adata).to_dict(orient="records")
+    # probabilities = get_probabilities(adata).to_dict(orient="records")
 
     return {
         "metadata": [clean_record(record) for record in metadata],
         "degs": [clean_record(record) for record in degs],
-        "probabilities": [clean_record(record) for record in probabilities]
+        # "probabilities": [clean_record(record) for record in probabilities]
     }
 
 
@@ -43,10 +43,10 @@ def clean_record(record):
 def get_metadata(adata):
     umap = pd.DataFrame(adata.obsm['X_umap'])
     umap.columns = ['UMAP_1', 'UMAP_2']
-    df = adata.obs[['clone_id', 'subtype']]
+    df = adata.obs[['clone_id', 'subtype', "pgen"]]
     df = df.reset_index()
     df = df.merge(umap, left_index=True, right_index=True)
-    df = df.rename(columns={'index': 'cell_id'})
+    df = df.rename(columns={'index': 'cell_id', 'pgen': 'log10_probability'})
     df = df.replace(to_replace="nan", value="None")
     return df
 
