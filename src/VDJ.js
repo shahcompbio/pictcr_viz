@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import _ from "lodash";
 import * as d3 from "d3";
 
-// import ClonotypeUMAP from "./components/Umap";
+import ClonotypeUMAP from "./components/Umap";
 // import SubtypeUMAP from "./components/subTypeUmap";
 import ClonotypeExpansion from "./components/ClonotypeExpansion";
 import DEGTable from "./components/DEGTable";
@@ -192,8 +192,8 @@ export const VDJ = ({ metadata, degs }) => {
           alignItems="flex-start"
         >
           <Layout title={INFO["UMAP"]["title"]} infoText={INFO["UMAP"]["text"]}>
-            <UMAP
-              width={700}
+            <ClonotypeUMAP
+              width={800}
               height={600}
               data={metadata}
               xParam={xParam}

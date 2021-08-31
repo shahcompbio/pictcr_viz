@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import * as d3 from "d3";
 import * as d3Hexbin from "d3-hexbin";
-import { INFO } from "../config.js";
 
 import {
-  Layout,
   VerticalLegend,
   useCanvas,
+  useLasso,
+  drawUMAPAxis,
   isValueHighlighted as isHighlighted,
 } from "@shahlab/planetarium";
 
@@ -27,68 +27,19 @@ const NULL_POINT_COLOR = "#d2d7d3";
 const UNHIGHLIGHTED_POINT_COLOR = "grey";
 const POINT_RADIUS = 2;
 
-const AXIS_FONT = "normal 10px Helvetica";
-const AXIS_COLOR = "#000000";
-
-const DataWrapper = ({
-  chartName,
-  data,
-  chartDim,
-  clonotypeLabels,
-  selectedClonotype,
-  hoveredClonotype,
-  setSelectedClonotype,
-}) => {
-  const { xParam, yParam, clonotypeParam } = CONSTANTS;
-
-  const setHighlighted = (event, value) => {
-    if (event === "mouseenter") {
-      setSelectedClonotype({ hover: value });
-    } else if (event === "mousedown") {
-      setSelectedClonotype({
-        hover: null,
-        selected: value,
-      });
-    } else if (event === "mouseout") {
-      setSelectedClonotype({
-        hover: null,
-      });
-    }
-  };
-  return (
-    <Layout title={INFO["UMAP"]["title"]} infoText={INFO["UMAP"]["text"]}>
-      <UMAP
-        width={chartDim["width"]}
-        height={chartDim["height"]}
-        chartName={chartName}
-        data={data}
-        highlighted={hoveredClonotype || selectedClonotype}
-        xParam={xParam}
-        yParam={yParam}
-        subsetParam={clonotypeParam}
-        subsetLabels={clonotypeLabels}
-        onHover={(value) => {
-          setSelectedClonotype({ hover: value });
-        }}
-        onClick={(value) => {
-          setSelectedClonotype({ hover: null, selected: value });
-        }}
-      />
-    </Layout>
-  );
-};
-
 const UMAP = ({
   width,
   height,
   data,
-  highlighted,
   xParam,
   yParam,
   subsetParam,
-  subsetLabels,
-  onHover,
-  onClick,
+  idParam,
+  colorScale,
+  highlightIDs,
+  onLasso,
+  onLegendClick,
+  disable,
 }) => {
   const [radiusRatio, setRadiusRatio] = useState(1);
   const canvasWidth = width - LEGEND_WIDTH - PADDING;
@@ -119,15 +70,28 @@ const UMAP = ({
     .domain([yMax, yMin])
     .range([chartY, chartY + chartHeight]);
 
-  const subsetValues = subsetLabels.map(({ value }) => value);
-  const subsetColors = subsetLabels.map(({ color }) => color);
+  const [lassoData, drawLasso, addLassoHandler] = useLasso(
+    data,
+    xScale,
+    yScale,
+    xParam,
+    yParam
+  );
 
-  const colorScale = d3.scaleOrdinal().domain(subsetValues).range(subsetColors);
+  const [hoverClone, setHoverClone] = useState(null)
+
+  const highlightData = 
 
   const canvasRef = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
-      drawUMAPAxis(context, canvasHeight - AXIS_SPACE, xParam, yParam);
+      drawUMAPAxis({
+        context,
+        xPos: AXIS_SPACE,
+        yPos: canvasHeight - AXIS_SPACE,
+        xLabel: xParam,
+        yLabel: yParam,
+      });
       drawPoints(
         context,
         data,
@@ -136,8 +100,8 @@ const UMAP = ({
         xParam,
         yParam,
         subsetParam,
-        highlighted,
-        subsetValues,
+        highlightIDs,
+        colorScale.domain(),
         colorScale,
         radiusRatio
       );
@@ -145,20 +109,23 @@ const UMAP = ({
       drawLineGraph(
         context,
         data,
-        subsetValues,
+        colorScale.domain(),
         xScale,
         yScale,
         xParam,
         yParam,
         subsetParam,
         colorScale,
-        highlighted,
+        null, // highlight
         chartX + chartWidth + 3
       );
+
+      drawLasso(context);
+      addLassoHandler(canvas, disable, onLasso);
     },
     canvasWidth,
     canvasHeight,
-    [highlighted, radiusRatio]
+    [highlightIDs, radiusRatio, lassoData, hoverClone]
   );
 
   return (
@@ -175,11 +142,13 @@ const UMAP = ({
           <VerticalLegend
             width={LEGEND_WIDTH}
             height={chartHeight / 2}
-            ticks={subsetLabels}
+            ticks={colorScale
+              .domain()
+              .map((value) => ({ value, label: `Clone ${value}` }))}
             colorScale={colorScale}
-            onHover={onHover}
+            // onHover={onHover}
             title={null}
-            onClick={onClick}
+            onClick={onLegendClick}
             fontFamily={{
               regular: "MyFontLight",
               bold: "MyFontBold",
@@ -194,7 +163,7 @@ const UMAP = ({
             max={3}
             step={0.05}
             value={radiusRatio}
-            disabled={highlighted}
+            disabled={highlightIDs !== null}
             onChange={(event, newValue) => {
               setRadiusRatio(newValue);
             }}
@@ -221,9 +190,8 @@ const drawPoints = (
   context.lineWidth = 1;
   context.globalAlpha = 1;
 
-  const [subsetData, backgroundData] = _.partition(
-    data,
-    (datum) => subsetLabels.indexOf(datum[subsetParam]) !== -1
+  const [subsetData, backgroundData] = _.partition(data, (datum) =>
+    subsetLabels.includes(datum[subsetParam])
   );
 
   context.fillStyle = NULL_POINT_COLOR;
@@ -276,12 +244,12 @@ const drawPoints = (
     .range([POINT_RADIUS, POINT_RADIUS * 3]);
 
   freqData.forEach((point) => {
-    context.globalAlpha = isHighlighted(point[subsetParam], highlighted)
-      ? 1
-      : 0.5;
-    context.fillStyle = isHighlighted(point[subsetParam], highlighted)
-      ? colorScale(point[subsetParam])
-      : UNHIGHLIGHTED_POINT_COLOR;
+    context.globalAlpha =
+      highlighted === null || highlighted.includes(point["cell_id"]) ? 1 : 0.5;
+    context.fillStyle =
+      highlighted === null || highlighted.includes(point["cell_id"])
+        ? colorScale(point[subsetParam])
+        : UNHIGHLIGHTED_POINT_COLOR;
 
     context.beginPath();
     context.arc(
@@ -298,11 +266,9 @@ const drawPoints = (
   if (highlighted) {
     context.globalAlpha = 1;
     freqData
-      .filter((datum) => datum[subsetParam] === highlighted)
+      .filter((datum) => highlighted.includes(datum["cell_id"]))
       .forEach((point) => {
-        context.fillStyle = isHighlighted(point[subsetParam], highlighted)
-          ? colorScale(point[subsetParam])
-          : UNHIGHLIGHTED_POINT_COLOR;
+        context.fillStyle = colorScale(point[subsetParam]);
 
         context.beginPath();
         context.arc(
@@ -316,35 +282,6 @@ const drawPoints = (
         context.fill();
       });
   }
-};
-
-const drawUMAPAxis = (context, startY, xParam, yParam) => {
-  context.beginPath();
-  context.font = AXIS_FONT;
-  context.globalAlpha = 1;
-  context.lineWidth = 1;
-
-  const START_X = AXIS_SPACE / 2;
-  const START_Y = startY + AXIS_SPACE / 2;
-
-  context.fillStyle = AXIS_COLOR;
-  context.strokeStyle = AXIS_COLOR;
-  context.moveTo(START_X, START_Y);
-  context.lineTo(START_X, START_Y - 50);
-  context.stroke();
-
-  context.beginPath();
-  context.moveTo(START_X, START_Y);
-  context.lineTo(START_X + 50, START_Y);
-  context.stroke();
-
-  context.textAlign = "left";
-  context.textBaseline = "middle";
-  context.fillText(xParam, START_X + 52, START_Y);
-  context.save();
-  context.rotate((270 * Math.PI) / 180);
-  context.fillText(yParam, -(START_Y - 52), START_X);
-  context.restore();
 };
 
 const drawLineGraph = (
@@ -452,4 +389,4 @@ const drawLineGraph = (
   }
 };
 
-export default DataWrapper;
+export default UMAP;
