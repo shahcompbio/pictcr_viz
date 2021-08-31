@@ -1,19 +1,97 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 
 import * as d3 from "d3";
 import { useD3, sortAlphanumeric } from "@shahlab/planetarium";
 import _ from "lodash";
 
+import { makeStyles } from "@material-ui/core/styles";
+
+import { useCanvas } from "@shahlab/planetarium";
+
 import { Layout } from "@shahlab/planetarium";
+import Tooltip from "@material-ui/core/Tooltip";
+import Typography from "@material-ui/core/Typography";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableRow from "@material-ui/core/TableRow";
 
 import { CONSTANTS, INFO } from "../config";
 
-const Doughnut = ({ data, colors, width, height, subsetParam, type }) => {
+import { jsPDF } from "jspdf";
+import canvg from "canvg";
+//import * as canvas from "canvas";
+const pageWidthPixel = 595;
+const pageHeightPixel = 842;
+const TOP_NUM = 3;
+
+const useStyles = makeStyles((theme) => ({
+  tooltip: {
+    minWidth: 220,
+  },
+}));
+const download = async (ref, width, height) => {
+  var doc = new jsPDF("L", "px", [width, height]);
+
+  const newCanvas = document.createElement("canvas");
+  const context = newCanvas.getContext("2d");
+
+  const currCanvas = ref.current;
+  console.log(currCanvas.width.animVal.value);
+  console.log(width);
+  //const currContext = canvas.getContext("2d");
+
+  let scale = window.devicePixelRatio;
+  newCanvas.style.width = width + "px";
+  newCanvas.style.height = height + "px";
+  newCanvas.width = width * scale;
+  newCanvas.height = height * scale;
+
+  context.scale(scale, scale);
+
+  const plot = d3.select(ref.current).node();
+  const profile = canvg.fromString(context, plot.outerHTML, { useCORS: true });
+
+  // Render only first frame, ignoring animations.
+  await profile.render();
+
+  const png = newCanvas.toBuffer();
+
+  //  const imgProfileBackground = context.drawImage(img, 0, 0, width, height);
+  //  context.stroke(path);
+  //const currContext = canvas.getContext("2d");
+
+  //  const plotOuter = plot.outerHTML;
+  //const profile = canvg.fromString(context, plotOuter);
+  //profile.start();
+
+  //  const imgProfileBackground = canvas.toDataURL("image/png", 1.0);
+  //const docWidth = Math.round((width * 25.4) / 96);
+  //const docHeight = Math.round((height * 25.4) / 96);
+  doc.addImage(png, "PNG", 0, 0, width / scale, height / scale);
+
+  doc.save("test.pdf");
+};
+const Doughnut = ({
+  data,
+  colors,
+  width,
+  height,
+  subsetParam,
+  type,
+  otherSubsetParam,
+}) => {
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const tooltipRef = useRef(null);
+  const [hoverItem, setHoverItem] = useState(null);
+
+  const classes = useStyles();
+
   const totalCount = data.length;
   const subsetValues = _.uniq(data.map((datum) => datum[subsetParam])).sort(
     sortAlphanumeric
   );
-  //console.log(data);
+
   const allSubsets = _.groupBy(data, (datum) => datum[subsetParam]);
 
   const subsetCounts = Object.keys(allSubsets)
@@ -41,7 +119,7 @@ const Doughnut = ({ data, colors, width, height, subsetParam, type }) => {
     .innerRadius(radius * 0.9)
     .outerRadius(radius * 0.9);
 
-  const drawArea = (svg) => {
+  const drawArea = (svg, setIsTooltipOpen, setHoveredItem) => {
     const pie = d3
       .pie()
       .value((d) => d["value"].length)
@@ -63,7 +141,7 @@ const Doughnut = ({ data, colors, width, height, subsetParam, type }) => {
         d3.select(this)
           .transition()
           .duration(500)
-          .attr("transform", function (d) {
+          .attr("transform", function (d, i) {
             var x;
             var y;
             if (d.data._translate) {
@@ -77,6 +155,14 @@ const Doughnut = ({ data, colors, width, height, subsetParam, type }) => {
               y = Math.sin(a) * 10;
               d.data._translate = { x: x, y: y };
             }
+            const arcLocation = arcLabel.centroid(d, i);
+            setIsTooltipOpen(true);
+            setHoveredItem(d.data.key);
+
+            d3.select(tooltipRef.current)
+              .transition()
+              .style("left", arcLocation[0] + width / 2 + "px")
+              .style("top", arcLocation[1] + height / 2 + "px");
 
             return "translate(" + x + "," + y + ")";
           });
@@ -88,6 +174,7 @@ const Doughnut = ({ data, colors, width, height, subsetParam, type }) => {
           .delay(200)
           .duration(500)
           .attr("transform", function (d) {
+            setIsTooltipOpen(false);
             d.data._expanded = false;
           });
         d3.select("#label-" + d.data.key).style("font-weight", "normal");
@@ -131,7 +218,7 @@ const Doughnut = ({ data, colors, width, height, subsetParam, type }) => {
 
   const ref = useD3(
     (svg) => {
-      drawArea(svg);
+      drawArea(svg, setIsTooltipOpen, setHoverItem);
     },
     width,
     height,
@@ -139,10 +226,107 @@ const Doughnut = ({ data, colors, width, height, subsetParam, type }) => {
   );
 
   return (
-    <Layout title={INFO[type]["title"]} infoText={INFO[type]["text"]}>
-      <svg ref={ref} />
+    <Layout
+      download={async () => download(ref, width, height)}
+      title={INFO[type]["title"]}
+      infoText={INFO[type]["text"]}
+    >
+      <div style={{ position: "relative" }}>
+        <div
+          id="tooltipDiv"
+          ref={tooltipRef}
+          style={{ position: "relative", width: "10px", height: "10px" }}
+        >
+          <Tooltip
+            PopperProps={{
+              disablePortal: true,
+            }}
+            classes={{ tooltip: classes.tooltip }}
+            arrow
+            title={
+              <TooltipText
+                allSubsets={allSubsets}
+                hoverItem={hoverItem}
+                allSubsets={allSubsets}
+              />
+            }
+            open={isTooltipOpen}
+            disableFocusListener
+            disableHoverListener
+            disableTouchListener
+          >
+            <div
+              style={{
+                position: "absolute",
+                x: 100,
+                y: 100,
+                width: 5,
+                height: 5,
+                fill: "blue",
+              }}
+            />
+          </Tooltip>
+        </div>
+        <svg ref={ref} />
+      </div>
     </Layout>
   );
 };
+const TooltipText = ({ allSubsets, hoverItem, allSubsets }) => (
+  <React.Fragment>
+    {hoverItem && (
+      <span>
+        <Typography color="inherit">{hoverItem}</Typography>
+        <b>{allSubsets[hoverItem].length}</b>
+        <em>{" - data points"}</em>
+        <div>
+          <Typography style={{ fontSize: 15 }} gutterBottom>
+            Top {TOP_NUM}{" "}
+            {otherSubsetParam === "subtype" ? "Subtypes" : "Clone IDs"}
+          </Typography>
+          <Table size="small">
+            <TableBody>
+              {_.chain(allSubsets[hoverItem])
+                .groupBy(otherSubsetParam)
+                .orderBy(
+                  function (o) {
+                    return o.length;
+                  },
+                  ["desc", "desc"]
+                )
+                .filter(function (o, i) {
+                  return i < 3;
+                })
+                .value()
+                .map(function (d) {
+                  return (
+                    <TableRow
+                      key={d[0][otherSubsetParam]}
+                      style={{ paddingBottom: "5px" }}
+                    >
+                      <TableCell
+                        style={{
+                          borderBottom: "none",
+                          paddingRight: 0,
+                        }}
+                      >
+                        <b>{d[0][otherSubsetParam]}</b>
+                      </TableCell>
+                      <TableCell style={{ borderBottom: "none" }}>
+                        {d.length} -{" "}
+                        {d3.format(".0%")(
+                          d.length / allSubsets[hoverItem].length
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </div>
+      </span>
+    )}
+  </React.Fragment>
+);
 
 export default Doughnut;

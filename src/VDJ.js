@@ -136,18 +136,6 @@ export const VDJ = ({ metadata, degs }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
-      {(selectClone || selectPhenotype) && (
-        <Popup
-          selected={selectClone || selectPhenotype}
-          setSelected={() => {
-            setSelectClone(null);
-            setSelectPhenotype(null);
-            setSelectIDs(null);
-            setActiveGraph(null);
-          }}
-          type={selectClone ? "Clone" : "Phenotype"}
-        />
-      )}
       <Grid
         container
         direction="column"
@@ -165,7 +153,14 @@ export const VDJ = ({ metadata, degs }) => {
             width={250}
             data={metadata}
             sample="SAMPLE-TITLE-NDVL"
-            selected={highlightData}
+            highlight={highlightData}
+            selected={selectClone || selectPhenotype}
+            setHighlight={() => {
+              setSelectIDs(null);
+              setSelectClone(null);
+              setSelectPhenotype(null);
+            }}
+            selectedType={selectClone ? "Clone" : "Phenotype"}
           />
           <Doughnut
             data={highlightData || metadata}
@@ -173,6 +168,7 @@ export const VDJ = ({ metadata, degs }) => {
             colors={CLONOTYPE_COLORS}
             width={450}
             height={350}
+            otherSubsetParam={subtypeParam}
             subsetParam={clonotypeParam}
           />
           <Doughnut
@@ -181,6 +177,7 @@ export const VDJ = ({ metadata, degs }) => {
             colors={CLONOTYPE_COLORS}
             width={450}
             height={350}
+            otherSubsetParam={clonotypeParam}
             subsetParam={subtypeParam}
           />
         </Grid>
