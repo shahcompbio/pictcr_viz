@@ -153,12 +153,13 @@ export const VDJ = ({ metadata, degs }) => {
             width={250}
             data={metadata}
             sample="SAMPLE-TITLE-NDVL"
-            highlight={highlightData}
+            highlighted={highlightData}
             selected={selectClone || selectPhenotype}
             setHighlight={() => {
               setSelectIDs(null);
               setSelectClone(null);
               setSelectPhenotype(null);
+              setActiveGraph(null);
             }}
             selectedType={selectClone ? "Clone" : "Phenotype"}
           />

@@ -179,12 +179,12 @@ const MetaData = ({
               )}
             </CardContent>
 
-            {selected && (
+            {(selected || highlighted) && (
               <CardActions>
                 <Button
                   size="small"
                   color="secondary"
-                  onClick={() => setHighlight(null)}
+                  onClick={() => setHighlight()}
                 >
                   Clear
                 </Button>
