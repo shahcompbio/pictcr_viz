@@ -78,9 +78,7 @@ const UMAP = ({
     yParam
   );
 
-  const [hoverClone, setHoverClone] = useState(null)
-
-  const highlightData = 
+  const [hoverClone, setHoverClone] = useState(null);
 
   const canvasRef = useCanvas(
     (canvas) => {

@@ -247,7 +247,7 @@ const Doughnut = ({
               <TooltipText
                 allSubsets={allSubsets}
                 hoverItem={hoverItem}
-                allSubsets={allSubsets}
+                otherSubsetParam={otherSubsetParam}
               />
             }
             open={isTooltipOpen}
@@ -272,7 +272,7 @@ const Doughnut = ({
     </Layout>
   );
 };
-const TooltipText = ({ allSubsets, hoverItem, allSubsets }) => (
+const TooltipText = ({ allSubsets, hoverItem, otherSubsetParam }) => (
   <React.Fragment>
     {hoverItem && (
       <span>
