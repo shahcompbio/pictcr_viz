@@ -90,7 +90,16 @@ const COLOR_ARRAY = [
 const PADDING = 50;
 const format = d3.format(".3f");
 
-const MetaData = ({ width, height, data, sample, selected }) => {
+const MetaData = ({
+  width,
+  height,
+  data,
+  sample,
+  selected,
+  highlighted,
+  selectedType,
+  setHighlight,
+}) => {
   const classes = useStyles();
   return (
     <Paper
@@ -116,7 +125,7 @@ const MetaData = ({ width, height, data, sample, selected }) => {
           </Card>
           <Card className={classes.root}>
             <CardContent className={classes.content}>
-              {selected ? (
+              {highlighted && (
                 <span>
                   <Typography className={classes.key}>Data Points:</Typography>
                   <Grid
@@ -126,6 +135,25 @@ const MetaData = ({ width, height, data, sample, selected }) => {
                     alignItems="stretch"
                   >
                     <Typography className={classes.selectedCells}>
+                      {highlighted.length}
+                    </Typography>
+                    <Typography className={classes.overallCells}>
+                      / {data.length} selected
+                    </Typography>
+                  </Grid>
+                </span>
+              )}
+              {selected && (
+                <span>
+                  <Typography className={classes.key}>Data Points:</Typography>
+                  <Grid
+                    container
+                    direction="row"
+                    justify="flex-start"
+                    alignItems="stretch"
+                  >
+                    <Typography variant="h4">{selectedType}</Typography>
+                    <Typography className={classes.selectedCells}>
                       {selected.length}
                     </Typography>
                     <Typography className={classes.overallCells}>
@@ -133,7 +161,8 @@ const MetaData = ({ width, height, data, sample, selected }) => {
                     </Typography>
                   </Grid>
                 </span>
-              ) : (
+              )}
+              {!highlighted && !selected && (
                 <Grid
                   container
                   direction="row"
@@ -150,9 +179,13 @@ const MetaData = ({ width, height, data, sample, selected }) => {
               )}
             </CardContent>
 
-            {!selected && (
+            {selected && (
               <CardActions>
-                <Button size="small" color="secondary">
+                <Button
+                  size="small"
+                  color="secondary"
+                  onClick={() => setHighlight(null)}
+                >
                   Clear
                 </Button>
               </CardActions>

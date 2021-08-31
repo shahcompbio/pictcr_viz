@@ -63,23 +63,10 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
     }));
 
   const subtypeTotals = _.countBy(metadata, subtypeParam);
-  console.log(highlight);
 
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
-      {(selectedClonotype["selected"] || selectedSubtype["selected"]) && (
-        <Popup
-          selected={
-            selectedClonotype["selected"] || selectedSubtype["selected"]
-          }
-          setSelected={() => {
-            setSelectedClonotype(NULL_SELECTED);
-            setSelectedSubtype(NULL_SELECTED);
-          }}
-          type={selectedClonotype["selected"] ? "Clone" : "Phenotype"}
-        />
-      )}
       <Grid
         container
         direction="column"
@@ -98,7 +85,16 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
             data={metadata}
             sample="SAMPLE-TITLE-NDVL"
             data={metadata}
-            selected={highlight}
+            highlight={highlight}
+            selected={
+              selectedClonotype["selected"] || selectedSubtype["selected"]
+            }
+            setHighlight={() => {
+              setHighlight(null);
+              setSelectedClonotype(NULL_SELECTED);
+              setSelectedSubtype(NULL_SELECTED);
+            }}
+            selectedType={selectedClonotype["selected"] ? "Clone" : "Phenotype"}
           />
           <Doughnut
             data={highlight ? highlight : metadata}
@@ -106,6 +102,7 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
             colors={CLONOTYPE_COLORS}
             width={450}
             height={350}
+            otherSubsetParam={CONSTANTS.subtypeParam}
             subsetParam={CONSTANTS.clonotypeParam}
           />
           <Doughnut
@@ -114,6 +111,7 @@ export const VDJ = ({ metadata, probabilities, degs }) => {
             colors={CLONOTYPE_COLORS}
             width={450}
             height={350}
+            otherSubsetParam={CONSTANTS.clonotypeParam}
             subsetParam={CONSTANTS.subtypeParam}
           />
         </Grid>
