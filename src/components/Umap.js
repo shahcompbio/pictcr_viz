@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import * as d3 from "d3";
 import * as d3Hexbin from "d3-hexbin";
 
@@ -70,7 +70,7 @@ const UMAP = ({
     .domain([yMax, yMin])
     .range([chartY, chartY + chartHeight]);
 
-  const [lassoData, drawLasso, addLassoHandler] = useLasso(
+  const [lassoData, drawLasso, addLassoHandler, resetLasso] = useLasso(
     data,
     xScale,
     yScale,
@@ -78,7 +78,31 @@ const UMAP = ({
     yParam
   );
 
+  const prevHighlightRef = useRef();
+
+  useEffect(() => {
+    // resetLasso if highlightIDs is suddenly null and lassoData still exists
+    if (highlightIDs === null && prevHighlightRef.current !== null) {
+      if (lassoData !== null) {
+        resetLasso();
+      }
+    }
+  }, [highlightIDs, lassoData]);
+
+  useEffect(() => {
+    prevHighlightRef.current = highlightIDs;
+  }, [highlightIDs]);
+
   const [hoverClone, setHoverClone] = useState(null);
+
+  const subsettedIDs =
+    hoverClone !== null
+      ? data
+          .filter((datum) => datum[subsetParam] === hoverClone)
+          .map((datum) => datum[idParam])
+      : highlightIDs !== null
+      ? highlightIDs
+      : data.map((datum) => datum[idParam]);
 
   const canvasRef = useCanvas(
     (canvas) => {
@@ -98,7 +122,7 @@ const UMAP = ({
         xParam,
         yParam,
         subsetParam,
-        highlightIDs,
+        subsettedIDs,
         colorScale.domain(),
         colorScale,
         radiusRatio
@@ -114,7 +138,7 @@ const UMAP = ({
         yParam,
         subsetParam,
         colorScale,
-        null, // highlight
+        hoverClone, // highlight
         chartX + chartWidth + 3
       );
 
@@ -144,7 +168,7 @@ const UMAP = ({
               .domain()
               .map((value) => ({ value, label: `Clone ${value}` }))}
             colorScale={colorScale}
-            // onHover={onHover}
+            onHover={setHoverClone}
             title={null}
             onClick={onLegendClick}
             fontFamily={{
@@ -152,6 +176,7 @@ const UMAP = ({
               bold: "MyFontBold",
               labelOffset: 3,
             }}
+            disable={disable}
           />
         </Grid>
         <Grid item>

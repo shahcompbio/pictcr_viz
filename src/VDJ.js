@@ -3,7 +3,6 @@ import _ from "lodash";
 import * as d3 from "d3";
 
 import ClonotypeUMAP from "./components/Umap";
-// import SubtypeUMAP from "./components/subTypeUmap";
 import ClonotypeExpansion from "./components/ClonotypeExpansion";
 import DEGTable from "./components/DEGTable";
 import RankedOrder from "./components/RankedOrder";
@@ -32,11 +31,6 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 import { CONSTANTS, CLONOTYPE_COLORS, INFO } from "./config";
-
-const NULL_SELECTED = {
-  hover: null,
-  selected: null,
-};
 
 const PHENOTYPE_COLORS = [
   "#5E4FA2",
@@ -125,7 +119,7 @@ export const VDJ = ({ metadata, degs }) => {
       ? null
       : highlightData.map((datum) => datum["cell_id"]);
 
-  const probabilities = (highlightData || metadata).filter(
+  const probabilities = metadata.filter(
     (datum) =>
       datum[clonotypeParam] !== "None" || datum[logProbParam] !== "None"
   );

@@ -1782,9 +1782,15 @@
     picomatch "^2.2.2"
 
 "@shahlab/planetarium@^1.0.12":
+<<<<<<< HEAD
   version "1.22.38"
   resolved "https://registry.yarnpkg.com/@shahlab/planetarium/-/planetarium-1.22.38.tgz#c0436fa73e57ef649b89396700ae05fe154b51d9"
   integrity sha512-PeHuIRVQFwUKNHwkvcoMsGwd8Id5sov6/MzAcrWfZw3UHwJD70UQmDYrFhVFj6xm5kQ3NNSGDamSt72+zcRqcw==
+=======
+  version "1.22.39"
+  resolved "https://registry.yarnpkg.com/@shahlab/planetarium/-/planetarium-1.22.39.tgz#1d296ff95b31dcb89c7ee46d297f7cf8fcb9eaa3"
+  integrity sha512-zqf8eGAyVW+r1JEBozf18TXAMElDWi31bjHFPQrr8p5A+L6b76TeoNSwRBQ3/YxohsDOPKlyPQdn5aR+GvysZw==
+>>>>>>> a6d248a5fc2b19deca9025d5f0d7f7b855206b73
   dependencies:
     "@material-ui/core" "^4.11.3"
     "@material-ui/icons" "^4.11.2"
