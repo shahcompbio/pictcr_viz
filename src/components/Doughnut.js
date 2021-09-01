@@ -37,8 +37,6 @@ const download = async (ref, width, height) => {
   const context = newCanvas.getContext("2d");
 
   const currCanvas = ref.current;
-  console.log(currCanvas.width.animVal.value);
-  console.log(width);
   //const currContext = canvas.getContext("2d");
 
   let scale = window.devicePixelRatio;
@@ -50,25 +48,32 @@ const download = async (ref, width, height) => {
   context.scale(scale, scale);
 
   const plot = d3.select(ref.current).node();
-  const profile = canvg.fromString(context, plot.outerHTML, { useCORS: true });
+  //const profile = canvg.fromString(context, plot.outerHTML, { useCORS: true });
 
   // Render only first frame, ignoring animations.
-  await profile.render();
+  //await profile.render();
 
-  const png = newCanvas.toBuffer();
+  //const png = newCanvas.toBuffer();
 
   //  const imgProfileBackground = context.drawImage(img, 0, 0, width, height);
   //  context.stroke(path);
   //const currContext = canvas.getContext("2d");
 
-  //  const plotOuter = plot.outerHTML;
-  //const profile = canvg.fromString(context, plotOuter);
-  //profile.start();
+  const plotOuter = plot.outerHTML;
+  const profile = canvg.fromString(context, plotOuter);
+  profile.start();
 
-  //  const imgProfileBackground = canvas.toDataURL("image/png", 1.0);
+  const imgProfileBackground = newCanvas.toDataURL("image/png", 1.0);
   //const docWidth = Math.round((width * 25.4) / 96);
   //const docHeight = Math.round((height * 25.4) / 96);
-  doc.addImage(png, "PNG", 0, 0, width / scale, height / scale);
+  doc.addImage(
+    imgProfileBackground,
+    "PNG",
+    0,
+    0,
+    width / scale,
+    height / scale
+  );
 
   doc.save("test.pdf");
 };

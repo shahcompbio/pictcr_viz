@@ -9,6 +9,7 @@ import DEGTable from "./components/DEGTable";
 import RankedOrder from "./components/RankedOrder";
 import Doughnut from "./components/Doughnut";
 import MetaData from "./components/MetaData";
+import Header from "./components/Header";
 
 import {
   Heatmap,
@@ -20,9 +21,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import Popper from "@material-ui/core/Popper";
 import Typography from "@material-ui/core/Typography";
-
 import Grid from "@material-ui/core/Grid";
-
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -136,6 +135,7 @@ export const VDJ = ({ metadata, degs }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
+      <Header />
       <Grid
         container
         direction="column"
@@ -270,7 +270,7 @@ export const VDJ = ({ metadata, degs }) => {
             chartName={"BARPLOT"}
             data={probabilities}
             width={750}
-            height={455}
+            height={550}
             highlightedRow={selectPhenotype}
           />
         </Grid>

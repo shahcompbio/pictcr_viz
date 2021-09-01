@@ -7,7 +7,6 @@ import Button from "@material-ui/core/Button";
 import ClearIcon from "@material-ui/icons/Clear";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import GetAppIcon from "@material-ui/icons/GetApp";
 import * as d3Dsv from "d3-dsv";
 import DataTable from "react-data-table-component";
 const formatCols = ["adj_pval", "log_fc"];
@@ -36,6 +35,7 @@ const customStyles = {
     },
   },
 };
+
 const DEGTable = ({ data, chartDim, selectedSubtype }) => {
   const [filterText, setFilterText] = useState("");
   const { subtypeParam } = CONSTANTS;
@@ -56,7 +56,6 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
         setFilterText("");
       }
     };
-
     return (
       <FilterComponent
         onFilter={(e) => setFilterText(e.target.value)}
@@ -67,7 +66,20 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
     );
   }, [filterText, data]);
   return (
-    <Layout title={INFO["TABLE"]["title"]} infoText={INFO["TABLE"]["text"]}>
+    <Layout
+      title={INFO["TABLE"]["title"]}
+      infoText={INFO["TABLE"]["text"]}
+      download={() => {
+        const dataSource = new Blob([d3Dsv.tsvFormat(data)], {
+          type: "text/tsv",
+        });
+        const tsvURL = window.URL.createObjectURL(dataSource);
+        const tempLink = document.createElement("a");
+        tempLink.href = tsvURL;
+        tempLink.setAttribute("download", "filename.tsv");
+        tempLink.click();
+      }}
+    >
       <Grid
         item
         style={{
@@ -143,25 +155,6 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
         ),
       }}
     />
-    <Button
-      variant="outlined"
-      label="Download"
-      id="tsv-download"
-      onClick={() => {
-        const dataSource = new Blob([d3Dsv.tsvFormat(data)], {
-          type: "text/tsv",
-        });
-        const tsvURL = window.URL.createObjectURL(dataSource);
-        const tempLink = document.createElement("a");
-        tempLink.href = tsvURL;
-        tempLink.setAttribute("download", "filename.tsv");
-        tempLink.click();
-      }}
-      color="secondary"
-      style={{ marginLeft: 15, right: 0, position: "absolute" }}
-    >
-      <GetAppIcon />
-    </Button>
   </div>
 );
 export default DEGTable;
