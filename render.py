@@ -18,9 +18,19 @@ PTHRESH = 0.01
 FCTHRESH = 0.01
 TOP_N = 20
 
+COLUMNS = ['phenotype', 'clone_id']
+
+
+def open_file(filepath):
+    adata = sc.read(filepath)
+    adata = adata[adata.obs["clone_id"].notnull()]
+    sc.tl.umap(adata)
+    
+    return adata
 
 def get_data(filepath):
-    adata = sc.read(filepath)
+    adata = open_file(filepath)
+
     metadata = get_metadata(adata).to_dict(orient="records")
     degs = get_degs(adata).to_dict(orient="records")
     # probabilities = get_probabilities(adata).to_dict(orient="records")
@@ -43,7 +53,8 @@ def clean_record(record):
 def get_metadata(adata):
     umap = pd.DataFrame(adata.obsm['X_umap'])
     umap.columns = ['UMAP_1', 'UMAP_2']
-    df = adata.obs[['clone_id', 'subtype', "pgen"]]
+    add_columns = list(adata.uns['viz_columns'])
+    df = adata.obs[COLUMNS + add_columns + ['pgen']]
     df = df.reset_index()
     df = df.merge(umap, left_index=True, right_index=True)
     df = df.rename(columns={'index': 'cell_id', 'pgen': 'log10_probability'})
@@ -73,6 +84,19 @@ def get_degs(adata):
         data = pd.concat([data, df], ignore_index=True)
 
     return data
+
+def get_filter(adata):
+    columns = list(adata.uns['viz_columns']) + COLUMNS
+    records = []
+
+    for column in columns:
+        record = {
+            "name": column,
+            "values": list(adata.obs[column].unique())
+        }
+        records.append(record)
+
+    return records
 
 def get_probabilities(adata):
     df = adata.obs[["clone_id", "pgen", "subtype"]]  
@@ -108,6 +132,7 @@ def output_data(filepath, output):
 
 if __name__ == "__main__":
     filename = sys.argv[1]
+    
     # output = sys.argv[2]
     # output_data(filename, output)
     data = get_data(filename)
@@ -126,8 +151,8 @@ if __name__ == "__main__":
     js_txt = open(os.path.join(app_dir, "build", "main.js"), 'r').read()
     css_txt = open(os.path.join(app_dir, "build", "main.css"), 'r').read()
 
-    html = html.replace('<script src="./main.js"></script>', f"<script>{js_txt}</script>")
-    html = html.replace('<link href="./main.css" rel="stylesheet">', f"<style>{css_txt}</style>")
+    # html = html.replace('<script src="./main.js"></script>', f"<script>{js_txt}</script>")
+    # html = html.replace('<link href="./main.css" rel="stylesheet">', f"<style>{css_txt}</style>")
 
     output.write(html)
     output.close()

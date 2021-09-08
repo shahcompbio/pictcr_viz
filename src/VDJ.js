@@ -3,6 +3,7 @@ import _ from "lodash";
 import * as d3 from "d3";
 
 import ClonotypeUMAP from "./components/Umap";
+import PhenotypeUMAP from "./components/subTypeUmap";
 import ClonotypeExpansion from "./components/ClonotypeExpansion";
 import DEGTable from "./components/DEGTable";
 import RankedOrder from "./components/RankedOrder";
@@ -10,12 +11,7 @@ import Doughnut from "./components/Doughnut";
 import MetaData from "./components/MetaData";
 import Header from "./components/Header";
 
-import {
-  Heatmap,
-  ProbabilityHistogram,
-  Layout,
-  UMAP,
-} from "@shahlab/planetarium";
+import { Heatmap, ProbabilityHistogram, Layout } from "@shahlab/planetarium";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Popper from "@material-ui/core/Popper";
@@ -53,12 +49,12 @@ const PHENOTYPE_COLORS = [
 const DataWrapper = ({ data }) => (
   <VDJ
     metadata={data["metadata"]}
-    probabilities={data["probabilities"]}
+    filters={data["filters"]}
     degs={data["degs"]}
   />
 );
 
-export const VDJ = ({ metadata, degs }) => {
+export const VDJ = ({ metadata, degs, filters }) => {
   const [selectPhenotype, setSelectPhenotype] = useState(null);
   const [selectClone, setSelectClone] = useState(null);
   const [selectIDs, setSelectIDs] = useState(null);
@@ -208,33 +204,29 @@ export const VDJ = ({ metadata, degs }) => {
               disable={activeGraph !== null && activeGraph !== "cloneUMAP"}
             />
           </Layout>
-          <Layout
-            title={INFO["SUBTYPEUMAP"]["title"]}
-            infoText={INFO["SUBTYPEUMAP"]["text"]}
-          >
-            <UMAP
-              width={700}
-              height={600}
-              data={metadata}
-              xParam={xParam}
-              yParam={yParam}
-              subsetParam={subtypeParam}
-              idParam="cell_id"
-              colorScale={phenotypeColorScale}
-              onLasso={(data) => {
-                setSelectIDs(
-                  data === null ? null : data.map((datum) => datum["cell_id"])
-                );
-                setActiveGraph(data === null ? null : "phenoUMAP");
-              }}
-              onLegendClick={(value) => {
-                setSelectPhenotype(value);
-                setActiveGraph(value === null ? null : "phenoUMAP");
-              }}
-              disable={activeGraph !== null && activeGraph !== "phenoUMAP"}
-              highlightIDs={highlightIDs}
-            />
-          </Layout>
+          <PhenotypeUMAP
+            width={700}
+            height={600}
+            data={metadata}
+            xParam={xParam}
+            yParam={yParam}
+            subsetParam={subtypeParam}
+            idParam="cell_id"
+            colorScale={phenotypeColorScale}
+            onLasso={(data) => {
+              setSelectIDs(
+                data === null ? null : data.map((datum) => datum["cell_id"])
+              );
+              setActiveGraph(data === null ? null : "phenoUMAP");
+            }}
+            onLegendClick={(value) => {
+              setSelectPhenotype(value);
+              setActiveGraph(value === null ? null : "phenoUMAP");
+            }}
+            disable={activeGraph !== null && activeGraph !== "phenoUMAP"}
+            highlightIDs={highlightIDs}
+            options={filters.map((datum) => datum["name"])}
+          />
         </Grid>
         <Grid
           item
@@ -304,7 +296,12 @@ export const VDJ = ({ metadata, degs }) => {
           title={INFO["RANKED"]["title"]}
           infoText={INFO["RANKED"]["text"]}
         >
-          <RankedOrder width={800} height={500} data={probabilities} />
+          <RankedOrder
+            width={800}
+            height={500}
+            data={probabilities}
+            highlight={selectPhenotype}
+          />
         </Layout>
       </Grid>
     </MuiThemeProvider>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as d3 from "d3";
 import _ from "lodash";
 
@@ -31,7 +31,7 @@ const COLOR_ARRAY = [
 const PADDING = 50;
 const format = d3.format(".3f");
 
-const RankedOrder = ({ width, height, data }) => {
+const RankedOrder = ({ width, height, data, highlight = null }) => {
   // need to calculate rank
   const subsets = _.groupBy(data, "subtype");
   const subsetValues = Object.keys(subsets).sort();
@@ -78,9 +78,13 @@ const RankedOrder = ({ width, height, data }) => {
 
   const subsetLabels = subsetValues.map((value) => ({
     value,
-    label: value,
+    label: `${value}`,
     color: subsetColors(value),
   }));
+
+  // const [hoverSubset, setHoverSubset] = useState(null);
+
+  const highlightValue = highlight;
 
   const canvasRef = useCanvas(
     (canvas) => {
@@ -116,7 +120,10 @@ const RankedOrder = ({ width, height, data }) => {
         context.beginPath();
 
         context.fillStyle = subsetColors(subsetName);
-        context.strokeStyle = subsetColors(subsetName);
+        context.strokeStyle =
+          highlightValue === null || highlightValue === subsetName
+            ? subsetColors(subsetName)
+            : "#e8e8e8";
         context.moveTo(rankScale(1), freqScale(subsetData[0]["frequency"]));
         subsetData.forEach((record, index) => {
           // context.arc(
@@ -131,11 +138,28 @@ const RankedOrder = ({ width, height, data }) => {
           context.lineTo(rankScale(index + 1), freqScale(record["frequency"]));
           context.stroke();
         });
+
+        if (highlightValue) {
+          const index = subsetValues.indexOf(highlightValue);
+          const subsetData = records[index];
+          context.beginPath();
+
+          context.fillStyle = subsetColors(highlightValue);
+          context.strokeStyle = subsetColors(highlightValue);
+          context.moveTo(rankScale(1), freqScale(subsetData[0]["frequency"]));
+          subsetData.forEach((record, index) => {
+            context.lineTo(
+              rankScale(index + 1),
+              freqScale(record["frequency"])
+            );
+            context.stroke();
+          });
+        }
       });
     },
     width,
     height,
-    []
+    [data, highlightValue]
   );
 
   return (
@@ -152,8 +176,9 @@ const RankedOrder = ({ width, height, data }) => {
           }}
           width={200}
           height={height}
-          ticks={subsetValues}
+          ticks={subsetLabels}
           colorScale={subsetColors}
+          // onHover={setHoverSubset}
         />
       </Grid>
     </Grid>

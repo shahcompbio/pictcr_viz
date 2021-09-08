@@ -1,60 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import _ from "lodash";
 import { INFO } from "../config.js";
 
-import { Layout, UMAP } from "@shahlab/planetarium";
+import { Layout, UMAP, Select } from "@shahlab/planetarium";
 
-import { CONSTANTS } from "../config";
-
-const DataWrapper = ({
+const PhenotypeUMAP = ({
   data,
-  chartDim,
-  selectedSubtype,
-  hoveredSubtype,
-  setSelectedSubtype,
+  xParam,
+  yParam,
+  subsetParam,
+  idParam,
+  colorScale,
   onLasso,
+  onLegendClick,
+  disable,
+  highlightIDs,
+  options,
 }) => {
-  const { xParam, yParam, subtypeParam } = CONSTANTS;
+  const [subset, setSubset] = useState(subsetParam);
 
-  const subset = hoveredSubtype || selectedSubtype;
-
-  const highlightIDs =
-    subset === null
-      ? null
-      : data
-          .filter((datum) => datum[subtypeParam] === subset)
-          .map((datum) => datum["cell_id"]);
   return (
     <Layout
       title={INFO["SUBTYPEUMAP"]["title"]}
       infoText={INFO["SUBTYPEUMAP"]["text"]}
     >
+      <Select
+        options={options}
+        value={subset}
+        title={"Color"}
+        onSelect={setSubset}
+      />
       <UMAP
-        width={chartDim["width"]}
-        height={chartDim["height"]}
+        width={700}
+        height={600}
         data={data}
-        highlightIDs={highlightIDs}
         xParam={xParam}
         yParam={yParam}
-        subsetParam={subtypeParam}
+        subsetParam={subset}
+        idParam={idParam}
+        colorScale={subset === subsetParam ? colorScale : null}
         onLasso={onLasso}
-        idParam={"cell_id"}
-        onLegendHover={(value) => {
-          setSelectedSubtype({
-            hover: value,
-          });
-        }}
-        fontFamily={{
-          regular: "MyFontLight",
-          bold: "MyFontBold",
-          labelOffset: 3,
-        }}
-        onLegendClick={(value) => {
-          setSelectedSubtype({ selected: value });
-        }}
+        onLegendClick={onLegendClick}
+        disable={disable}
+        highlightIDs={highlightIDs}
       />
     </Layout>
   );
 };
 
-export default DataWrapper;
+export default PhenotypeUMAP;
