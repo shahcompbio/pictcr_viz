@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, Fragment } from "react";
 
 import * as d3 from "d3";
 import { useD3, sortAlphanumeric } from "@shahlab/planetarium";
@@ -278,7 +278,7 @@ const Doughnut = ({
   );
 };
 const TooltipText = ({ allSubsets, hoverItem, otherSubsetParam }) => (
-  <React.Fragment>
+  <Fragment>
     {hoverItem && (
       <span>
         <Typography color="inherit">{hoverItem}</Typography>
@@ -313,13 +313,16 @@ const TooltipText = ({ allSubsets, hoverItem, otherSubsetParam }) => (
                         style={{
                           borderBottom: "none",
                           paddingRight: 0,
+                          color: "#eeeeeede",
                         }}
                       >
-                        <b>{d[0][otherSubsetParam]}</b>
+                        <b>Clone {d[0][otherSubsetParam]}</b>
                       </TableCell>
-                      <TableCell style={{ borderBottom: "none" }}>
-                        {d.length} -{" "}
-                        {d3.format(".0%")(
+                      <TableCell
+                        style={{ borderBottom: "none", color: "white" }}
+                      >
+                        {d.length} data points -{" "}
+                        {d3.format(".001%")(
                           d.length / allSubsets[hoverItem].length
                         )}
                       </TableCell>
@@ -331,7 +334,7 @@ const TooltipText = ({ allSubsets, hoverItem, otherSubsetParam }) => (
         </div>
       </span>
     )}
-  </React.Fragment>
+  </Fragment>
 );
 
 export default Doughnut;

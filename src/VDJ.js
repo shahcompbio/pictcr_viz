@@ -9,6 +9,7 @@ import RankedOrder from "./components/RankedOrder";
 import Doughnut from "./components/Doughnut";
 import MetaData from "./components/MetaData";
 import Header from "./components/Header";
+import Sunburst from "./components/Sunburst";
 
 import {
   Heatmap,
@@ -55,10 +56,11 @@ const DataWrapper = ({ data }) => (
     metadata={data["metadata"]}
     probabilities={data["probabilities"]}
     degs={data["degs"]}
+    filters={data["filters"]}
   />
 );
 
-export const VDJ = ({ metadata, degs }) => {
+export const VDJ = ({ metadata, degs, filters }) => {
   const [selectPhenotype, setSelectPhenotype] = useState(null);
   const [selectClone, setSelectClone] = useState(null);
   const [selectIDs, setSelectIDs] = useState(null);
@@ -125,7 +127,8 @@ export const VDJ = ({ metadata, degs }) => {
   );
 
   const subtypeTotals = _.countBy(metadata, subtypeParam);
-
+  console.log(highlightData);
+  console.log(cloneColorScale);
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
@@ -147,6 +150,7 @@ export const VDJ = ({ metadata, degs }) => {
             width={250}
             data={metadata}
             sample="SAMPLE-TITLE-NDVL"
+            filters={filters}
             highlighted={highlightData}
             selected={selectClone || selectPhenotype}
             setHighlight={() => {
@@ -157,10 +161,13 @@ export const VDJ = ({ metadata, degs }) => {
             }}
             selectedType={selectClone ? "Clone" : "Phenotype"}
           />
-          <Doughnut
+          <Sunburst
             data={highlightData || metadata}
             type={"CLONOTYPEDOUGH"}
             colors={CLONOTYPE_COLORS}
+            selectedCloneColor={
+              selectClone ? cloneColorScale(selectClone) : null
+            }
             width={450}
             height={350}
             otherSubsetParam={subtypeParam}
