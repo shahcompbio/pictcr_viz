@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import * as d3 from "d3";
-import _ from "lodash";
 
-import { useCanvas, PieChart, drawCanvasAxis } from "@shahlab/planetarium";
-
-import InboxIcon from "@material-ui/icons/Inbox";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -16,13 +11,9 @@ import Popover from "@material-ui/core/Popover";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Box from "@material-ui/core/Box";
-
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-
-import { Layout } from "@shahlab/planetarium";
 
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -119,26 +110,6 @@ const filterMapping = {
   subtype: "Subtype",
   clone_id: "Clone ID",
 };
-const COLOR_ARRAY = [
-  "#5E4FA2",
-  "#3288BD",
-  "#66C2A5",
-  "#FEE08B",
-  "#FDAE61",
-  "#F46D43",
-  "#D53E4F",
-  "#c9cc76",
-  "#9E0142",
-  "#C6AEFF",
-  "#BDD8FF",
-  "#BDFFB2",
-  "#FFC8AE",
-  "#FF9FBB",
-  "#b2dbd6",
-  "#ffd470",
-];
-const PADDING = 50;
-const format = d3.format(".3f");
 
 const MetaData = ({
   width,
@@ -151,7 +122,6 @@ const MetaData = ({
   setHighlight,
   filters,
 }) => {
-  console.log(selected);
   const classes = useStyles();
   return (
     <Paper
@@ -169,61 +139,25 @@ const MetaData = ({
         alignItems="stretch"
       >
         <Grid item>
-          <Card className={classes.root} elevation={0}>
-            <CardContent className={classes.content}>
-              <Typography className={classes.key}>Sample:</Typography>
-              <Typography className={classes.value}>{sample}</Typography>
-            </CardContent>
-          </Card>
+          <Header classes={classes} sample={sample} />
           <Card className={classes.root} elevation={0}>
             <CardContent className={classes.content}>
               {highlighted && (
-                <span>
-                  <Typography className={classes.key}>Data Points:</Typography>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="flex-start"
-                    alignItems="stretch"
-                  >
-                    <Typography className={classes.selectedCells}>
-                      {highlighted.length}
-                    </Typography>
-                    <Typography className={classes.overallCells}>
-                      / {data.length} selected
-                    </Typography>
-                  </Grid>
-                </span>
+                <HighlightedContent
+                  dataCount={data.length}
+                  highlightedCount={highlighted.length}
+                  classes={classes}
+                />
               )}
               {selected && (
-                <span>
-                  <Typography className={classes.key}>
-                    {selectedType}:
-                  </Typography>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="flex-start"
-                    alignItems="stretch"
-                  >
-                    <Typography variant="h4">{selected} </Typography>
-                  </Grid>
-                </span>
+                <SelectedContent
+                  classes={classes}
+                  selectedType={selectedType}
+                  selected={selected}
+                />
               )}
               {!highlighted && !selected && (
-                <span>
-                  <Typography className={classes.key}>Data Points:</Typography>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="flex-start"
-                    alignItems="stretch"
-                  >
-                    <Typography className={classes.overallCellsValue}>
-                      {data.length}
-                    </Typography>
-                  </Grid>
-                </span>
+                <NoSelectionContent classes={classes} dataCount={data.length} />
               )}
             </CardContent>
 
@@ -320,18 +254,15 @@ const Filters = ({ filters, classes }) => {
                 key={filter["name"] + "TabPanel"}
               >
                 <List component="nav" aria-label="main mailbox folders">
-                  {filter["values"].map((value, index) => {
-                    const labelId = `checkbox-list-label-${value}`;
-                    return (
-                      <ListItem
-                        button
-                        selected={selectedIndex === index}
-                        onClick={(event) => handleListItemClick(event, 0)}
-                      >
-                        <ListItemText primary={value} />
-                      </ListItem>
-                    );
-                  })}
+                  {filter["values"].map((value, index) => (
+                    <ListItem
+                      button
+                      selected={selectedIndex === index}
+                      onClick={(event) => handleListItemClick(event, 0)}
+                    >
+                      <ListItemText primary={value} />
+                    </ListItem>
+                  ))}
                 </List>
               </TabPanel>
             );
@@ -341,6 +272,45 @@ const Filters = ({ filters, classes }) => {
     </div>
   );
 };
+const Header = ({ classes, sample }) => (
+  <Card className={classes.root} elevation={0}>
+    <CardContent className={classes.content}>
+      <Typography className={classes.key}>Sample:</Typography>
+      <Typography className={classes.value}>{sample}</Typography>
+    </CardContent>
+  </Card>
+);
+const NoSelectionContent = ({ classes, dataCount }) => (
+  <span>
+    <Typography className={classes.key}>Data Points:</Typography>
+    <Grid container direction="row" justify="flex-start" alignItems="stretch">
+      <Typography className={classes.overallCellsValue}>{dataCount}</Typography>
+    </Grid>
+  </span>
+);
+const SelectedContent = ({ classes, selectedType, selected }) => (
+  <span>
+    <Typography className={classes.key}>{selectedType}:</Typography>
+    <Grid container direction="row" justify="flex-start" alignItems="stretch">
+      <Typography variant="h4">{selected} </Typography>
+    </Grid>
+  </span>
+);
+
+const HighlightedContent = ({ classes, highlightedCount, totalCount }) => (
+  <span>
+    <Typography className={classes.key}>Data Points:</Typography>
+    <Grid container direction="row" justify="flex-start" alignItems="stretch">
+      <Typography className={classes.selectedCells}>
+        {highlightedCount}
+      </Typography>
+      <Typography className={classes.overallCells}>
+        / {totalCount} selected
+      </Typography>
+    </Grid>
+  </span>
+);
+
 const TabPanel = ({ children, value, index, ...other }) => {
   return (
     <div

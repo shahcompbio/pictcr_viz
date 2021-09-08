@@ -4,7 +4,6 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import MenuIcon from "@material-ui/icons/Menu";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import BookmarkIcon from "@material-ui/icons/Bookmark";
 import InfoIcon from "@material-ui/icons/Info";

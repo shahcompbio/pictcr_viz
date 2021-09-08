@@ -18,14 +18,7 @@ import {
   UMAP,
 } from "@shahlab/planetarium";
 
-import { makeStyles } from "@material-ui/core/styles";
-import Popper from "@material-ui/core/Popper";
-import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardHeader from "@material-ui/core/CardHeader";
 
 import { theme } from "./theme/theme";
 import { MuiThemeProvider } from "@material-ui/core/styles";
@@ -168,6 +161,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
             selectedCloneColor={
               selectClone ? cloneColorScale(selectClone) : null
             }
+            cloneColorScale={cloneColorScale}
             width={450}
             height={350}
             otherSubsetParam={subtypeParam}
@@ -317,50 +311,5 @@ export const VDJ = ({ metadata, degs, filters }) => {
     </MuiThemeProvider>
   );
 };
-const useStyles = makeStyles({
-  root: {
-    minWidth: 275,
-  },
-  header: { padding: 10, paddingBottom: 0 },
-  body: {
-    padding: 5,
-    paddingLeft: 20,
-  },
-  button: { margin: 5, float: "right" },
-  poppr: {
-    width: 150,
-    float: "right",
-    right: "100px",
-    top: "10px",
-    left: "auto",
-    margin: 10,
-  },
-});
-const Popup = ({ selected, setSelected, type }) => {
-  const classes = useStyles();
-  return (
-    <Popper
-      open={true}
-      placement={"bottom"}
-      transition
-      className={classes.popper}
-    >
-      <Card className={classes.root} variant="outlined">
-        <CardHeader className={classes.header} title={"Selected " + type} />
-        <CardContent className={classes.body}>
-          <Typography variant="body">{selected}</Typography>
-        </CardContent>
-        <Button
-          color="primary"
-          size="small"
-          variant="outlined"
-          className={classes.button}
-          onClick={setSelected}
-        >
-          Clear
-        </Button>
-      </Card>
-    </Popper>
-  );
-};
+
 export default DataWrapper;

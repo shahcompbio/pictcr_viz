@@ -1,12 +1,10 @@
 import React, { useState, useRef, Fragment } from "react";
 
 import * as d3 from "d3";
-import { useD3, sortAlphanumeric } from "@shahlab/planetarium";
+import { useD3 } from "@shahlab/planetarium";
 import _ from "lodash";
 
 import { makeStyles } from "@material-ui/core/styles";
-
-import { useCanvas } from "@shahlab/planetarium";
 
 import { Layout } from "@shahlab/planetarium";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -16,13 +14,11 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 
-import { CONSTANTS, INFO } from "../config";
+import { INFO } from "../config";
 
 import { jsPDF } from "jspdf";
 import canvg from "canvg";
-//import * as canvas from "canvas";
-const pageWidthPixel = 595;
-const pageHeightPixel = 842;
+
 const TOP_NUM = 3;
 
 const useStyles = makeStyles((theme) => ({
@@ -36,7 +32,7 @@ const download = async (ref, width, height) => {
   const newCanvas = document.createElement("canvas");
   const context = newCanvas.getContext("2d");
 
-  const currCanvas = ref.current;
+  //const currCanvas = ref.current;
   //const currContext = canvas.getContext("2d");
 
   let scale = window.devicePixelRatio;
@@ -93,9 +89,6 @@ const Doughnut = ({
   const classes = useStyles();
 
   const totalCount = data.length;
-  const subsetValues = _.uniq(data.map((datum) => datum[subsetParam])).sort(
-    sortAlphanumeric
-  );
 
   const allSubsets = _.groupBy(data, (datum) => datum[subsetParam]);
 

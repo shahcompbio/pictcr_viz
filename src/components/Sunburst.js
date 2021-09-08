@@ -1,47 +1,35 @@
 import React, { useState, useRef, Fragment } from "react";
 
 import * as d3 from "d3";
-import { useD3, sortAlphanumeric } from "@shahlab/planetarium";
+import { useD3 } from "@shahlab/planetarium";
 import _ from "lodash";
 
 import { makeStyles } from "@material-ui/core/styles";
 
-import { useCanvas } from "@shahlab/planetarium";
-
 import { Layout } from "@shahlab/planetarium";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
 
-import { CONSTANTS, INFO } from "../config";
+import { INFO } from "../config";
 
 import { jsPDF } from "jspdf";
 import canvg from "canvg";
-//import * as canvas from "canvas";
-const pageWidthPixel = 595;
-const pageHeightPixel = 842;
-const TOP_NUM = 3;
+
 const ANGLE = 0.01;
 const useStyles = makeStyles((theme) => ({
   tooltip: {
     minWidth: 220,
   },
+  tooltipWrapper: { position: "relative", width: "10px", height: "10px" },
 }));
-const parentInfo = {
-  Other: { hasDetail: false },
-  Singleton: { hasDetail: false },
-  "Top Ten": { hasDetail: true },
-};
+
 const download = async (ref, width, height) => {
   var doc = new jsPDF("L", "px", [width, height]);
 
   const newCanvas = document.createElement("canvas");
   const context = newCanvas.getContext("2d");
 
-  const currCanvas = ref.current;
+  //const currCanvas = ref.current;
   //const currContext = canvas.getContext("2d");
 
   let scale = window.devicePixelRatio;
@@ -90,6 +78,7 @@ const Sunburst = ({
   subsetParam,
   type,
   otherSubsetParam,
+  cloneColorScale,
   selectedCloneColor = null,
 }) => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
@@ -100,9 +89,6 @@ const Sunburst = ({
   const classes = useStyles();
 
   const totalCount = data.length;
-  const subsetValues = _.uniq(data.map((datum) => datum[subsetParam])).sort(
-    sortAlphanumeric
-  );
 
   const allSubsets = _.groupBy(data, (datum) => datum[subsetParam]);
 
@@ -164,15 +150,38 @@ const Sunburst = ({
     return d3.partition().size([2 * Math.PI, root.height + 1])(root);
   };
 
+  const appendTooSmall = (small, d) => {
+    const parent = d.parent.data.name;
+    if (small.hasOwnProperty(parent)) {
+      if (small[parent]["start"] < arc.startAngle()(d)) {
+        small[parent]["start"] = arc.startAngle()(d);
+        small[parent]["startNode"] = d;
+      }
+      if (small[parent]["end"] > arc.startAngle()(d)) {
+        small[parent]["end"] = arc.endAngle()(d);
+        small[parent]["endNode"] = d;
+      }
+    } else {
+      small[parent] = {
+        start: arc.startAngle()(d),
+        end: arc.endAngle()(d),
+        startNode: d,
+        endNode: d,
+      };
+    }
+    return small;
+  };
+
   const drawArea = (svg, setIsTooltipOpen, setHoveredItem, colors) => {
-    const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, 11));
     const root = partition(hierarchy);
     root.each((d) => (d.current = d));
 
     const g = svg
       .append("g")
       .attr("transform", `translate(${width / 2},${height / 2})`);
+
     var small = {};
+
     const path = g
       .append("g")
       .selectAll("path")
@@ -181,23 +190,7 @@ const Sunburst = ({
           const isTooSmall =
             Math.abs(arc.startAngle()(d) - arc.endAngle()(d)) > ANGLE;
           if (!isTooSmall && d.parent && d.height === 1) {
-            if (small.hasOwnProperty(d.parent.data.name)) {
-              if (small[d.parent.data.name]["start"] < arc.startAngle()(d)) {
-                small[d.parent.data.name]["start"] = arc.startAngle()(d);
-                small[d.parent.data.name]["startNode"] = d;
-              }
-              if (small[d.parent.data.name]["end"] > arc.startAngle()(d)) {
-                small[d.parent.data.name]["end"] = arc.endAngle()(d);
-                small[d.parent.data.name]["endNode"] = d;
-              }
-            } else {
-              small[d.parent.data.name] = {
-                start: arc.startAngle()(d),
-                end: arc.endAngle()(d),
-                startNode: d,
-                endNode: d,
-              };
-            }
+            small = appendTooSmall(small, d);
           }
           return isTooSmall;
         })
@@ -225,6 +218,7 @@ const Sunburst = ({
         return curr;
       })
       .map((d) => (d.current = d));
+
     const smallListTitleOmit = smallList.map((d) => d.data.name);
 
     const joinedPath = g
@@ -396,7 +390,7 @@ const Sunburst = ({
         <div
           id="tooltipDiv"
           ref={tooltipRef}
-          style={{ position: "relative", width: "10px", height: "10px" }}
+          className={classes.tooltipWrapper}
         >
           <Tooltip
             PopperProps={{
@@ -485,51 +479,4 @@ const TooltipText = ({
     </Fragment>
   );
 };
-/*  <b>{allSubsets[hoverItem].length}</b>
-  <em>{" - data points"}</em>
-  <div>
-    <Typography style={{ fontSize: 15 }} gutterBottom>
-      Top {TOP_NUM}{" "}
-      {otherSubsetParam === "subtype" ? "Subtypes" : "Clone IDs"}
-    </Typography>
-    <Table size="small">
-      <TableBody>
-        {_.chain(allSubsets[hoverItem])
-          .groupBy(otherSubsetParam)
-          .orderBy(
-            function (o) {
-              return o.length;
-            },
-            ["desc", "desc"]
-          )
-          .filter(function (o, i) {
-            return i < 3;
-          })
-          .value()
-          .map(function (d) {
-            return (
-              <TableRow
-                key={d[0][otherSubsetParam]}
-                style={{ paddingBottom: "5px" }}
-              >
-                <TableCell
-                  style={{
-                    borderBottom: "none",
-                    paddingRight: 0,
-                  }}
-                >
-                  <b>{d[0][otherSubsetParam]}</b>
-                </TableCell>
-                <TableCell style={{ borderBottom: "none" }}>
-                  {d.length} -{" "}
-                  {d3.format(".0%")(
-                    d.length / allSubsets[hoverItem].length
-                  )}
-                </TableCell>
-              </TableRow>
-            );
-          })}
-      </TableBody>
-    </Table>
-  </div>*/
 export default Sunburst;
