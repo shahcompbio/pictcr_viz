@@ -4,12 +4,16 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
-import MenuIcon from "@material-ui/icons/Menu";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import BookmarkIcon from "@material-ui/icons/Bookmark";
 import InfoIcon from "@material-ui/icons/Info";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    backgroundColor: "#F7F8FB",
+    boxShadow:
+      "2px 2px 30px 2px rgb(0 0 0 / 20%), 0px 2px 0px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)",
+  },
   grow: {
     flexGrow: 1,
     fill: "#F7F8FB",
@@ -54,16 +58,14 @@ const Header = () => {
 
   return (
     <div className={classes.grow}>
-      <AppBar position="static" style={{ backgroundColor: "#F7F8FB" }}>
+      <AppBar position="static" className={classes.root}>
         <Toolbar>
           <IconButton
             edge="start"
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
-          >
-            <MenuIcon />
-          </IconButton>
+          ></IconButton>
           <Typography className={classes.title} variant="h5" noWrap>
             PICTCR
           </Typography>
