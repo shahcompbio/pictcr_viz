@@ -49,26 +49,25 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
       item["gene"] &&
       item["gene"].toLowerCase().includes(filterText.toLowerCase())
   );
+  const handleClear = () => {
+    if (filterText) {
+      setFilterText("");
+    }
+  };
+  const SubHeaderComponentMemo = () => (
+    <FilterComponent
+      onFilter={(e) => setFilterText(e.target.value)}
+      onClear={handleClear}
+      filterText={filterText}
+      data={data}
+    />
+  );
 
-  const subHeaderComponentMemo = useMemo(() => {
-    const handleClear = () => {
-      if (filterText) {
-        setFilterText("");
-      }
-    };
-    return (
-      <FilterComponent
-        onFilter={(e) => setFilterText(e.target.value)}
-        onClear={handleClear}
-        filterText={filterText}
-        data={data}
-      />
-    );
-  }, [filterText, data]);
   return (
     <Layout
       title={INFO["TABLE"]["title"]}
       infoText={INFO["TABLE"]["text"]}
+      SearchComponent={SubHeaderComponentMemo}
       download={() => {
         const dataSource = new Blob([d3Dsv.tsvFormat(data)], {
           type: "text/tsv",
@@ -97,7 +96,6 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
           defaultSortAsc
           overflowY
           customStyles={customStyles}
-          subHeaderComponent={subHeaderComponentMemo}
           compact
           columns={columns.map((col) => {
             const formatIndex = formatCols.indexOf(col);
@@ -134,6 +132,9 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
       color="primary"
       type="text"
       id="searchGenes"
+      size="small"
+      autoFocus
+      margin="dense"
       placeholder="Filter By Gene"
       aria-label="Search Input"
       value={filterText}
@@ -143,7 +144,7 @@ const FilterComponent = ({ filterText, onFilter, onClear, data }) => (
           <Button
             label="Clear"
             color="primary"
-            variant="outlined"
+            size="small"
             onClick={onClear}
             style={{
               marginLeft: 15,
