@@ -50,13 +50,16 @@ const DataWrapper = ({ data }) => (
 );
 
 export const VDJ = ({ metadata, degs, filters }) => {
+  const { clonotypeParam, subtypeParam, logProbParam, xParam, yParam } =
+    CONSTANTS;
+
   const [selectPhenotype, setSelectPhenotype] = useState(null);
   const [selectClone, setSelectClone] = useState(null);
   const [selectIDs, setSelectIDs] = useState(null);
   const [activeGraph, setActiveGraph] = useState(null);
 
-  const { clonotypeParam, subtypeParam, logProbParam, xParam, yParam } =
-    CONSTANTS;
+  const [subset, setSubset] = useState(subtypeParam);
+  const [selectSubset, setSelectSubset] = useState(null);
 
   // Remove none
   const clonotypeCounts = _.countBy(
@@ -84,7 +87,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
     )
     .unknown("#e8e8e8");
 
-  const phenotypeValues = Object.keys(_.groupBy(metadata, subtypeParam)).sort();
+  const phenotypeValues = Object.keys(_.groupBy(metadata, subset)).sort();
   const phenotypeColorScale = d3
     .scaleOrdinal()
     .domain(phenotypeValues)
@@ -101,8 +104,8 @@ export const VDJ = ({ metadata, degs, filters }) => {
       ? metadata.filter((datum) => selectIDs.includes(datum["cell_id"]))
       : selectClone !== null
       ? metadata.filter((datum) => datum[clonotypeParam] === selectClone)
-      : selectPhenotype !== null
-      ? metadata.filter((datum) => datum[subtypeParam] === selectPhenotype)
+      : selectSubset !== null
+      ? metadata.filter((datum) => datum[subset] === selectSubset)
       : null;
 
   const highlightIDs =
@@ -116,8 +119,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
   );
 
   const subtypeTotals = _.countBy(metadata, subtypeParam);
-  console.log(highlightData);
-  console.log(cloneColorScale);
+
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
@@ -141,14 +143,14 @@ export const VDJ = ({ metadata, degs, filters }) => {
             sample="SAMPLE-TITLE-NDVL"
             filters={filters}
             highlighted={highlightData}
-            selected={selectClone || selectPhenotype}
+            selected={selectClone || selectSubset}
             setHighlight={() => {
               setSelectIDs(null);
               setSelectClone(null);
-              setSelectPhenotype(null);
+              setSelectSubset(null);
               setActiveGraph(null);
             }}
-            selectedType={selectClone ? "Clone" : "Phenotype"}
+            selectedType={selectClone ? "Clone" : selectSubset}
           />
           <Sunburst
             data={highlightData || metadata}
@@ -170,7 +172,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
             width={450}
             height={350}
             otherSubsetParam={clonotypeParam}
-            subsetParam={subtypeParam}
+            subsetParam={subset}
           />
         </Grid>
         <Grid
@@ -211,7 +213,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
             data={metadata}
             xParam={xParam}
             yParam={yParam}
-            subsetParam={subtypeParam}
+            subsetParam={subset}
             idParam="cell_id"
             colorScale={phenotypeColorScale}
             onLasso={(data) => {
@@ -221,12 +223,13 @@ export const VDJ = ({ metadata, degs, filters }) => {
               setActiveGraph(data === null ? null : "phenoUMAP");
             }}
             onLegendClick={(value) => {
-              setSelectPhenotype(value);
+              setSelectSubset(value);
               setActiveGraph(value === null ? null : "phenoUMAP");
             }}
             disable={activeGraph !== null && activeGraph !== "phenoUMAP"}
             highlightIDs={highlightIDs}
             options={filters.map((datum) => datum["name"])}
+            onSelect={setSubset}
           />
         </Grid>
         <Grid

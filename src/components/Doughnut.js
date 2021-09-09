@@ -220,7 +220,7 @@ const Doughnut = ({
     },
     width,
     height,
-    [data]
+    [data, subsetParam]
   );
 
   return (

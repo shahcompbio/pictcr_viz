@@ -16,9 +16,8 @@ const PhenotypeUMAP = ({
   disable,
   highlightIDs,
   options,
+  onSelect = (value) => {},
 }) => {
-  const [subset, setSubset] = useState(subsetParam);
-
   return (
     <Layout
       title={INFO["SUBTYPEUMAP"]["title"]}
@@ -26,9 +25,9 @@ const PhenotypeUMAP = ({
     >
       <Select
         options={options}
-        value={subset}
+        value={subsetParam}
         title={"Color"}
-        onSelect={setSubset}
+        onSelect={onSelect}
       />
       <UMAP
         width={700}
@@ -36,9 +35,9 @@ const PhenotypeUMAP = ({
         data={data}
         xParam={xParam}
         yParam={yParam}
-        subsetParam={subset}
+        subsetParam={subsetParam}
         idParam={idParam}
-        colorScale={subset === subsetParam ? colorScale : null}
+        colorScale={colorScale}
         onLasso={onLasso}
         onLegendClick={onLegendClick}
         disable={disable}
