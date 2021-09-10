@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import _ from "lodash";
 import { INFO } from "../config.js";
 
@@ -22,13 +22,15 @@ const PhenotypeUMAP = ({
     <Layout
       title={INFO["SUBTYPEUMAP"]["title"]}
       infoText={INFO["SUBTYPEUMAP"]["text"]}
+      addIcon={
+        <Select
+          options={options}
+          value={subsetParam}
+          title={"Color"}
+          onSelect={onSelect}
+        />
+      }
     >
-      <Select
-        options={options}
-        value={subsetParam}
-        title={"Color"}
-        onSelect={onSelect}
-      />
       <UMAP
         width={700}
         height={600}

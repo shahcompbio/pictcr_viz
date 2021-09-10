@@ -258,7 +258,7 @@ const Filters = ({ filters, classes }) => {
                     <ListItem
                       button
                       selected={selectedIndex === index}
-                      onClick={(event) => handleListItemClick(event, 0)}
+                      onClick={(event) => handleListItemClick(event, index)}
                     >
                       <ListItemText primary={value} />
                     </ListItem>
