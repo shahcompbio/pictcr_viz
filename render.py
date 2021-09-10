@@ -25,19 +25,22 @@ def open_file(filepath):
     adata = sc.read(filepath)
     adata = adata[adata.obs["clone_id"].notnull()]
     sc.tl.umap(adata)
-    
+
     return adata
+
 
 def get_data(filepath):
     adata = open_file(filepath)
 
     metadata = get_metadata(adata).to_dict(orient="records")
     degs = get_degs(adata).to_dict(orient="records")
+    filters = get_filter(adata)
     # probabilities = get_probabilities(adata).to_dict(orient="records")
 
     return {
         "metadata": [clean_record(record) for record in metadata],
         "degs": [clean_record(record) for record in degs],
+        "filters": filters
         # "probabilities": [clean_record(record) for record in probabilities]
     }
 
@@ -46,9 +49,10 @@ def clean_record(record):
     floats = [field for field in record if isinstance(record[field], float)]
     for field in floats:
         if np.isnan(record[field]):
-            record[field] = "None" 
-    
+            record[field] = "None"
+
     return record
+
 
 def get_metadata(adata):
     umap = pd.DataFrame(adata.obsm['X_umap'])
@@ -61,12 +65,16 @@ def get_metadata(adata):
     df = df.replace(to_replace="nan", value="None")
     return df
 
+
 def get_degs(adata):
     subtypes = adata.uns['rank_genes_groups']["names"].dtype.names
 
-    genes = pd.DataFrame(adata.uns['rank_genes_groups']['names'].tolist(), columns=adata.uns['rank_genes_groups']['names'].dtype.names)
-    adjpvals = pd.DataFrame(adata.uns['rank_genes_groups']['pvals_adj'].tolist(), columns=adata.uns['rank_genes_groups']['pvals_adj'].dtype.names)
-    logfc = pd.DataFrame(adata.uns['rank_genes_groups']['logfoldchanges'].tolist(), columns=adata.uns['rank_genes_groups']['logfoldchanges'].dtype.names)
+    genes = pd.DataFrame(adata.uns['rank_genes_groups']['names'].tolist(
+    ), columns=adata.uns['rank_genes_groups']['names'].dtype.names)
+    adjpvals = pd.DataFrame(adata.uns['rank_genes_groups']['pvals_adj'].tolist(
+    ), columns=adata.uns['rank_genes_groups']['pvals_adj'].dtype.names)
+    logfc = pd.DataFrame(adata.uns['rank_genes_groups']['logfoldchanges'].tolist(
+    ), columns=adata.uns['rank_genes_groups']['logfoldchanges'].dtype.names)
 
     data = pd.DataFrame()
     for subtype in subtypes:
@@ -85,6 +93,7 @@ def get_degs(adata):
 
     return data
 
+
 def get_filter(adata):
     columns = list(adata.uns['viz_columns']) + COLUMNS
     records = []
@@ -98,8 +107,9 @@ def get_filter(adata):
 
     return records
 
+
 def get_probabilities(adata):
-    df = adata.obs[["clone_id", "pgen", "subtype"]]  
+    df = adata.obs[["clone_id", "pgen", "subtype"]]
     df = df[df['clone_id'].notnull() & df['pgen'].notnull()]
     # df["log10_probability"] = [math.log10(float(prob)) for prob in df["pgen"].tolist()]
 
@@ -123,16 +133,20 @@ def get_probabilities(adata):
 #     "degs": degs
 # }
 
+
 def output_data(filepath, output):
     adata = sc.read(filepath)
-    get_metadata(adata).to_csv(os.path.join(output, "metadata.tsv"), sep="\t", index=False, na_rep='None')
-    get_degs(adata).to_csv(os.path.join(output, "degs.tsv"), sep="\t", index=False, na_rep='None')
-    get_probabilities(adata).to_csv(os.path.join(output, "probabilities.tsv"), sep="\t", index=False, na_rep='None')
+    get_metadata(adata).to_csv(os.path.join(output, "metadata.tsv"),
+                               sep="\t", index=False, na_rep='None')
+    get_degs(adata).to_csv(os.path.join(output, "degs.tsv"),
+                           sep="\t", index=False, na_rep='None')
+    get_probabilities(adata).to_csv(os.path.join(
+        output, "probabilities.tsv"), sep="\t", index=False, na_rep='None')
 
 
 if __name__ == "__main__":
     filename = sys.argv[1]
-    
+
     # output = sys.argv[2]
     # output_data(filename, output)
     data = get_data(filename)
@@ -140,13 +154,12 @@ if __name__ == "__main__":
 
     app_dir = os.path.dirname(os.path.abspath(__file__))
     # app_dir = os.path.abspath(os.path.join(app_dir, "../..", "build"))
-    index_template=os.path.join(app_dir, "build", "index.html")
-    template = Template(open(index_template,"r").read())
-
+    index_template = os.path.join(app_dir, "build", "index.html")
+    template = Template(open(index_template, "r").read())
 
     html = template.render(data=data)
-    output_html=os.path.join(app_dir,"build", "pictcr.html")
-    output = open(output_html,"w")
+    output_html = os.path.join(app_dir, "build", "pictcr.html")
+    output = open(output_html, "w")
 
     js_txt = open(os.path.join(app_dir, "build", "main.js"), 'r').read()
     css_txt = open(os.path.join(app_dir, "build", "main.css"), 'r').read()

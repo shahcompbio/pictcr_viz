@@ -140,7 +140,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
           <MetaData
             width={250}
             data={metadata}
-            sample="SAMPLE-TITLE-NDVL"
+            sample="Hacohen"
             filters={filters}
             highlighted={highlightData}
             selected={selectClone || selectSubset}
