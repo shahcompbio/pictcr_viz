@@ -61,7 +61,8 @@ def get_metadata(adata):
     df = adata.obs[COLUMNS + add_columns + ['pgen']]
     df = df.reset_index()
     df = df.merge(umap, left_index=True, right_index=True)
-    df = df.rename(columns={'index': 'cell_id', 'pgen': 'log10_probability'})
+    df = df.rename(columns={'index': 'cell_id',
+                            'pgen': 'log10_probability', 'phenotype': 'subtype'})
     df = df.replace(to_replace="nan", value="None")
     return df
 
@@ -100,7 +101,7 @@ def get_filter(adata):
 
     for column in columns:
         record = {
-            "name": column,
+            "name": column if column != "phenotype" else "subtype",
             "values": list(adata.obs[column].unique())
         }
         records.append(record)

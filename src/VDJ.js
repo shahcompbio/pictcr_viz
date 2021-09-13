@@ -45,7 +45,6 @@ const DataWrapper = ({ data }) => (
     metadata={data["metadata"]}
     filters={data["filters"]}
     degs={data["degs"]}
-    filters={data["filters"]}
   />
 );
 
