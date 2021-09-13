@@ -121,6 +121,7 @@ const MetaData = ({
   selectedType,
   setHighlight,
   filters,
+  setFilters,
 }) => {
   const classes = useStyles();
   return (
@@ -175,7 +176,11 @@ const MetaData = ({
           </Card>
           <Card className={classes.root} elevation={0}>
             <CardContent className={classes.content}>
-              <Filters classes={classes} filters={filters} />
+              <Filters
+                classes={classes}
+                filters={filters}
+                setFilters={setFilters}
+              />
             </CardContent>
           </Card>
         </Grid>
@@ -184,7 +189,7 @@ const MetaData = ({
   );
 };
 
-const Filters = ({ filters, classes }) => {
+const Filters = ({ filters, classes, setFilters }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -194,9 +199,11 @@ const Filters = ({ filters, classes }) => {
       "aria-controls": `scrollable-auto-tabpanel-${index}`,
     };
   }
+  const [selectedTabIndex, setSelectedTabIndex] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(1);
 
-  const handleListItemClick = (event, index) => {
+  const handleListItemClick = (event, index, value) => {
+    console.log(index, value);
     setSelectedIndex(index);
   };
 
@@ -245,20 +252,27 @@ const Filters = ({ filters, classes }) => {
               />
             ))}
           </Tabs>
-          {filters.map((filter, index) => {
+          {filters.map((filter, tindex) => {
             return (
               <TabPanel
                 className={classes.tabPanel}
                 value={tabIndex}
-                index={index}
+                index={tindex}
                 key={filter["name"] + "TabPanel"}
               >
                 <List component="nav" aria-label="main mailbox folders">
                   {filter["values"].map((value, index) => (
                     <ListItem
                       button
-                      selected={selectedIndex === index}
-                      onClick={(event) => handleListItemClick(event, index)}
+                      selected={
+                        tabIndex === selectedTabIndex && selectedIndex === index
+                      }
+                      onClick={(event) => {
+                        setSelectedTabIndex(tabIndex);
+                        setSelectedIndex(index);
+                        setFilters([filter["name"], value]);
+                        // handleListItemClick(event, index, value);
+                      }}
                     >
                       <ListItemText primary={value} />
                     </ListItem>

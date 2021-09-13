@@ -60,9 +60,19 @@ export const VDJ = ({ metadata, degs, filters }) => {
   const [subset, setSubset] = useState(subtypeParam);
   const [selectSubset, setSelectSubset] = useState(null);
 
+  const [selectFilters, setSelectFilters] = useState(null);
+
+  const data =
+    selectFilters === null
+      ? metadata
+      : metadata.filter(
+          (datum) => datum[selectFilters[0]] === selectFilters[1]
+        );
+
+  console.log(data);
   // Remove none
   const clonotypeCounts = _.countBy(
-    metadata.filter((datum) => datum[clonotypeParam] !== "None"),
+    data.filter((datum) => datum[clonotypeParam] !== "None"),
     clonotypeParam
   );
 
@@ -86,7 +96,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
     )
     .unknown("#e8e8e8");
 
-  const phenotypeValues = Object.keys(_.groupBy(metadata, subset)).sort();
+  const phenotypeValues = Object.keys(_.groupBy(data, subset)).sort();
   const phenotypeColorScale = d3
     .scaleOrdinal()
     .domain(phenotypeValues)
@@ -100,11 +110,11 @@ export const VDJ = ({ metadata, degs, filters }) => {
 
   const highlightData =
     selectIDs !== null
-      ? metadata.filter((datum) => selectIDs.includes(datum["cell_id"]))
+      ? data.filter((datum) => selectIDs.includes(datum["cell_id"]))
       : selectClone !== null
-      ? metadata.filter((datum) => datum[clonotypeParam] === selectClone)
+      ? data.filter((datum) => datum[clonotypeParam] === selectClone)
       : selectSubset !== null
-      ? metadata.filter((datum) => datum[subset] === selectSubset)
+      ? data.filter((datum) => datum[subset] === selectSubset)
       : null;
 
   const highlightIDs =
@@ -112,12 +122,12 @@ export const VDJ = ({ metadata, degs, filters }) => {
       ? null
       : highlightData.map((datum) => datum["cell_id"]);
 
-  const probabilities = metadata.filter(
+  const probabilities = data.filter(
     (datum) =>
       datum[clonotypeParam] !== "None" || datum[logProbParam] !== "None"
   );
 
-  const subtypeTotals = _.countBy(metadata, subtypeParam);
+  const subtypeTotals = _.countBy(data, subtypeParam);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -138,7 +148,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
         >
           <MetaData
             width={250}
-            data={metadata}
+            data={data}
             sample="Hacohen"
             filters={filters}
             highlighted={highlightData}
@@ -150,9 +160,10 @@ export const VDJ = ({ metadata, degs, filters }) => {
               setActiveGraph(null);
             }}
             selectedType={selectClone ? "Clone" : selectSubset}
+            setFilters={setSelectFilters}
           />
           <Sunburst
-            data={highlightData || metadata}
+            data={highlightData || data}
             type={"CLONOTYPEDOUGH"}
             colors={CLONOTYPE_COLORS}
             selectedCloneColor={
@@ -165,7 +176,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
             subsetParam={clonotypeParam}
           />
           <Doughnut
-            data={highlightData || metadata}
+            data={highlightData || data}
             type={"SUBTYPEDOUGH"}
             colors={CLONOTYPE_COLORS}
             width={450}
@@ -185,7 +196,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
             <ClonotypeUMAP
               width={800}
               height={600}
-              data={metadata}
+              data={data}
               xParam={xParam}
               yParam={yParam}
               subsetParam={clonotypeParam}
@@ -209,7 +220,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
           <PhenotypeUMAP
             width={700}
             height={600}
-            data={metadata}
+            data={data}
             xParam={xParam}
             yParam={yParam}
             subsetParam={subset}
