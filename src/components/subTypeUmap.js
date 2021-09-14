@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import _ from "lodash";
 import { INFO } from "../config.js";
 
-import { Layout, UMAP, Select } from "@shahlab/planetarium";
+import { Layout, UMAP } from "@shahlab/planetarium";
+import { CircularProgress } from "@material-ui/core";
 
 const PhenotypeUMAP = ({
   data,
@@ -16,20 +17,13 @@ const PhenotypeUMAP = ({
   disable,
   highlightIDs,
   options,
-  onSelect = (value) => {},
+  Select,
 }) => {
   return (
     <Layout
       title={INFO["SUBTYPEUMAP"]["title"]}
       infoText={INFO["SUBTYPEUMAP"]["text"]}
-      addIcon={
-        <Select
-          options={options}
-          value={subsetParam}
-          title={"Color"}
-          onSelect={onSelect}
-        />
-      }
+      addIcon={Select}
     >
       <UMAP
         width={700}
@@ -48,5 +42,23 @@ const PhenotypeUMAP = ({
     </Layout>
   );
 };
-
+/*      <div
+        style={{
+          position: "absolute",
+          width: 700,
+          height: 600,
+          background: "#f8f8f",
+          marginTop: 250,
+        }}
+      >
+        <CircularProgress size={150} thickness={7} />
+      </div>
+      <div
+        style={{
+          filter: "blur(3px)",
+          opacity: 0.3,
+        }}
+      >
+        {componentUmap}
+      </div>*/
 export default PhenotypeUMAP;

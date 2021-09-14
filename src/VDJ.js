@@ -12,7 +12,12 @@ import MetaData from "./components/MetaData";
 import Header from "./components/Header";
 import Sunburst from "./components/Sunburst";
 
-import { Heatmap, ProbabilityHistogram, Layout } from "@shahlab/planetarium";
+import {
+  Heatmap,
+  ProbabilityHistogram,
+  Layout,
+  Select,
+} from "@shahlab/planetarium";
 
 import Grid from "@material-ui/core/Grid";
 
@@ -69,7 +74,6 @@ export const VDJ = ({ metadata, degs, filters }) => {
           (datum) => datum[selectFilters[0]] === selectFilters[1]
         );
 
-  console.log(data);
   // Remove none
   const clonotypeCounts = _.countBy(
     data.filter((datum) => datum[clonotypeParam] !== "None"),
@@ -183,6 +187,15 @@ export const VDJ = ({ metadata, degs, filters }) => {
             height={350}
             otherSubsetParam={clonotypeParam}
             subsetParam={subset}
+            Select={
+              <Select
+                width={200}
+                title={"Color By"}
+                value={subset}
+                options={filters.map((datum) => datum["name"])}
+                onSelect={setSubset}
+              />
+            }
           />
         </Grid>
         <Grid
@@ -240,6 +253,15 @@ export const VDJ = ({ metadata, degs, filters }) => {
             highlightIDs={highlightIDs}
             options={filters.map((datum) => datum["name"])}
             onSelect={setSubset}
+            Select={
+              <Select
+                width={200}
+                title={"Color By"}
+                value={subset}
+                options={filters.map((datum) => datum["name"])}
+                onSelect={setSubset}
+              />
+            }
           />
         </Grid>
         <Grid
@@ -321,5 +343,15 @@ export const VDJ = ({ metadata, degs, filters }) => {
     </MuiThemeProvider>
   );
 };
+
+const PhenotypeSelect = ({ options, subsetParam, onSelect }) => (
+  <Select
+    width={200}
+    options={options}
+    value={subsetParam}
+    title={"Color"}
+    onSelect={onSelect}
+  />
+);
 
 export default DataWrapper;

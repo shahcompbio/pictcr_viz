@@ -81,6 +81,7 @@ const Doughnut = ({
   subsetParam,
   type,
   otherSubsetParam,
+  Select,
 }) => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const tooltipRef = useRef(null);
@@ -129,54 +130,21 @@ const Doughnut = ({
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
       .attr("stroke", "white")
       .selectAll("path")
-      .data(arcs);
+      .data(arcs, (d) => d.data.key);
 
-    path
+    /*  path
       .join("path")
       .attr("fill", (d) => colorScale(d["data"].key))
       .attr("d", arc)
-      .on("mouseover", function (d) {
-        d3.select(this)
-          .transition()
-          .duration(500)
-          .attr("transform", function (d, i) {
-            var x;
-            var y;
-            if (d.data._translate) {
-              x = d.data._translate.x;
-              y = d.data._translate.y;
-            } else if (!d.data._expanded) {
-              d.data._expanded = true;
-              var a =
-                d.startAngle + (d.endAngle - d.startAngle) / 2 - Math.PI / 2;
-              x = Math.cos(a) * 10;
-              y = Math.sin(a) * 10;
-              d.data._translate = { x: x, y: y };
-            }
-            const arcLocation = arcLabel.centroid(d, i);
-            setIsTooltipOpen(true);
-            setHoveredItem(d.data.key);
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout);*/
 
-            d3.select(tooltipRef.current)
-              .transition()
-              .style("left", arcLocation[0] + width / 2 + "px")
-              .style("top", arcLocation[1] + height / 2 + "px");
-
-            return "translate(" + x + "," + y + ")";
-          });
-        d3.select("#label-" + d.data.key).style("font-weight", "bold");
-      })
-      .on("mouseout", function (d) {
-        d3.select(this)
-          .transition()
-          .delay(200)
-          .duration(500)
-          .attr("transform", function (d) {
-            setIsTooltipOpen(false);
-            d.data._expanded = false;
-          });
-        d3.select("#label-" + d.data.key).style("font-weight", "normal");
-      });
+    path
+      .join("path", (update) =>
+        update.on("mouseover", mouseover).on("mouseout", mouseout)
+      )
+      .attr("fill", (d) => colorScale(d["data"].key))
+      .attr("d", arc);
 
     svg
       .append("g")
@@ -212,6 +180,50 @@ const Doughnut = ({
               ")"
           )
       );
+    function mouseover(element, index, elements) {
+      d3.select(elements[index])
+        .transition()
+        .duration(500)
+        .attr("transform", function (d, i) {
+          var x;
+          var y;
+          if (element.data._translate) {
+            x = element.data._translate.x;
+            y = element.data._translate.y;
+          } else if (!element.data._expanded) {
+            element.data._expanded = true;
+            var a =
+              element.startAngle +
+              (element.endAngle - element.startAngle) / 2 -
+              Math.PI / 2;
+            x = Math.cos(a) * 10;
+            y = Math.sin(a) * 10;
+            element.data._translate = { x: x, y: y };
+          }
+          const arcLocation = arcLabel.centroid(element, i);
+          setIsTooltipOpen(true);
+          setHoveredItem(element.data.key);
+
+          d3.select(tooltipRef.current)
+            .transition()
+            .style("left", arcLocation[0] + width / 2 + "px")
+            .style("top", arcLocation[1] + height / 2 + "px");
+
+          return "translate(" + x + "," + y + ")";
+        });
+      d3.select("#label-" + element.data.key).style("font-weight", "bold");
+    }
+    function mouseout(d, index, elements) {
+      d3.select(elements[index])
+        .transition()
+        .delay(200)
+        .duration(500)
+        .attr("transform", function (e) {
+          setIsTooltipOpen(false);
+          d.data._expanded = false;
+        });
+      d3.select("#label-" + d.data.key).style("font-weight", "normal");
+    }
   };
 
   const ref = useD3(
@@ -222,12 +234,12 @@ const Doughnut = ({
     height,
     [data, subsetParam]
   );
-
   return (
     <Layout
       download={async () => download(ref, width, height)}
       title={INFO[type]["title"]}
       infoText={INFO[type]["text"]}
+      addIcon={Select}
     >
       <div style={{ position: "relative" }}>
         <div
