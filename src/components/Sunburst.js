@@ -1,7 +1,7 @@
 import React, { useState, useRef, Fragment } from "react";
 
 import * as d3 from "d3";
-import { useD3 } from "@shahlab/planetarium";
+import { useD3, DownloadIcon } from "@shahlab/planetarium";
 import _ from "lodash";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -382,7 +382,9 @@ const Sunburst = ({
   );
   return (
     <Layout
-      download={async () => download(ref, width, height)}
+      addIcon={
+        <DownloadIcon download={async () => download(ref, width, height)} />
+      }
       title={INFO[type]["title"]}
       infoText={INFO[type]["text"]}
     >

@@ -7,7 +7,7 @@ import {
   useCanvas,
   useLasso,
   drawUMAPAxis,
-  isValueHighlighted as isHighlighted,
+  isHighlighted,
 } from "@shahlab/planetarium";
 
 import Grid from "@material-ui/core/Grid";

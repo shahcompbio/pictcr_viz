@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import * as d3 from "d3";
 import { CONSTANTS, INFO } from "../config";
-import { Layout } from "@shahlab/planetarium";
+import { Layout, SearchIcon, DownloadIcon } from "@shahlab/planetarium";
 
 import Button from "@material-ui/core/Button";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -54,30 +54,33 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
       setFilterText("");
     }
   };
-  const SubHeaderComponentMemo = () => (
-    <FilterComponent
-      onFilter={(e) => setFilterText(e.target.value)}
-      onClear={handleClear}
-      filterText={filterText}
-      data={data}
-    />
-  );
+
+  const download = () => {
+    const dataSource = new Blob([d3Dsv.tsvFormat(data)], {
+      type: "text/tsv",
+    });
+    const tsvURL = window.URL.createObjectURL(dataSource);
+    const tempLink = document.createElement("a");
+    tempLink.href = tsvURL;
+    tempLink.setAttribute("download", "filename.tsv");
+    tempLink.click();
+  };
 
   return (
     <Layout
       title={INFO["TABLE"]["title"]}
       infoText={INFO["TABLE"]["text"]}
-      SearchComponent={SubHeaderComponentMemo}
-      download={() => {
-        const dataSource = new Blob([d3Dsv.tsvFormat(data)], {
-          type: "text/tsv",
-        });
-        const tsvURL = window.URL.createObjectURL(dataSource);
-        const tempLink = document.createElement("a");
-        tempLink.href = tsvURL;
-        tempLink.setAttribute("download", "filename.tsv");
-        tempLink.click();
-      }}
+      addIcon={[
+        <SearchIcon>
+          <FilterComponent
+            onFilter={(e) => setFilterText(e.target.value)}
+            onClear={handleClear}
+            filterText={filterText}
+            data={data}
+          />
+        </SearchIcon>,
+        <DownloadIcon download={download} />,
+      ]}
     >
       <Grid
         item
