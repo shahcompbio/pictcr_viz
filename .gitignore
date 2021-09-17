@@ -17,6 +17,7 @@
 # data
 *.tsv
 *.h5ad
+/src/data/**/*.json
 
 # misc
 .DS_Store
