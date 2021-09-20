@@ -183,6 +183,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
             data={highlightData || data}
             type={"SUBTYPEDOUGH"}
             colors={CLONOTYPE_COLORS}
+            colorScale={phenotypeColorScale}
             width={450}
             height={350}
             otherSubsetParam={clonotypeParam}

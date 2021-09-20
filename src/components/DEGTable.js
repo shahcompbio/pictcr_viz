@@ -21,17 +21,18 @@ const formatHeader = {
 const customStyles = {
   rows: {
     style: {
-      fontFamily: "MyFontRegular",
+      fontFamily: "Noto Sans",
     },
   },
   headCells: {
     style: {
-      fontFamily: "MyFontBold",
+      fontFamily: "Noto Sans",
+      fontWeight: "bold",
     },
   },
   cells: {
     style: {
-      fontFamily: "MyFontLight",
+      fontFamily: "Noto Sans",
     },
   },
 };

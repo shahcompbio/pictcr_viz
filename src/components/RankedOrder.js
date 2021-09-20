@@ -28,7 +28,7 @@ const COLOR_ARRAY = [
   "#b2dbd6",
   "#ffd470",
 ];
-const PADDING = 50;
+const PADDING = 70;
 const format = d3.format(".3f");
 
 const RankedOrder = ({ width, height, data, highlight = null }) => {
@@ -96,7 +96,7 @@ const RankedOrder = ({ width, height, data, highlight = null }) => {
         xScale: rankScale,
         yScale: freqScale,
         ticks: 3,
-        font: "MyFontRegular",
+        font: "Noto Sans",
         label: "Clone Frequency",
       });
 
@@ -106,7 +106,7 @@ const RankedOrder = ({ width, height, data, highlight = null }) => {
         yScale: freqScale,
         ticks: 3,
         label: "Rank",
-        font: "MyFontRegular",
+        font: "Noto Sans",
         orientation: "horizontal",
       });
 
@@ -170,9 +170,9 @@ const RankedOrder = ({ width, height, data, highlight = null }) => {
       <Grid item>
         <VerticalLegend
           fontFamily={{
-            regular: "MyFontLight",
-            bold: "MyFontBold",
-            labelOffset: 3,
+            regular: "Noto Sans",
+            bold: "Noto Sans",
+            labelOffset: -1,
           }}
           width={200}
           height={height}

@@ -172,9 +172,9 @@ const UMAP = ({
             title={null}
             onClick={onLegendClick}
             fontFamily={{
-              regular: "MyFontLight",
-              bold: "MyFontBold",
-              labelOffset: 3,
+              regular: "Noto Sans",
+              bold: "Noto Sans",
+              labelOffset: -1,
             }}
             disable={disable}
           />

@@ -1,25 +1,14 @@
 .App {
   text-align: center;
 }
-@font-face {
-  font-family: "MyFontBold";
-  src: local("MyFontBold"), url(./theme/Black.otf) format("opentype");
-}
-@font-face {
-  font-family: "MyFontRegular";
-  src: local("MyFontRegular"), url(./theme/Regular.otf) format("opentype");
-}
-@font-face {
-  font-family: "MyFontLight";
-  src: local("MyFontLight"), url(./theme/Light.otf) format("opentype");
-}
+
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 40vmin;
   pointer-events: none;
 }
 #font {
-  font-family: MyFontLight;
+  font-family: Noto Sans;
 }
 .App-header {
   background-color: #282c34;

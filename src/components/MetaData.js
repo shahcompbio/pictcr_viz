@@ -58,24 +58,25 @@ const useStyles = makeStyles({
   overallCells: {
     fontSize: 18,
     fontWeight: "bold",
-    fontFamily: "MyFontLight",
+    fontFamily: "Noto Sans",
+    fontWeight: "light",
     color: "#81a6f9",
     marginLeft: 15,
     paddingTop: 5,
   },
   selectedClone: {
     fontSize: 28,
-    fontFamily: "MyFontRegular",
+    fontFamily: "Noto Sans",
     color: "black",
   },
   selectedCells: {
     fontSize: 25,
-    fontFamily: "MyFontRegular",
+    fontFamily: "Noto Sans",
     color: "black",
   },
   overallCellsValue: {
     fontSize: 25,
-    fontFamily: "MyFontRegular",
+    fontFamily: "Noto Sans",
     color: "black",
   },
   popOver: { width: 350, maxWidth: 500 },
@@ -92,12 +93,14 @@ const useStyles = makeStyles({
     textTransform: "none",
   },
   light: {
-    fontFamily: "MyFontLight",
+    fontFamily: "Noto Sans",
+    fontWeight: "light",
   },
   title: {
     fontSize: 14,
     fill: "black",
-    fontFamily: "MyFontBold",
+    fontFamily: "Noto Sans",
+    fontWeight: "bold",
   },
   pos: {
     marginBottom: 12,

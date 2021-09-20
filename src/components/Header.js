@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   title: {
-    fontFamily: "MyFontLight",
+    fontFamily: "Noto Sans",
     display: "none",
     [theme.breakpoints.up("sm")]: {
       display: "block",

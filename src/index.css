@@ -1,19 +1,7 @@
-@font-face {
-  font-family: "MyFontBold";
-  src: local("MyFontBold"), url(./theme/Black.otf) format("opentype");
-}
-@font-face {
-  font-family: "MyFontRegular";
-  src: local("MyFontRegular"), url(./theme/Regular.otf) format("opentype");
-}
-@font-face {
-  font-family: "MyFontLight";
-  src: local("MyFontLight"), url(./theme/Light.otf) format("opentype");
-}
 body {
   margin: 0;
   padding: 0;
-  font-family: "MyFontRegular";
+  font-family: "Noto Sans";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

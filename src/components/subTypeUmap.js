@@ -35,6 +35,7 @@ const PhenotypeUMAP = ({
         idParam={idParam}
         colorScale={colorScale}
         onLasso={onLasso}
+        fontFamily={"Noto Sans"}
         onLegendClick={onLegendClick}
         disable={disable}
         highlightIDs={highlightIDs}

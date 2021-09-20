@@ -82,6 +82,7 @@ const Doughnut = ({
   type,
   otherSubsetParam,
   Select,
+  colorScale,
 }) => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const tooltipRef = useRef(null);
@@ -96,11 +97,6 @@ const Doughnut = ({
   const subsetCounts = Object.keys(allSubsets)
     .sort((a, b) => allSubsets[b].length - allSubsets[a].length)
     .slice(0, 10);
-
-  const colorScale = d3
-    .scaleOrdinal()
-    .domain(subsetCounts)
-    .range(colors.slice(0, Math.min(subsetCounts.length, colors.length)));
 
   const subsets = subsetCounts.map((d) => ({
     key: d,
@@ -149,7 +145,7 @@ const Doughnut = ({
     svg
       .append("g")
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
-      .attr("font-family", "MyFontLight")
+      .attr("font-family", "Noto Sans")
       .attr("font-size", 12)
       .attr("text-anchor", "middle")
       .selectAll("text")
@@ -170,14 +166,15 @@ const Doughnut = ({
         text
           .filter((d) => d.endAngle - d.startAngle > 0.25)
           .append("tspan")
-
           .attr("fill-opacity", 0.7)
+          .text((d) => d.data.key.toLocaleString())
+          .append("tspan")
+          .attr("fill-opacity", 0.7)
+          .attr("dy", 13)
+          .attr("x", 0)
           .text(
             (d) =>
-              d.data.key.toLocaleString() +
-              " (" +
-              d3.format(".0%")(d.data.value.length / totalCount) +
-              ")"
+              " (" + d3.format(".0%")(d.data.value.length / totalCount) + ")"
           )
       );
     function mouseover(element, index, elements) {
