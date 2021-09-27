@@ -16,6 +16,8 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Drawer from "@material-ui/core/Drawer";
 
+import Divider from "@material-ui/core/Divider";
+
 import Accordion from "@material-ui/core/Accordion";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -35,17 +37,17 @@ const useStyles = makeStyles({
     marginBottom: 0,
   },
   rootWithMarginTop: {
-    backgroundColor: "#f5f5f5",
-    backgroundColor: "white",
-    border: "#ababab",
-    borderStyle: "solid",
-    borderRadius: 5,
-    borderWidth: 1,
+    //  backgroundColor: "#f5f5f5",
+    backgroundColor: "none",
+    //  border: "#ababab",
+    //  borderStyle: "solid",
+    //  borderRadius: 5,
+    //  borderWidth: 1,
 
     padding: 15,
     minWidth: 275,
     marginTop: 15,
-    marginLeft: 30,
+    marginLeft: 15,
     marginBottom: 0,
   },
   clearButton: {
@@ -66,7 +68,7 @@ const useStyles = makeStyles({
     border: "solid 1px",
   },
   content: {
-    width: 200,
+    width: "100%",
     padding: 0,
     paddingBottom: "0 !important",
   },
@@ -163,8 +165,8 @@ const MetaData = ({
   totalCount,
 }) => {
   const classes = useStyles();
-
-  console.log(selectFilters);
+  console.log(!selected);
+  console.log(!highlighted);
   return (
     <Paper
       elevation={0}
@@ -182,9 +184,65 @@ const MetaData = ({
       >
         <Grid item>
           <Header classes={classes} sample={sample} totalCount={totalCount} />
+          <Divider variant="middle" style={{ marginLeft: 30 }} />
+
+          <Card className={classes.root} elevation={0}>
+            <CardContent className={classes.content}>
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-around"
+                alignItems="flex-end"
+                style={{ marginBottom: 0 }}
+              >
+                <Grid item xs={9}>
+                  {highlighted ? (
+                    <Typography
+                      varient="h4"
+                      style={{
+                        color: "black",
+                      }}
+                    >
+                      {highlighted.length} selected
+                    </Typography>
+                  ) : selected ? (
+                    <Typography
+                      varient="h4"
+                      style={{
+                        color: "black",
+                      }}
+                    >
+                      {selected.length} selected
+                    </Typography>
+                  ) : (
+                    <Typography
+                      varient="h4"
+                      style={{
+                        color: "grey",
+                      }}
+                    >
+                      Selection
+                    </Typography>
+                  )}
+                </Grid>
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    disabled={!selected && !highlighted}
+                    className={classes.clearButton}
+                    onClick={() => setHighlight()}
+                  >
+                    Clear
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+          <Divider variant="middle" style={{ marginLeft: 30 }} />
           <Card className={classes.root} elevation={0}>
             <CardContent className={classes.content}>
               <Filters
+                selected={selectFilters}
                 classes={classes}
                 filters={filters}
                 setFilters={setFilters}
@@ -192,53 +250,13 @@ const MetaData = ({
               />
             </CardContent>
           </Card>
-          {(highlighted || selected || selectFilters) && (
-            <Card className={classes.root} elevation={0}>
-              <CardContent className={classes.selectionContent}>
-                {highlighted && (
-                  <HighlightedContent
-                    dataCount={totalCount}
-                    highlightedCount={highlighted.length}
-                    classes={classes}
-                  />
-                )}
-                {selected && (
-                  <SelectedContent
-                    classes={classes}
-                    selectedType={selectedType}
-                    selected={selected}
-                  />
-                )}
-                {selectFilters && (
-                  <SelectedFilterContent
-                    dataCount={totalCount}
-                    classes={classes}
-                    highlightedCount={data.length}
-                    filter={selectFilters}
-                  />
-                )}
-              </CardContent>
-
-              {(selected || highlighted || selectFilters) && (
-                <CardActions className={classes.clearSelectionWrapper}>
-                  <Button
-                    variant="contained"
-                    className={classes.clearButton}
-                    onClick={() => setHighlight()}
-                  >
-                    Clear Selection
-                  </Button>
-                </CardActions>
-              )}
-            </Card>
-          )}
         </Grid>
       </Grid>
     </Paper>
   );
 };
 
-const Filters = ({ filters, classes, setFilters, setHighlight }) => {
+const Filters = ({ filters, classes, setFilters, setHighlight, selected }) => {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -256,6 +274,7 @@ const Filters = ({ filters, classes, setFilters, setHighlight }) => {
         <Grid item>
           <Button
             variant="contained"
+            disabled={!selected}
             className={classes.clearButton}
             onClick={() => setHighlight()}
           >
@@ -303,21 +322,17 @@ const DrawerContent = ({ filters, classes, setFilters, setDrawerOpen }) => {
             {filter["values"].map((value, i) => (
               <ListItem
                 key={"panel-item-" + value}
-                style={{ fontSize: 14 }}
+                style={{ fontSize: 12 }}
                 button
-                //  selected={index === selectedTabIndex && selectedIndex === i}
                 onClick={(event) => {
-                  //  setSelectedTabIndex(tabIndex);
-                  //  setSelectedIndex(i);
                   setFilters([filter["name"], value]);
                   handleChange("panel" + index);
                   setDrawerOpen(false);
-                  // handleListItemClick(event, index, value);
                 }}
               >
                 <ListItemText
                   primary={value}
-                  style={{ fontSize: 14 }}
+                  style={{ fontSize: 12 }}
                   key={"panel-item-text-" + value}
                 />
               </ListItem>
@@ -328,90 +343,23 @@ const DrawerContent = ({ filters, classes, setFilters, setDrawerOpen }) => {
     )),
   ];
 };
-/*      <Popover
-      className={classes.popOver}
-      id={id}
-      open={open}
-      anchorEl={anchorEl}
-      onClose={() => setAnchorEl(null)}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "left",
-      }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-    >*/
-/*const FilterDrawerContent = ({ setTabIndex, tabIndex, filters }) => (
-  <Typography className={classes.typography}>
-    <Tabs
-      value={tabIndex}
-      onChange={(event, newValue) => setTabIndex(newValue)}
-      indicatorColor="primary"
-      textColor="primary"
-      variant="scrollable"
-      scrollButtons="auto"
-      aria-label="scrollable auto tabs"
-    >
-      {filters.map((filter, index) => (
-        <Tab
-          label={filterMapping[filter["name"]]}
-          {...a11yProps(index)}
-          className={classes.tabTitle}
-        />
-      ))}
-    </Tabs>
-    {filters.map((filter, tindex) => {
-      return (
-        <TabPanel
-          className={classes.tabPanel}
-          value={tabIndex}
-          index={tindex}
-          key={filter["name"] + "TabPanel"}
-        >
-          <List component="nav" aria-label="main mailbox folders">
-            {filter["values"].map((value, index) => (
-              <ListItem
-                button
-                selected={
-                  tabIndex === selectedTabIndex && selectedIndex === index
-                }
-                onClick={(event) => {
-                  setSelectedTabIndex(tabIndex);
-                  setSelectedIndex(index);
-                  setFilters([filter["name"], value]);
-                  // handleListItemClick(event, index, value);
-                }}
-              >
-                <ListItemText primary={value} />
-              </ListItem>
-            ))}
-          </List>
-        </TabPanel>
-      );
-    })}
-  </Typography>
-);*/
 
 const Header = ({ classes, sample, totalCount }) => (
-  <Card className={classes.rootWithMarginTop} elevation={0}>
-    <CardContent className={classes.content}>
-      <Grid
-        container
-        direction="row"
-        justifyContent="flex-start"
-        alignItems="center"
-      >
-        <Typography className={classes.key}>Sample:</Typography>
-        <Typography className={classes.value}>{sample}</Typography>
-      </Grid>
-      <Grid container direction="row" justify="flex-start" alignItems="stretch">
-        <Typography className={classes.key}>Data Points:</Typography>
-        <Typography className={classes.value}>{totalCount}</Typography>
-      </Grid>
-    </CardContent>
-  </Card>
+  <div className={classes.rootWithMarginTop}>
+    <Grid
+      container
+      direction="row"
+      justifyContent="flex-start"
+      alignItems="center"
+    >
+      <Typography>Sample:</Typography>
+      <Typography>{sample}</Typography>
+    </Grid>
+    <Grid container direction="row" justify="flex-start" alignItems="stretch">
+      <Typography>Data Points:</Typography>
+      <Typography>{totalCount}</Typography>
+    </Grid>
+  </div>
 );
 const SelectedFilterContent = ({
   classes,
