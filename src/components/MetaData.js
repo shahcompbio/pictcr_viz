@@ -14,19 +14,42 @@ import Box from "@material-ui/core/Box";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import Drawer from "@material-ui/core/Drawer";
+
+import Accordion from "@material-ui/core/Accordion";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   root: {
     backgroundColor: "#f5f5f5",
-    minWidth: 275,
-    marginTop: 15,
+    //  backgroundColor: "white",
+    padding: 15,
+    width: "100%",
+    marginTop: 0,
     marginLeft: 15,
     marginBottom: 0,
-    paddingBottom: 0,
+  },
+  rootWithMarginTop: {
+    backgroundColor: "#f5f5f5",
+    backgroundColor: "white",
+    border: "#ababab",
+    borderStyle: "solid",
+    borderRadius: 5,
+    borderWidth: 1,
+
+    padding: 15,
+    minWidth: 275,
+    marginTop: 15,
+    marginLeft: 30,
+    marginBottom: 0,
   },
   clearButton: {
+    float: "right",
     boxShadow: "none !important",
     backgroundColor: "#f7f8fb",
     border: "solid 1px",
@@ -37,6 +60,7 @@ const useStyles = makeStyles({
     paddingLeft: 0,
   },
   button: {
+    fontSize: 18,
     boxShadow: "none !important",
     backgroundColor: "#f7f8fb",
     border: "solid 1px",
@@ -46,9 +70,19 @@ const useStyles = makeStyles({
     padding: 0,
     paddingBottom: "0 !important",
   },
+  selectionContent: {
+    //width: 200,
+    padding: 10,
+    paddingBottom: "10 !important",
+    background: "white",
+    border: "#ababab",
+    borderStyle: "solid",
+    borderRadius: 5,
+    borderWidth: 1,
+  },
   key: {
     fontWeight: "light",
-    fontSize: 15,
+    fontSize: 20,
     color: "#b3b3b3",
   },
   value: {
@@ -59,9 +93,8 @@ const useStyles = makeStyles({
     fontSize: 18,
     fontWeight: "bold",
     fontFamily: "Noto Sans",
-    fontWeight: "light",
+
     color: "#81a6f9",
-    marginLeft: 15,
     paddingTop: 5,
   },
   selectedClone: {
@@ -70,7 +103,8 @@ const useStyles = makeStyles({
     color: "black",
   },
   selectedCells: {
-    fontSize: 25,
+    fontWeight: "bold",
+    fontSize: 18,
     fontFamily: "Noto Sans",
     color: "black",
   },
@@ -125,8 +159,12 @@ const MetaData = ({
   setHighlight,
   filters,
   setFilters,
+  selectFilters,
+  totalCount,
 }) => {
   const classes = useStyles();
+
+  console.log(selectFilters);
   return (
     <Paper
       elevation={0}
@@ -143,160 +181,273 @@ const MetaData = ({
         alignItems="stretch"
       >
         <Grid item>
-          <Header classes={classes} sample={sample} />
-          <Card className={classes.root} elevation={0}>
-            <CardContent className={classes.content}>
-              {highlighted && (
-                <HighlightedContent
-                  dataCount={data.length}
-                  highlightedCount={highlighted.length}
-                  classes={classes}
-                />
-              )}
-              {selected && (
-                <SelectedContent
-                  classes={classes}
-                  selectedType={selectedType}
-                  selected={selected}
-                />
-              )}
-              {!highlighted && !selected && (
-                <NoSelectionContent classes={classes} dataCount={data.length} />
-              )}
-            </CardContent>
-
-            {(selected || highlighted) && (
-              <CardActions className={classes.clearSelectionWrapper}>
-                <Button
-                  variant="contained"
-                  className={classes.clearButton}
-                  onClick={() => setHighlight()}
-                >
-                  Clear Selection
-                </Button>
-              </CardActions>
-            )}
-          </Card>
+          <Header classes={classes} sample={sample} totalCount={totalCount} />
           <Card className={classes.root} elevation={0}>
             <CardContent className={classes.content}>
               <Filters
                 classes={classes}
                 filters={filters}
                 setFilters={setFilters}
+                setHighlight={setHighlight}
               />
             </CardContent>
           </Card>
+          {(highlighted || selected || selectFilters) && (
+            <Card className={classes.root} elevation={0}>
+              <CardContent className={classes.selectionContent}>
+                {highlighted && (
+                  <HighlightedContent
+                    dataCount={totalCount}
+                    highlightedCount={highlighted.length}
+                    classes={classes}
+                  />
+                )}
+                {selected && (
+                  <SelectedContent
+                    classes={classes}
+                    selectedType={selectedType}
+                    selected={selected}
+                  />
+                )}
+                {selectFilters && (
+                  <SelectedFilterContent
+                    dataCount={totalCount}
+                    classes={classes}
+                    highlightedCount={data.length}
+                    filter={selectFilters}
+                  />
+                )}
+              </CardContent>
+
+              {(selected || highlighted || selectFilters) && (
+                <CardActions className={classes.clearSelectionWrapper}>
+                  <Button
+                    variant="contained"
+                    className={classes.clearButton}
+                    onClick={() => setHighlight()}
+                  >
+                    Clear Selection
+                  </Button>
+                </CardActions>
+              )}
+            </Card>
+          )}
         </Grid>
       </Grid>
     </Paper>
   );
 };
 
-const Filters = ({ filters, classes, setFilters }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [tabIndex, setTabIndex] = useState(0);
+const Filters = ({ filters, classes, setFilters, setHighlight }) => {
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
 
-  function a11yProps(index) {
-    return {
-      id: `scrollable-auto-tab-${index}`,
-      "aria-controls": `scrollable-auto-tabpanel-${index}`,
-    };
-  }
-  const [selectedTabIndex, setSelectedTabIndex] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(1);
-
-  const handleListItemClick = (event, index, value) => {
-    console.log(index, value);
-    setSelectedIndex(index);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
   return (
-    <div>
-      <Button
-        aria-describedby={id}
-        variant="contained"
-        onClick={(event) => setAnchorEl(event.currentTarget)}
-        className={classes.button}
+    <div style={{ height: 400, overflowY: "scroll" }}>
+      <Grid
+        container
+        direction="row"
+        justifyContent="space-around"
+        alignItems="flex-end"
+        style={{ marginBottom: 10 }}
       >
-        Filter Data
-      </Button>
-      <Popover
-        className={classes.popOver}
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={() => setAnchorEl(null)}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-      >
-        <Typography className={classes.typography}>
-          <Tabs
-            value={tabIndex}
-            onChange={(event, newValue) => setTabIndex(newValue)}
-            indicatorColor="primary"
-            textColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
-            aria-label="scrollable auto tabs"
+        <Grid item xs={9}>
+          <Typography varient="h4">Filters</Typography>
+        </Grid>
+        <Grid item>
+          <Button
+            variant="contained"
+            className={classes.clearButton}
+            onClick={() => setHighlight()}
           >
-            {filters.map((filter, index) => (
-              <Tab
-                label={filterMapping[filter["name"]]}
-                {...a11yProps(index)}
-                className={classes.tabTitle}
-              />
-            ))}
-          </Tabs>
-          {filters.map((filter, tindex) => {
-            return (
-              <TabPanel
-                className={classes.tabPanel}
-                value={tabIndex}
-                index={tindex}
-                key={filter["name"] + "TabPanel"}
-              >
-                <List component="nav" aria-label="main mailbox folders">
-                  {filter["values"].map((value, index) => (
-                    <ListItem
-                      button
-                      selected={
-                        tabIndex === selectedTabIndex && selectedIndex === index
-                      }
-                      onClick={(event) => {
-                        setSelectedTabIndex(tabIndex);
-                        setSelectedIndex(index);
-                        setFilters([filter["name"], value]);
-                        // handleListItemClick(event, index, value);
-                      }}
-                    >
-                      <ListItemText primary={value} />
-                    </ListItem>
-                  ))}
-                </List>
-              </TabPanel>
-            );
-          })}
-        </Typography>
-      </Popover>
+            Clear
+          </Button>
+        </Grid>
+      </Grid>
+      <DrawerContent
+        filters={filters}
+        classes={classes}
+        setFilters={setFilters}
+        setDrawerOpen={setDrawerOpen}
+      />
     </div>
   );
 };
-const Header = ({ classes, sample }) => (
-  <Card className={classes.root} elevation={0}>
+const DrawerContent = ({ filters, classes, setFilters, setDrawerOpen }) => {
+  const [expanded, setExpanded] = useState({});
+
+  const handleChange = (panel) => (event, isExpanded) => {
+    var newExpanded = expanded;
+    newExpanded[panel] = isExpanded;
+    setExpanded(newExpanded);
+  };
+
+  return [
+    ...filters.map((filter, index) => (
+      <Accordion
+        key={"panel-" + index}
+        expanded={expanded["panel" + index]}
+        onChange={handleChange("panel" + index)}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls={"panel" + index + "bh-content"}
+          id={"panel" + index + "bh-header"}
+          key={"panel-summary-" + index}
+        >
+          <Typography className={classes.heading} key={"panel-title-" + index}>
+            {filterMapping[filter["name"]]}
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails key={"panel-details-" + index}>
+          <List component="nav" key={"panel-list-values-" + index}>
+            {filter["values"].map((value, i) => (
+              <ListItem
+                key={"panel-item-" + value}
+                style={{ fontSize: 14 }}
+                button
+                //  selected={index === selectedTabIndex && selectedIndex === i}
+                onClick={(event) => {
+                  //  setSelectedTabIndex(tabIndex);
+                  //  setSelectedIndex(i);
+                  setFilters([filter["name"], value]);
+                  handleChange("panel" + index);
+                  setDrawerOpen(false);
+                  // handleListItemClick(event, index, value);
+                }}
+              >
+                <ListItemText
+                  primary={value}
+                  style={{ fontSize: 14 }}
+                  key={"panel-item-text-" + value}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </AccordionDetails>
+      </Accordion>
+    )),
+  ];
+};
+/*      <Popover
+      className={classes.popOver}
+      id={id}
+      open={open}
+      anchorEl={anchorEl}
+      onClose={() => setAnchorEl(null)}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "left",
+      }}
+    >*/
+/*const FilterDrawerContent = ({ setTabIndex, tabIndex, filters }) => (
+  <Typography className={classes.typography}>
+    <Tabs
+      value={tabIndex}
+      onChange={(event, newValue) => setTabIndex(newValue)}
+      indicatorColor="primary"
+      textColor="primary"
+      variant="scrollable"
+      scrollButtons="auto"
+      aria-label="scrollable auto tabs"
+    >
+      {filters.map((filter, index) => (
+        <Tab
+          label={filterMapping[filter["name"]]}
+          {...a11yProps(index)}
+          className={classes.tabTitle}
+        />
+      ))}
+    </Tabs>
+    {filters.map((filter, tindex) => {
+      return (
+        <TabPanel
+          className={classes.tabPanel}
+          value={tabIndex}
+          index={tindex}
+          key={filter["name"] + "TabPanel"}
+        >
+          <List component="nav" aria-label="main mailbox folders">
+            {filter["values"].map((value, index) => (
+              <ListItem
+                button
+                selected={
+                  tabIndex === selectedTabIndex && selectedIndex === index
+                }
+                onClick={(event) => {
+                  setSelectedTabIndex(tabIndex);
+                  setSelectedIndex(index);
+                  setFilters([filter["name"], value]);
+                  // handleListItemClick(event, index, value);
+                }}
+              >
+                <ListItemText primary={value} />
+              </ListItem>
+            ))}
+          </List>
+        </TabPanel>
+      );
+    })}
+  </Typography>
+);*/
+
+const Header = ({ classes, sample, totalCount }) => (
+  <Card className={classes.rootWithMarginTop} elevation={0}>
     <CardContent className={classes.content}>
-      <Typography className={classes.key}>Sample:</Typography>
-      <Typography className={classes.value}>{sample}</Typography>
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="center"
+      >
+        <Typography className={classes.key}>Sample:</Typography>
+        <Typography className={classes.value}>{sample}</Typography>
+      </Grid>
+      <Grid container direction="row" justify="flex-start" alignItems="stretch">
+        <Typography className={classes.key}>Data Points:</Typography>
+        <Typography className={classes.value}>{totalCount}</Typography>
+      </Grid>
     </CardContent>
   </Card>
 );
+const SelectedFilterContent = ({
+  classes,
+  dataCount,
+  highlightedCount,
+  filter,
+}) => (
+  <span>
+    <Grid
+      container
+      direction="column"
+      justify="flex-start"
+      alignItems="stretch"
+    >
+      <Grid>
+        <Typography variant="h7" className={classes.key}>
+          Filtered by:{" "}
+          {filter[0][0].toUpperCase() +
+            filter[0].substring(1, filter[0].length)}
+        </Typography>
+      </Grid>
+      <Grid>
+        <Typography variant="h4">{filter[1]} </Typography>
+      </Grid>
+      <Grid container direction="row" justify="flex-start" alignItems="stretch">
+        <Typography className={classes.selectedCells}>
+          {highlightedCount}
+        </Typography>
+        <Typography className={classes.overallCells}>
+          /{dataCount} selected
+        </Typography>
+      </Grid>
+    </Grid>
+  </span>
+);
+
 const NoSelectionContent = ({ classes, dataCount }) => (
   <span>
     <Typography className={classes.key}>Data Points:</Typography>
@@ -314,15 +465,15 @@ const SelectedContent = ({ classes, selectedType, selected }) => (
   </span>
 );
 
-const HighlightedContent = ({ classes, highlightedCount, totalCount }) => (
+const HighlightedContent = ({ classes, highlightedCount, dataCount }) => (
   <span>
-    <Typography className={classes.key}>Data Points:</Typography>
+    <Typography className={classes.key}>Highlighted:</Typography>
     <Grid container direction="row" justify="flex-start" alignItems="stretch">
       <Typography className={classes.selectedCells}>
         {highlightedCount}
       </Typography>
       <Typography className={classes.overallCells}>
-        / {totalCount} selected
+        /{dataCount} selected
       </Typography>
     </Grid>
   </span>

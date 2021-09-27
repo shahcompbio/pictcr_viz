@@ -136,7 +136,6 @@ export const VDJ = ({ metadata, degs, filters }) => {
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
-      <Header />
       <Grid
         container
         direction="column"
@@ -144,60 +143,87 @@ export const VDJ = ({ metadata, degs, filters }) => {
         alignItems="flex-start"
       >
         <Grid
-          item
           container
           direction="row"
           justify="flex-start"
           alignItems="flex-start"
+          spacing={3}
         >
-          <MetaData
-            width={250}
-            data={data}
-            sample="Hacohen"
-            filters={filters}
-            highlighted={highlightData}
-            selected={selectClone || selectSubset}
-            setHighlight={() => {
-              setSelectIDs(null);
-              setSelectClone(null);
-              setSelectSubset(null);
-              setActiveGraph(null);
-            }}
-            selectedType={selectClone ? "Clone" : selectSubset}
-            setFilters={setSelectFilters}
-          />
-          <Sunburst
-            data={highlightData || data}
-            type={"CLONOTYPEDOUGH"}
-            colors={CLONOTYPE_COLORS}
-            selectedCloneColor={
-              selectClone ? cloneColorScale(selectClone) : null
-            }
-            cloneColorScale={cloneColorScale}
-            width={450}
-            height={350}
-            otherSubsetParam={subtypeParam}
-            subsetParam={clonotypeParam}
-          />
-          <Doughnut
-            data={highlightData || data}
-            type={"SUBTYPEDOUGH"}
-            colors={CLONOTYPE_COLORS}
-            colorScale={phenotypeColorScale}
-            width={450}
-            height={350}
-            otherSubsetParam={clonotypeParam}
-            subsetParam={subset}
-            Select={
-              <Select
-                width={200}
-                title={"Color By"}
-                value={subset}
-                options={filters.map((datum) => datum["name"])}
-                onSelect={setSubset}
-              />
-            }
-          />
+          <Grid item xs={3} style={{ width: 200 }}>
+            <MetaData
+              width={250}
+              data={data}
+              sample="Hacohen"
+              filters={filters}
+              highlighted={highlightData}
+              selected={selectClone || selectSubset}
+              setHighlight={() => {
+                setSelectIDs(null);
+                setSelectClone(null);
+                setSelectSubset(null);
+                setActiveGraph(null);
+                setSelectFilters(null);
+              }}
+              selectFilters={selectFilters}
+              selectedType={selectClone ? "Clone" : selectSubset}
+              setFilters={setSelectFilters}
+              totalCount={metadata.length}
+            />
+          </Grid>
+          <Grid item>
+            <Grid
+              container
+              direction="column"
+              justify="flex-start"
+              alignItems="flex-start"
+            >
+              <Grid item>
+                <Header />
+              </Grid>
+              <Grid item>
+                <Grid
+                  item
+                  container
+                  direction="row"
+                  justify="flex-start"
+                  alignItems="flex-start"
+                >
+                  <Sunburst
+                    data={highlightData || data}
+                    type={"CLONOTYPEDOUGH"}
+                    colors={CLONOTYPE_COLORS}
+                    selectedCloneColor={
+                      selectClone ? cloneColorScale(selectClone) : null
+                    }
+                    cloneColorScale={cloneColorScale}
+                    width={450}
+                    height={350}
+                    otherSubsetParam={subtypeParam}
+                    subsetParam={clonotypeParam}
+                  />
+                  <Doughnut
+                    data={highlightData || data}
+                    type={"SUBTYPEDOUGH"}
+                    colors={CLONOTYPE_COLORS}
+                    colorScale={phenotypeColorScale}
+                    width={450}
+                    height={350}
+                    otherSubsetParam={clonotypeParam}
+                    subsetParam={subset}
+                    Select={
+                      <Select
+                        width={200}
+                        title={"Color By"}
+                        value={subset}
+                        options={filters.map((datum) => datum["name"])}
+                        onSelect={setSubset}
+                      />
+                    }
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
         <Grid
           item

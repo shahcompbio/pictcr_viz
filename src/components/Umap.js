@@ -147,7 +147,7 @@ const UMAP = ({
     },
     canvasWidth,
     canvasHeight,
-    [highlightIDs, radiusRatio, lassoData, hoverClone]
+    [highlightIDs, radiusRatio, lassoData, hoverClone, data]
   );
 
   return (
@@ -360,6 +360,7 @@ const drawLineGraph = (
   subsetLabels.forEach((subset) => {
     context.lineWidth = 2;
     context.globalAlpha = isHighlighted(subset, highlighted) ? 1 : 0.5;
+
     context.strokeStyle = isHighlighted(subset, highlighted)
       ? colorScale(subset)
       : UNHIGHLIGHTED_POINT_COLOR;
