@@ -1,21 +1,14 @@
 import React, { useState } from "react";
 
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import Popover from "@material-ui/core/Popover";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Box from "@material-ui/core/Box";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import Drawer from "@material-ui/core/Drawer";
-
 import Divider from "@material-ui/core/Divider";
 
 import Accordion from "@material-ui/core/Accordion";
@@ -27,6 +20,36 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
+  accordian: {
+    //  background: "#f5f5f5",
+    backgroundColor: "#e9eaed",
+    borderRadius: 5,
+    marginBottom: 5,
+    "&.MuiAccordion-root:before": {
+      top: 0,
+    },
+  },
+  accordianList: {
+    width: "100%",
+    paddingTop: 0,
+  },
+  selectedAccordianItem: {
+    backgroundColor: "#e7e7f1",
+    fontSize: 12,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+  accordianItem: {
+    fontSize: 12,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+  accordianDetails: {
+    padding: 0,
+    paddingLeft: 10,
+    backgroundColor: "#f5f5f5",
+    //marginLeft: 15,
+  },
   root: {
     backgroundColor: "#f5f5f5",
     //  backgroundColor: "white",
@@ -60,6 +83,9 @@ const useStyles = makeStyles({
     paddingTop: 10,
     paddingBottom: 10,
     paddingLeft: 0,
+  },
+  heading: {
+    marginLeft: 3,
   },
   button: {
     fontSize: 18,
@@ -165,8 +191,7 @@ const MetaData = ({
   totalCount,
 }) => {
   const classes = useStyles();
-  console.log(!selected);
-  console.log(!highlighted);
+
   return (
     <Paper
       elevation={0}
@@ -260,7 +285,7 @@ const Filters = ({ filters, classes, setFilters, setHighlight, selected }) => {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div style={{ height: 400, overflowY: "scroll" }}>
+    <div style={{ height: 400, overflowY: "scroll", overflowX: "clip" }}>
       <Grid
         container
         direction="row"
@@ -287,11 +312,18 @@ const Filters = ({ filters, classes, setFilters, setHighlight, selected }) => {
         classes={classes}
         setFilters={setFilters}
         setDrawerOpen={setDrawerOpen}
+        selected={selected}
       />
     </div>
   );
 };
-const DrawerContent = ({ filters, classes, setFilters, setDrawerOpen }) => {
+const DrawerContent = ({
+  filters,
+  classes,
+  setFilters,
+  setDrawerOpen,
+  selected,
+}) => {
   const [expanded, setExpanded] = useState({});
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -299,49 +331,104 @@ const DrawerContent = ({ filters, classes, setFilters, setDrawerOpen }) => {
     newExpanded[panel] = isExpanded;
     setExpanded(newExpanded);
   };
-
-  return [
-    ...filters.map((filter, index) => (
-      <Accordion
-        key={"panel-" + index}
-        expanded={expanded["panel" + index]}
-        onChange={handleChange("panel" + index)}
+  return (
+    <div style={{ position: "relative" }}>
+      <div
+        style={{
+          position: "absolute",
+          marginLeft: 11,
+          borderLeft: "3px solid rgb(211 211 211)",
+          height: "100%",
+          zIndex: 10,
+        }}
+      />
+      <div
+        style={{ position: "relative", borderRight: "solid 10px transparent" }}
       >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls={"panel" + index + "bh-content"}
-          id={"panel" + index + "bh-header"}
-          key={"panel-summary-" + index}
-        >
-          <Typography className={classes.heading} key={"panel-title-" + index}>
-            {filterMapping[filter["name"]]}
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails key={"panel-details-" + index}>
-          <List component="nav" key={"panel-list-values-" + index}>
-            {filter["values"].map((value, i) => (
-              <ListItem
-                key={"panel-item-" + value}
-                style={{ fontSize: 12 }}
-                button
-                onClick={(event) => {
-                  setFilters([filter["name"], value]);
-                  handleChange("panel" + index);
-                  setDrawerOpen(false);
+        {filters.map((filter, index) => (
+          <Accordion
+            elevation={0}
+            classes={{
+              root: classes.accordian,
+            }}
+            key={"panel-" + index}
+            expanded={expanded["panel" + index]}
+            onChange={handleChange("panel" + index)}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls={"panel" + index + "bh-content"}
+              id={"panel" + index + "bh-header"}
+              key={"panel-summary-" + index}
+            >
+              <svg
+                height="20"
+                width="10"
+                style={{
+                  zIndex: 20,
                 }}
               >
-                <ListItemText
-                  primary={value}
-                  style={{ fontSize: 12 }}
-                  key={"panel-item-text-" + value}
+                <circle
+                  cx="5"
+                  cy="12"
+                  r="5"
+                  stroke="black"
+                  stroke-width="1"
+                  style={{
+                    fill:
+                      selected && selected[0] === filter["name"]
+                        ? "green"
+                        : "rgb(211 211 211)",
+                    //fill: "rgb(211 211 211)",
+                    stroke: "rgb(211 211 211)",
+                  }}
                 />
-              </ListItem>
-            ))}
-          </List>
-        </AccordionDetails>
-      </Accordion>
-    )),
-  ];
+              </svg>
+              <Typography
+                className={classes.heading}
+                key={"panel-title-" + index}
+              >
+                {filterMapping[filter["name"]]}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              key={"panel-details-" + index}
+              className={classes.accordianDetails}
+            >
+              <List
+                className={classes.accordianList}
+                component="nav"
+                key={"panel-list-values-" + index}
+              >
+                {filter["values"].map((value, i) => (
+                  <ListItem
+                    key={"panel-item-" + value}
+                    className={
+                      selected && selected[1] === value
+                        ? classes.selectedAccordianItem
+                        : classes.accordianItem
+                    }
+                    button
+                    onClick={(event) => {
+                      setFilters([filter["name"], value]);
+                      handleChange("panel" + index);
+                      setDrawerOpen(false);
+                    }}
+                  >
+                    <ListItemText
+                      primary={value}
+                      style={{ fontSize: 12 }}
+                      key={"panel-item-text-" + value}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 const Header = ({ classes, sample, totalCount }) => (
@@ -361,87 +448,5 @@ const Header = ({ classes, sample, totalCount }) => (
     </Grid>
   </div>
 );
-const SelectedFilterContent = ({
-  classes,
-  dataCount,
-  highlightedCount,
-  filter,
-}) => (
-  <span>
-    <Grid
-      container
-      direction="column"
-      justify="flex-start"
-      alignItems="stretch"
-    >
-      <Grid>
-        <Typography variant="h7" className={classes.key}>
-          Filtered by:{" "}
-          {filter[0][0].toUpperCase() +
-            filter[0].substring(1, filter[0].length)}
-        </Typography>
-      </Grid>
-      <Grid>
-        <Typography variant="h4">{filter[1]} </Typography>
-      </Grid>
-      <Grid container direction="row" justify="flex-start" alignItems="stretch">
-        <Typography className={classes.selectedCells}>
-          {highlightedCount}
-        </Typography>
-        <Typography className={classes.overallCells}>
-          /{dataCount} selected
-        </Typography>
-      </Grid>
-    </Grid>
-  </span>
-);
 
-const NoSelectionContent = ({ classes, dataCount }) => (
-  <span>
-    <Typography className={classes.key}>Data Points:</Typography>
-    <Grid container direction="row" justify="flex-start" alignItems="stretch">
-      <Typography className={classes.overallCellsValue}>{dataCount}</Typography>
-    </Grid>
-  </span>
-);
-const SelectedContent = ({ classes, selectedType, selected }) => (
-  <span>
-    <Typography className={classes.key}>{selectedType}:</Typography>
-    <Grid container direction="row" justify="flex-start" alignItems="stretch">
-      <Typography variant="h4">{selected} </Typography>
-    </Grid>
-  </span>
-);
-
-const HighlightedContent = ({ classes, highlightedCount, dataCount }) => (
-  <span>
-    <Typography className={classes.key}>Highlighted:</Typography>
-    <Grid container direction="row" justify="flex-start" alignItems="stretch">
-      <Typography className={classes.selectedCells}>
-        {highlightedCount}
-      </Typography>
-      <Typography className={classes.overallCells}>
-        /{dataCount} selected
-      </Typography>
-    </Grid>
-  </span>
-);
-
-const TabPanel = ({ children, value, index, ...other }) => {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`scrollable-auto-tabpanel-${index}`}
-      aria-labelledby={`scrollable-auto-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-};
 export default MetaData;
