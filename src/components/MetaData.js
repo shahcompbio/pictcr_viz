@@ -33,6 +33,12 @@ const useStyles = makeStyles({
     width: "100%",
     paddingTop: 0,
   },
+  selectedAccordianItem: {
+    backgroundColor: "#e7e7f1",
+    fontSize: 12,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
   accordianItem: {
     fontSize: 12,
     paddingTop: 0,
@@ -42,7 +48,7 @@ const useStyles = makeStyles({
     padding: 0,
     paddingLeft: 10,
     backgroundColor: "#f5f5f5",
-    marginLeft: 15,
+    //marginLeft: 15,
   },
   root: {
     backgroundColor: "#f5f5f5",
@@ -336,7 +342,9 @@ const DrawerContent = ({
           zIndex: 10,
         }}
       />
-      <div style={{ position: "relative" }}>
+      <div
+        style={{ position: "relative", borderRight: "solid 10px transparent" }}
+      >
         {filters.map((filter, index) => (
           <Accordion
             elevation={0}
@@ -395,7 +403,11 @@ const DrawerContent = ({
                 {filter["values"].map((value, i) => (
                   <ListItem
                     key={"panel-item-" + value}
-                    className={classes.accordianItem}
+                    className={
+                      selected && selected[1] === value
+                        ? classes.selectedAccordianItem
+                        : classes.accordianItem
+                    }
                     button
                     onClick={(event) => {
                       setFilters([filter["name"], value]);
