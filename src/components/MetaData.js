@@ -193,241 +193,71 @@ const MetaData = ({
   const classes = useStyles();
 
   return (
-    <Paper
-      elevation={0}
-      style={{
-        background: "none",
-        margin: 10,
-        padding: 10,
-      }}
+    <Grid
+      container
+      direction="column"
+      justify="flex-start"
+      alignItems="stretch"
     >
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="stretch"
-      >
-        <Grid item>
-          <Header classes={classes} sample={sample} totalCount={totalCount} />
-          <Divider variant="middle" style={{ marginLeft: 30 }} />
+      <Grid item>
+        <Header classes={classes} sample={sample} totalCount={totalCount} />
+        <Divider variant="middle" style={{ marginLeft: 30 }} />
 
-          <Card className={classes.root} elevation={0}>
-            <CardContent className={classes.content}>
-              <Grid
-                container
-                direction="row"
-                justifyContent="space-around"
-                alignItems="flex-end"
-                style={{ marginBottom: 0 }}
-              >
-                <Grid item xs={9}>
-                  {highlighted ? (
-                    <Typography
-                      varient="h4"
-                      style={{
-                        color: "black",
-                      }}
-                    >
-                      {highlighted.length} selected
-                    </Typography>
-                  ) : selected ? (
-                    <Typography
-                      varient="h4"
-                      style={{
-                        color: "black",
-                      }}
-                    >
-                      {selected.length} selected
-                    </Typography>
-                  ) : (
-                    <Typography
-                      varient="h4"
-                      style={{
-                        color: "grey",
-                      }}
-                    >
-                      Selection
-                    </Typography>
-                  )}
-                </Grid>
-                <Grid item>
-                  <Button
-                    variant="contained"
-                    disabled={!selected && !highlighted}
-                    className={classes.clearButton}
-                    onClick={() => setHighlight()}
-                  >
-                    Clear
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-          <Divider variant="middle" style={{ marginLeft: 30 }} />
-          <Card className={classes.root} elevation={0}>
-            <CardContent className={classes.content}>
-              <Filters
-                selected={selectFilters}
-                classes={classes}
-                filters={filters}
-                setFilters={setFilters}
-                setHighlight={setHighlight}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </Paper>
-  );
-};
-
-const Filters = ({ filters, classes, setFilters, setHighlight, selected }) => {
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
-
-  return (
-    <div style={{ height: 400, overflowY: "scroll", overflowX: "clip" }}>
-      <Grid
-        container
-        direction="row"
-        justifyContent="space-around"
-        alignItems="flex-end"
-        style={{ marginBottom: 10 }}
-      >
-        <Grid item xs={9}>
-          <Typography varient="h4">Filters</Typography>
-        </Grid>
-        <Grid item>
-          <Button
-            variant="contained"
-            disabled={!selected}
-            className={classes.clearButton}
-            onClick={() => setHighlight()}
-          >
-            Clear
-          </Button>
-        </Grid>
-      </Grid>
-      <DrawerContent
-        filters={filters}
-        classes={classes}
-        setFilters={setFilters}
-        setDrawerOpen={setDrawerOpen}
-        selected={selected}
-      />
-    </div>
-  );
-};
-const DrawerContent = ({
-  filters,
-  classes,
-  setFilters,
-  setDrawerOpen,
-  selected,
-}) => {
-  const [expanded, setExpanded] = useState({});
-
-  const handleChange = (panel) => (event, isExpanded) => {
-    var newExpanded = expanded;
-    newExpanded[panel] = isExpanded;
-    setExpanded(newExpanded);
-  };
-  return (
-    <div style={{ position: "relative" }}>
-      <div
-        style={{
-          position: "absolute",
-          marginLeft: 11,
-          borderLeft: "3px solid rgb(211 211 211)",
-          height: "100%",
-          zIndex: 10,
-        }}
-      />
-      <div
-        style={{ position: "relative", borderRight: "solid 10px transparent" }}
-      >
-        {filters.map((filter, index) => (
-          <Accordion
-            elevation={0}
-            classes={{
-              root: classes.accordian,
-            }}
-            key={"panel-" + index}
-            expanded={expanded["panel" + index]}
-            onChange={handleChange("panel" + index)}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls={"panel" + index + "bh-content"}
-              id={"panel" + index + "bh-header"}
-              key={"panel-summary-" + index}
+        <Card className={classes.root} elevation={0}>
+          <CardContent className={classes.content}>
+            <Grid
+              container
+              direction="row"
+              justifyContent="space-around"
+              alignItems="flex-end"
+              style={{ marginBottom: 0 }}
             >
-              <svg
-                height="20"
-                width="10"
-                style={{
-                  zIndex: 20,
-                }}
-              >
-                <circle
-                  cx="5"
-                  cy="12"
-                  r="5"
-                  stroke="black"
-                  stroke-width="1"
-                  style={{
-                    fill:
-                      selected && selected[0] === filter["name"]
-                        ? "green"
-                        : "rgb(211 211 211)",
-                    //fill: "rgb(211 211 211)",
-                    stroke: "rgb(211 211 211)",
-                  }}
-                />
-              </svg>
-              <Typography
-                className={classes.heading}
-                key={"panel-title-" + index}
-              >
-                {filterMapping[filter["name"]]}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails
-              key={"panel-details-" + index}
-              className={classes.accordianDetails}
-            >
-              <List
-                className={classes.accordianList}
-                component="nav"
-                key={"panel-list-values-" + index}
-              >
-                {filter["values"].map((value, i) => (
-                  <ListItem
-                    key={"panel-item-" + value}
-                    className={
-                      selected && selected[1] === value
-                        ? classes.selectedAccordianItem
-                        : classes.accordianItem
-                    }
-                    button
-                    onClick={(event) => {
-                      setFilters([filter["name"], value]);
-                      handleChange("panel" + index);
-                      setDrawerOpen(false);
+              <Grid item xs={9}>
+                {highlighted ? (
+                  <Typography
+                    varient="h4"
+                    style={{
+                      color: "black",
                     }}
                   >
-                    <ListItemText
-                      primary={value}
-                      style={{ fontSize: 12 }}
-                      key={"panel-item-text-" + value}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </AccordionDetails>
-          </Accordion>
-        ))}
-      </div>
-    </div>
+                    {highlighted.length} selected
+                  </Typography>
+                ) : selected ? (
+                  <Typography
+                    varient="h4"
+                    style={{
+                      color: "black",
+                    }}
+                  >
+                    {selected.length} selected
+                  </Typography>
+                ) : (
+                  <Typography
+                    varient="h4"
+                    style={{
+                      color: "grey",
+                    }}
+                  >
+                    Selection
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="contained"
+                  disabled={!selected && !highlighted}
+                  className={classes.clearButton}
+                  onClick={() => setHighlight()}
+                >
+                  Clear
+                </Button>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+        <Divider variant="middle" style={{ marginLeft: 30 }} />
+      </Grid>
+    </Grid>
   );
 };
 

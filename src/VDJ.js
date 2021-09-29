@@ -12,6 +12,9 @@ import MetaData from "./components/MetaData";
 import Header from "./components/Header";
 import Sunburst from "./components/Sunburst";
 
+import Paper from "@material-ui/core/Paper";
+import Filters from "./components/Filters";
+
 import {
   Heatmap,
   ProbabilityHistogram,
@@ -150,25 +153,39 @@ export const VDJ = ({ metadata, degs, filters }) => {
           spacing={3}
         >
           <Grid item xs={3} style={{ width: 200 }}>
-            <MetaData
-              width={250}
-              data={data}
-              sample="Hacohen"
-              filters={filters}
-              highlighted={highlightData}
-              selected={selectClone || selectSubset}
-              setHighlight={() => {
-                setSelectIDs(null);
-                setSelectClone(null);
-                setSelectSubset(null);
-                setActiveGraph(null);
-                setSelectFilters(null);
+            <Paper
+              elevation={0}
+              style={{
+                background: "none",
+                margin: 10,
+                padding: 10,
               }}
-              selectFilters={selectFilters}
-              selectedType={selectClone ? "Clone" : selectSubset}
-              setFilters={setSelectFilters}
-              totalCount={metadata.length}
-            />
+            >
+              <MetaData
+                width={250}
+                data={data}
+                sample="Hacohen"
+                filters={filters}
+                highlighted={highlightData}
+                selected={selectClone || selectSubset}
+                setHighlight={() => {
+                  setSelectIDs(null);
+                  setSelectClone(null);
+                  setSelectSubset(null);
+                  setActiveGraph(null);
+                  setSelectFilters(null);
+                }}
+                selectFilters={selectFilters}
+                selectedType={selectClone ? "Clone" : selectSubset}
+                setFilters={setSelectFilters}
+                totalCount={metadata.length}
+              />
+              <Filters
+                selected={selectFilters}
+                filters={filters}
+                setFilters={setSelectFilters}
+              />
+            </Paper>
           </Grid>
           <Grid item>
             <Grid
@@ -180,7 +197,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
               <Grid item>
                 <Header />
               </Grid>
-              <Grid item>
+              {/* <Grid item>
                 <Grid
                   item
                   container
@@ -221,7 +238,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
                     }
                   />
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Grid>
         </Grid>
@@ -291,7 +308,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
             }
           />
         </Grid>
-        <Grid
+        {/* <Grid
           item
           container
           direction="row"
@@ -354,8 +371,8 @@ export const VDJ = ({ metadata, degs, filters }) => {
               width: 750,
             }}
           />
-        </Grid>
-        <Layout
+        </Grid> */}
+        {/* <Layout
           title={INFO["RANKED"]["title"]}
           infoText={INFO["RANKED"]["text"]}
         >
@@ -365,7 +382,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
             data={probabilities}
             highlight={selectPhenotype}
           />
-        </Layout>
+        </Layout> */}
       </Grid>
     </MuiThemeProvider>
   );
