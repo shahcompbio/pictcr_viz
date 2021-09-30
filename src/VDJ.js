@@ -12,7 +12,7 @@ import MetaData from "./components/MetaData";
 import Header from "./components/Header";
 import Sunburst from "./components/Sunburst";
 
-import Paper from "@material-ui/core/Paper";
+import Paper from "@mui/material/Paper";
 import Filters from "./components/Filters";
 
 import {
@@ -22,11 +22,11 @@ import {
   Select,
 } from "@shahlab/planetarium";
 
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 
 import { theme } from "./theme/theme";
-import { MuiThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
 import { CONSTANTS, CLONOTYPE_COLORS, INFO } from "./config";
 
@@ -137,254 +137,259 @@ export const VDJ = ({ metadata, degs, filters }) => {
   const subtypeTotals = _.countBy(data, subtypeParam);
 
   return (
-    <MuiThemeProvider theme={theme}>
-      <CssBaseline />
-      <Grid
-        container
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-      >
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
         <Grid
           container
-          direction="row"
-          justify="flex-start"
+          direction="column"
+          justifyContent="flex-start"
           alignItems="flex-start"
-          spacing={3}
         >
-          <Grid item xs={3} style={{ width: 200 }}>
-            <Paper
-              elevation={0}
-              style={{
-                background: "none",
-                margin: 10,
-                padding: 10,
-              }}
-            >
-              <MetaData
-                width={250}
-                data={data}
-                sample="Hacohen"
-                filters={filters}
-                highlighted={highlightData}
-                selected={selectClone || selectSubset}
-                setHighlight={() => {
-                  setSelectIDs(null);
-                  setSelectClone(null);
-                  setSelectSubset(null);
-                  setActiveGraph(null);
-                  setSelectFilters(null);
+          <Grid
+            container
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="flex-start"
+            spacing={3}
+          >
+            <Grid item xs={3} style={{ width: 200 }}>
+              <Paper
+                elevation={0}
+                style={{
+                  background: "none",
+                  margin: 10,
+                  padding: 10,
                 }}
-                selectFilters={selectFilters}
-                selectedType={selectClone ? "Clone" : selectSubset}
-                setFilters={setSelectFilters}
-                totalCount={metadata.length}
-              />
-              <Filters
-                selected={selectFilters}
-                filters={filters}
-                setFilters={setSelectFilters}
-              />
-            </Paper>
-          </Grid>
-          <Grid item>
-            <Grid
-              container
-              direction="column"
-              justify="flex-start"
-              alignItems="flex-start"
-            >
-              <Grid item>
-                <Header />
-              </Grid>
-              {/* <Grid item>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  justify="flex-start"
-                  alignItems="flex-start"
-                >
-                  <Sunburst
-                    data={highlightData || data}
-                    type={"CLONOTYPEDOUGH"}
-                    colors={CLONOTYPE_COLORS}
-                    selectedCloneColor={
-                      selectClone ? cloneColorScale(selectClone) : null
-                    }
-                    cloneColorScale={cloneColorScale}
-                    width={450}
-                    height={350}
-                    otherSubsetParam={subtypeParam}
-                    subsetParam={clonotypeParam}
-                  />
-                  <Doughnut
-                    data={highlightData || data}
-                    type={"SUBTYPEDOUGH"}
-                    colors={CLONOTYPE_COLORS}
-                    colorScale={phenotypeColorScale}
-                    width={450}
-                    height={350}
-                    otherSubsetParam={clonotypeParam}
-                    subsetParam={subset}
-                    Select={
-                      <Select
-                        width={200}
-                        title={"Color By"}
-                        value={subset}
-                        options={filters.map((datum) => datum["name"])}
-                        onSelect={setSubset}
-                      />
-                    }
-                  />
+              >
+                <MetaData
+                  width={250}
+                  data={data}
+                  sample="Hacohen"
+                  filters={filters}
+                  highlighted={highlightData}
+                  selected={selectClone || selectSubset}
+                  setHighlight={() => {
+                    setSelectIDs(null);
+                    setSelectClone(null);
+                    setSelectSubset(null);
+                    setActiveGraph(null);
+                    setSelectFilters(null);
+                  }}
+                  selectFilters={selectFilters}
+                  selectedType={selectClone ? "Clone" : selectSubset}
+                  setFilters={setSelectFilters}
+                  totalCount={metadata.length}
+                />
+                <Filters
+                  selected={selectFilters}
+                  filters={filters}
+                  setFilters={setSelectFilters}
+                />
+              </Paper>
+            </Grid>
+            <Grid item>
+              <Grid
+                container
+                direction="column"
+                justifyContent="flex-start"
+                alignItems="flex-start"
+              >
+                <Grid item>
+                  <Header />
                 </Grid>
-              </Grid> */}
+                <Grid item>
+                  <Grid
+                    item
+                    container
+                    direction="row"
+                    justify="flex-start"
+                    alignItems="flex-start"
+                  >
+                    <Sunburst
+                      data={highlightData || data}
+                      type={"CLONOTYPEDOUGH"}
+                      colors={CLONOTYPE_COLORS}
+                      selectedCloneColor={
+                        selectClone ? cloneColorScale(selectClone) : null
+                      }
+                      cloneColorScale={cloneColorScale}
+                      width={450}
+                      height={350}
+                      otherSubsetParam={subtypeParam}
+                      subsetParam={clonotypeParam}
+                    />
+                    <Doughnut
+                      data={highlightData || data}
+                      type={"SUBTYPEDOUGH"}
+                      colors={CLONOTYPE_COLORS}
+                      colorScale={phenotypeColorScale}
+                      width={450}
+                      height={350}
+                      otherSubsetParam={clonotypeParam}
+                      subsetParam={subset}
+                      Select={
+                        <Select
+                          width={200}
+                          title={"Color By"}
+                          value={subset}
+                          options={filters.map((datum) => datum["name"])}
+                          onSelect={setSubset}
+                        />
+                      }
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-        <Grid
-          item
-          container
-          direction="row"
-          justify="flex-start"
-          alignItems="flex-start"
-        >
-          <Layout title={INFO["UMAP"]["title"]} infoText={INFO["UMAP"]["text"]}>
-            <ClonotypeUMAP
-              width={800}
+          <Grid
+            item
+            container
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="flex-start"
+          >
+            <Layout
+              title={INFO["UMAP"]["title"]}
+              infoText={INFO["UMAP"]["text"]}
+            >
+              <ClonotypeUMAP
+                width={800}
+                height={600}
+                data={data}
+                xParam={xParam}
+                yParam={yParam}
+                subsetParam={clonotypeParam}
+                idParam="cell_id"
+                colorScale={cloneColorScale}
+                labels={(value) => `Clone ${value}`}
+                highlightIDs={highlightIDs}
+                onLasso={(data) => {
+                  setSelectIDs(
+                    data === null ? null : data.map((datum) => datum["cell_id"])
+                  );
+                  setActiveGraph(data === null ? null : "cloneUMAP");
+                }}
+                onLegendClick={(value) => {
+                  setSelectClone(value);
+                  setActiveGraph(value === null ? null : "cloneUMAP");
+                }}
+                disable={activeGraph !== null && activeGraph !== "cloneUMAP"}
+              />
+            </Layout>
+            <PhenotypeUMAP
+              width={700}
               height={600}
               data={data}
               xParam={xParam}
               yParam={yParam}
-              subsetParam={clonotypeParam}
+              subsetParam={subset}
               idParam="cell_id"
-              colorScale={cloneColorScale}
-              labels={(value) => `Clone ${value}`}
-              highlightIDs={highlightIDs}
+              colorScale={phenotypeColorScale}
               onLasso={(data) => {
                 setSelectIDs(
                   data === null ? null : data.map((datum) => datum["cell_id"])
                 );
-                setActiveGraph(data === null ? null : "cloneUMAP");
+                setActiveGraph(data === null ? null : "phenoUMAP");
               }}
               onLegendClick={(value) => {
-                setSelectClone(value);
-                setActiveGraph(value === null ? null : "cloneUMAP");
+                setSelectSubset(value);
+                setActiveGraph(value === null ? null : "phenoUMAP");
               }}
-              disable={activeGraph !== null && activeGraph !== "cloneUMAP"}
+              disable={activeGraph !== null && activeGraph !== "phenoUMAP"}
+              highlightIDs={highlightIDs}
+              options={filters.map((datum) => datum["name"])}
+              onSelect={setSubset}
+              Select={
+                <Select
+                  width={200}
+                  title={"Color By"}
+                  value={subset}
+                  options={filters.map((datum) => datum["name"])}
+                  onSelect={setSubset}
+                />
+              }
             />
-          </Layout>
-          <PhenotypeUMAP
-            width={700}
-            height={600}
-            data={data}
-            xParam={xParam}
-            yParam={yParam}
-            subsetParam={subset}
-            idParam="cell_id"
-            colorScale={phenotypeColorScale}
-            onLasso={(data) => {
-              setSelectIDs(
-                data === null ? null : data.map((datum) => datum["cell_id"])
-              );
-              setActiveGraph(data === null ? null : "phenoUMAP");
-            }}
-            onLegendClick={(value) => {
-              setSelectSubset(value);
-              setActiveGraph(value === null ? null : "phenoUMAP");
-            }}
-            disable={activeGraph !== null && activeGraph !== "phenoUMAP"}
-            highlightIDs={highlightIDs}
-            options={filters.map((datum) => datum["name"])}
-            onSelect={setSubset}
-            Select={
-              <Select
-                width={200}
-                title={"Color By"}
-                value={subset}
-                options={filters.map((datum) => datum["name"])}
-                onSelect={setSubset}
-              />
-            }
-          />
-        </Grid>
-        {/* <Grid
-          item
-          container
-          direction="row"
-          justify="flex-start"
-          alignItems="flex-end"
-        >
-          <Layout
-            title={INFO["HEATMAP"]["title"]}
-            infoText={INFO["HEATMAP"]["text"]}
+          </Grid>
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-end"
           >
-            <Heatmap
+            <Layout
+              title={INFO["HEATMAP"]["title"]}
+              infoText={INFO["HEATMAP"]["text"]}
+            >
+              <Heatmap
+                width={750}
+                height={550}
+                font={"MyFontLight"}
+                data={probabilities}
+                column={clonotypeParam}
+                row={subtypeParam}
+                highlightedRow={selectPhenotype}
+                highlightedColumn={selectClone}
+                columnLabels={clonotypeLabels}
+                rowTotal={subtypeTotals}
+              />
+            </Layout>
+            <ClonotypeExpansion
+              chartName={"BARPLOT"}
+              data={probabilities}
               width={750}
               height={550}
-              font={"MyFontLight"}
-              data={probabilities}
-              column={clonotypeParam}
-              row={subtypeParam}
               highlightedRow={selectPhenotype}
-              highlightedColumn={selectClone}
-              columnLabels={clonotypeLabels}
-              rowTotal={subtypeTotals}
             />
-          </Layout>
-          <ClonotypeExpansion
-            chartName={"BARPLOT"}
-            data={probabilities}
-            width={750}
-            height={550}
-            highlightedRow={selectPhenotype}
-          />
-        </Grid>
-        <Grid
-          item
-          container
-          direction="row"
-          justify="flex-start"
-          alignItems="flex-start"
-        >
-          <Layout
-            title={INFO["HISTOGRAM"]["title"]}
-            infoText={INFO["HISTOGRAM"]["text"]}
+          </Grid>
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
           >
-            <ProbabilityHistogram
-              data={probabilities}
-              width={750}
+            <Layout
+              title={INFO["HISTOGRAM"]["title"]}
+              infoText={INFO["HISTOGRAM"]["text"]}
+            >
+              <ProbabilityHistogram
+                data={probabilities}
+                width={750}
+                height={500}
+                probParam={logProbParam}
+                subgroupParam={subtypeParam}
+                observationParam={clonotypeParam}
+                highlightedObservation={selectClone}
+                highlightedSubgroup={selectPhenotype}
+              />
+            </Layout>
+            <DEGTable
+              chartName={"TABLE"}
+              data={degs}
+              selectedSubtype={selectPhenotype || selectClone}
+              chartDim={{
+                height: 500,
+                width: 750,
+              }}
+            />
+          </Grid>
+          <Layout
+            title={INFO["RANKED"]["title"]}
+            infoText={INFO["RANKED"]["text"]}
+          >
+            <RankedOrder
+              width={800}
               height={500}
-              probParam={logProbParam}
-              subgroupParam={subtypeParam}
-              observationParam={clonotypeParam}
-              highlightedObservation={selectClone}
-              highlightedSubgroup={selectPhenotype}
+              data={probabilities}
+              highlight={selectPhenotype}
             />
           </Layout>
-          <DEGTable
-            chartName={"TABLE"}
-            data={degs}
-            selectedSubtype={selectPhenotype || selectClone}
-            chartDim={{
-              height: 500,
-              width: 750,
-            }}
-          />
-        </Grid> */}
-        {/* <Layout
-          title={INFO["RANKED"]["title"]}
-          infoText={INFO["RANKED"]["text"]}
-        >
-          <RankedOrder
-            width={800}
-            height={500}
-            data={probabilities}
-            highlight={selectPhenotype}
-          />
-        </Layout> */}
-      </Grid>
-    </MuiThemeProvider>
+        </Grid>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 

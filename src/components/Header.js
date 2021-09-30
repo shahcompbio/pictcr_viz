@@ -1,13 +1,13 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import Grid from "@material-ui/core/Grid";
-import BookmarkIcon from "@material-ui/icons/Bookmark";
-import InfoIcon from "@material-ui/icons/Info";
+import makeStyles from '@mui/styles/makeStyles';
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import Grid from "@mui/material/Grid";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import InfoIcon from "@mui/icons-material/Info";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("md")]: {
@@ -63,7 +63,7 @@ const Header = () => {
       <Grid
         container
         direction="row"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="stretch"
         position="static"
         className={classes.root}
@@ -74,7 +74,7 @@ const Header = () => {
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
-          ></IconButton>
+            size="large"></IconButton>
           <Typography className={classes.title} variant="h5" noWrap>
             PICTCR
           </Typography>
@@ -86,7 +86,7 @@ const Header = () => {
               aria-label="Help"
               aria-haspopup="true"
               color="inherit"
-            >
+              size="large">
               <HelpOutlineIcon />
             </IconButton>
             <IconButton
@@ -94,10 +94,10 @@ const Header = () => {
               aria-label="bookmark"
               aria-haspopup="true"
               color="inherit"
-            >
+              size="large">
               <BookmarkIcon />
             </IconButton>
-            <IconButton aria-label="info" color="inherit">
+            <IconButton aria-label="info" color="inherit" size="large">
               <InfoIcon />
             </IconButton>
           </div>

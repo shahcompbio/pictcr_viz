@@ -10,8 +10,8 @@ import {
   isHighlighted,
 } from "@shahlab/planetarium";
 
-import Grid from "@material-ui/core/Grid";
-import Slider from "@material-ui/core/Slider";
+import Grid from "@mui/material/Grid";
+import Slider from "@mui/material/Slider";
 
 import { CONSTANTS } from "../config";
 

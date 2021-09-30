@@ -3,10 +3,10 @@ import * as d3 from "d3";
 import { CONSTANTS, INFO } from "../config";
 import { Layout, SearchIcon, DownloadIcon } from "@shahlab/planetarium";
 
-import Button from "@material-ui/core/Button";
-import ClearIcon from "@material-ui/icons/Clear";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
+import Button from "@mui/material/Button";
+import ClearIcon from "@mui/icons-material/Clear";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
 import * as d3Dsv from "d3-dsv";
 import DataTable from "react-data-table-component";
 const formatCols = ["adj_pval", "log_fc"];

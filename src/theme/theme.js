@@ -1,6 +1,6 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme, adaptV4Theme } from "@mui/material/styles";
 
-export const theme = createMuiTheme({
+export const theme = createTheme(adaptV4Theme({
   typography: {
     fontFamily: ["Noto Sans"].join(","),
   },
@@ -28,4 +28,4 @@ export const theme = createMuiTheme({
   },
 
   spacing: 4,
-});
+}));

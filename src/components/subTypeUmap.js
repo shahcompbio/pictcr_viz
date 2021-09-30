@@ -3,7 +3,7 @@ import _ from "lodash";
 import { INFO } from "../config.js";
 
 import { Layout, UMAP } from "@shahlab/planetarium";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@mui/material";
 
 const PhenotypeUMAP = ({
   data,

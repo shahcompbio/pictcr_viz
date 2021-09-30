@@ -8,7 +8,7 @@ import {
   drawCanvasAxis,
 } from "@shahlab/planetarium";
 
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 
 const COLOR_ARRAY = [
   "#5E4FA2",
