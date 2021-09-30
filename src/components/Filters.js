@@ -4,16 +4,22 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import List from "@mui/material/List";
+import ListSubheader from "@mui/material/ListSubheader";
 import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 // const useStyles = makeStyles({
 //   accordian: {
@@ -316,4 +322,153 @@ const DrawerContent = ({ filters, classes, setFilters, selected }) => {
   );
 };
 
-export default Filters;
+const Filters2 = ({ filters, selected, setFilters }) => (
+  <Box
+    sx={{
+      width: "100%",
+      maxWidth: 360,
+      bgcolor: "background.paper",
+      height: 400,
+      overflowY: "scroll",
+      overflowX: "clip",
+    }}
+  >
+    <List
+      sx={{ bgcolor: "background.paper" }}
+      component="div"
+      aria-labelledby="nested-list-subheader"
+      subheader={
+        <ListSubheader id="nested-list-subheader">
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-around"
+            alignItems="flex-end"
+            style={{ marginBottom: 10 }}
+          >
+            <Grid item xs={9}>
+              <Typography varient="h4">Filters</Typography>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                disabled={!selected}
+                onClick={() => setFilters(null)}
+              >
+                Clear
+              </Button>
+            </Grid>
+          </Grid>
+        </ListSubheader>
+      }
+    >
+      {filters.map((filter, index) => (
+        <FilterDropdown
+          key={filter["name"]}
+          title={filter["name"]}
+          values={filter["values"]}
+          onValueClick={setFilters}
+          selected={selected}
+          top={index !== 0}
+          bottom={index !== filters.length - 1}
+        />
+      ))}
+    </List>
+  </Box>
+);
+
+const FilterDropdown = ({
+  title,
+  values,
+  onValueClick,
+  selected,
+  top = true,
+  bottom = true,
+}) => {
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
+  return [
+    <ListItemButton
+      onClick={handleClick}
+      style={{
+        display: "flex",
+        paddingBottom: 0,
+      }}
+    >
+      <svg
+        height="30"
+        width="20"
+        style={{
+          zIndex: 20,
+        }}
+      >
+        <rect
+          x="8"
+          y={top ? "0" : "10"}
+          width="3"
+          height={bottom || open ? 30 : 20}
+          style={{
+            fill: "rgb(211 211 211)",
+            stroke: "rgb(211 211 211)",
+          }}
+        />
+        <circle
+          cx="10"
+          cy="15"
+          r="5"
+          stroke="black"
+          stroke-width="1"
+          style={{
+            fill:
+              selected && selected[0] === title ? "green" : "rgb(211 211 211)",
+            stroke: "rgb(211 211 211)",
+          }}
+        />
+      </svg>
+      <ListItemText primary={filterMapping[title]} sx={{ pl: 2, m: 0 }} />
+      {open ? <ExpandLess /> : <ExpandMore />}
+    </ListItemButton>,
+    <Collapse in={open} timeout="auto" unmountOnExit>
+      <List component="div" disablePadding>
+        {values.map((value) => (
+          <ListItemButton
+            style={{ display: "flex" }}
+            key={`${title}-${value}`}
+            onClick={() => {
+              onValueClick([title, value]);
+            }}
+            selected={
+              selected && selected[0] === title && selected[1] === value
+            }
+          >
+            <svg
+              height="35"
+              width="20"
+              style={{
+                zIndex: 20,
+              }}
+            >
+              <rect
+                x="8"
+                y="0"
+                width="3"
+                height="35"
+                style={{
+                  fill: "rgb(211 211 211)",
+                  stroke: "rgb(211 211 211)",
+                }}
+              />
+            </svg>
+            <ListItemText primary={value} sx={{ pl: 4 }} />
+          </ListItemButton>
+        ))}
+      </List>
+    </Collapse>,
+  ];
+};
+
+export default Filters2;
