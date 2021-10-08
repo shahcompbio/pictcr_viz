@@ -238,85 +238,87 @@ const DrawerContent = ({ filters, classes, setFilters, selected }) => {
       <div
         style={{ position: "relative", borderRight: "solid 10px transparent" }}
       >
-        {filters.map((filter, index) => (
-          <Accordion
-            elevation={0}
-            // classes={{
-            //   root: classes.accordian,
-            // }}
-            key={"panel-" + index}
-            expanded={expanded["panel" + index]}
-            onChange={handleChange("panel" + index)}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls={"panel" + index + "bh-content"}
-              id={"panel" + index + "bh-header"}
-              key={"panel-summary-" + index}
+        {filters
+          .filter((filter) => filter["name"] !== "clone_id")
+          .map((filter, index) => (
+            <Accordion
+              elevation={0}
+              // classes={{
+              //   root: classes.accordian,
+              // }}
+              key={"panel-" + index}
+              expanded={expanded["panel" + index]}
+              onChange={handleChange("panel" + index)}
             >
-              <svg
-                height="20"
-                width="10"
-                style={{
-                  zIndex: 20,
-                }}
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls={"panel" + index + "bh-content"}
+                id={"panel" + index + "bh-header"}
+                key={"panel-summary-" + index}
               >
-                <circle
-                  cx="5"
-                  cy="12"
-                  r="5"
-                  stroke="black"
-                  stroke-width="1"
+                <svg
+                  height="20"
+                  width="10"
                   style={{
-                    fill:
-                      selected && selected[0] === filter["name"]
-                        ? "green"
-                        : "rgb(211 211 211)",
-                    //fill: "rgb(211 211 211)",
-                    stroke: "rgb(211 211 211)",
+                    zIndex: 20,
                   }}
-                />
-              </svg>
-              <Typography
-                // className={classes.heading}
-                key={"panel-title-" + index}
-              >
-                {filterMapping[filter["name"]]}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails
-              key={"panel-details-" + index}
-              //   className={classes.accordianDetails}
-            >
-              <List
-                // className={classes.accordianList}
-                component="nav"
-                key={"panel-list-values-" + index}
-              >
-                {filter["values"].map((value, i) => (
-                  <ListItem
-                    key={"panel-item-" + value}
-                    // className={
-                    //   selected && selected[1] === value
-                    //     ? classes.selectedAccordianItem
-                    //     : classes.accordianItem
-                    // }
-                    button
-                    onClick={(event) => {
-                      setFilters([filter["name"], value]);
+                >
+                  <circle
+                    cx="5"
+                    cy="12"
+                    r="5"
+                    stroke="black"
+                    stroke-width="1"
+                    style={{
+                      fill:
+                        selected && selected[0] === filter["name"]
+                          ? "green"
+                          : "rgb(211 211 211)",
+                      //fill: "rgb(211 211 211)",
+                      stroke: "rgb(211 211 211)",
                     }}
-                  >
-                    <ListItemText
-                      primary={value}
-                      style={{ fontSize: 12 }}
-                      key={"panel-item-text-" + value}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </AccordionDetails>
-          </Accordion>
-        ))}
+                  />
+                </svg>
+                <Typography
+                  // className={classes.heading}
+                  key={"panel-title-" + index}
+                >
+                  {filterMapping[filter["name"]]}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails
+                key={"panel-details-" + index}
+                //   className={classes.accordianDetails}
+              >
+                <List
+                  // className={classes.accordianList}
+                  component="nav"
+                  key={"panel-list-values-" + index}
+                >
+                  {filter["values"].map((value, i) => (
+                    <ListItem
+                      key={"panel-item-" + value}
+                      // className={
+                      //   selected && selected[1] === value
+                      //     ? classes.selectedAccordianItem
+                      //     : classes.accordianItem
+                      // }
+                      button
+                      onClick={(event) => {
+                        setFilters([filter["name"], value]);
+                      }}
+                    >
+                      <ListItemText
+                        primary={value}
+                        style={{ fontSize: 12 }}
+                        key={"panel-item-text-" + value}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+          ))}
       </div>
     </div>
   );
@@ -328,9 +330,10 @@ const Filters2 = ({ filters, selected, setFilters }) => (
       width: "100%",
       maxWidth: 360,
       bgcolor: "background.paper",
-      height: 400,
+      maxHeight: 400,
       overflowY: "scroll",
       overflowX: "clip",
+      ml: 4,
     }}
   >
     <List
@@ -396,6 +399,7 @@ const FilterDropdown = ({
       onClick={handleClick}
       style={{
         display: "flex",
+        paddingTop: 0,
         paddingBottom: 0,
       }}
     >
@@ -436,7 +440,7 @@ const FilterDropdown = ({
       <List component="div" disablePadding>
         {values.map((value) => (
           <ListItemButton
-            style={{ display: "flex" }}
+            style={{ display: "flex", paddingTop: 0, paddingBottom: 0 }}
             key={`${title}-${value}`}
             onClick={() => {
               onValueClick([title, value]);

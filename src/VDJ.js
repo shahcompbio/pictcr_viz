@@ -312,7 +312,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
               }
             />
           </Grid>
-          <Grid
+          {/* <Grid
             item
             container
             direction="row"
@@ -386,7 +386,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
               data={probabilities}
               highlight={selectPhenotype}
             />
-          </Layout>
+          </Layout> */}
         </Grid>
       </ThemeProvider>
     </StyledEngineProvider>
