@@ -16,14 +16,13 @@ const PhenotypeUMAP = ({
   onLegendClick,
   disable,
   highlightIDs,
-  options,
   Select,
 }) => {
   return (
     <Layout
       title={INFO["SUBTYPEUMAP"]["title"]}
       infoText={INFO["SUBTYPEUMAP"]["text"]}
-      addIcon={Select}
+      addIcon={[Select]}
     >
       <UMAP
         width={700}

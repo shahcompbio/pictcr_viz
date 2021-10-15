@@ -176,6 +176,7 @@ const filterMapping = {
   treatment: "Treatment",
   subtype: "Subtype",
   clone_id: "Clone ID",
+  timepoint: "Timepoint",
 };
 const Filters = ({ filters, setFilters, selected }) => {
   //   const classes = useStyles();

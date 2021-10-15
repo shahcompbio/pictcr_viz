@@ -299,8 +299,6 @@ export const VDJ = ({ metadata, degs, filters }) => {
               }}
               disable={activeGraph !== null && activeGraph !== "phenoUMAP"}
               highlightIDs={highlightIDs}
-              options={filters.map((datum) => datum["name"])}
-              onSelect={setSubset}
               Select={
                 <Select
                   width={200}
