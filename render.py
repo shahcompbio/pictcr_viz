@@ -18,12 +18,14 @@ PTHRESH = 0.01
 FCTHRESH = 0.01
 TOP_N = 20
 
-COLUMNS = ['phenotype', 'clone_id']
+COLUMNS = ['subtype', 'IR_VDJ_1_junction_aa']
 
 
 def open_file(filepath):
     adata = sc.read(filepath)
-    adata = adata[adata.obs["clone_id"].notnull()]
+    # adata = adata[adata.obs["IR_VDJ_1_junction_aa"].notnull()]
+    adata.obs["IR_VDJ_1_junction_aa"] = adata.obs["IR_VDJ_1_junction_aa"].replace(
+        to_replace="nan", value="None")
     sc.tl.umap(adata)
 
     return adata
@@ -33,13 +35,14 @@ def get_data(filepath):
     adata = open_file(filepath)
 
     metadata = get_metadata(adata).to_dict(orient="records")
-    degs = get_degs(adata).to_dict(orient="records")
+    # degs = get_degs(adata).to_dict(orient="records")
     filters = get_filter(adata)
+    print(filters)
     # probabilities = get_probabilities(adata).to_dict(orient="records")
 
     return {
         "metadata": [clean_record(record) for record in metadata],
-        "degs": [clean_record(record) for record in degs],
+        "degs": [],
         "filters": filters
         # "probabilities": [clean_record(record) for record in probabilities]
     }
@@ -57,12 +60,12 @@ def clean_record(record):
 def get_metadata(adata):
     umap = pd.DataFrame(adata.obsm['X_umap'])
     umap.columns = ['UMAP_1', 'UMAP_2']
-    add_columns = list(adata.uns['viz_columns'])
-    df = adata.obs[COLUMNS + add_columns + ['pgen']]
+    add_columns = ['patient', 'timepoint']
+    df = adata.obs[COLUMNS + add_columns]
     df = df.reset_index()
     df = df.merge(umap, left_index=True, right_index=True)
     df = df.rename(columns={'index': 'cell_id',
-                            'pgen': 'log10_probability', 'phenotype': 'subtype'})
+                            'IR_VDJ_1_junction_aa': 'clone_id'})
     df = df.replace(to_replace="nan", value="None")
     return df
 
@@ -96,12 +99,12 @@ def get_degs(adata):
 
 
 def get_filter(adata):
-    columns = list(adata.uns['viz_columns']) + COLUMNS
+    columns = ['patient', 'timepoint', 'subtype']
     records = []
 
     for column in columns:
         record = {
-            "name": column if column != "phenotype" else "subtype",
+            "name": column,
             "values": list(adata.obs[column].unique())
         }
         records.append(record)
@@ -139,10 +142,12 @@ def output_data(filepath, output):
     adata = sc.read(filepath)
     get_metadata(adata).to_csv(os.path.join(output, "metadata.tsv"),
                                sep="\t", index=False, na_rep='None')
-    get_degs(adata).to_csv(os.path.join(output, "degs.tsv"),
-                           sep="\t", index=False, na_rep='None')
-    get_probabilities(adata).to_csv(os.path.join(
-        output, "probabilities.tsv"), sep="\t", index=False, na_rep='None')
+    with open(os.path.join(output, "filters.json"), 'w') as f:
+        json.dump(get_filter(adata), f, indent=4)
+    # get_degs(adata).to_csv(os.path.join(output, "degs.tsv"),
+    #                        sep="\t", index=False, na_rep='None')
+    # get_probabilities(adata).to_csv(os.path.join(
+    #     output, "probabilities.tsv"), sep="\t", index=False, na_rep='None')
 
 
 if __name__ == "__main__":
@@ -162,11 +167,11 @@ if __name__ == "__main__":
     output_html = os.path.join(app_dir, "build", "pictcr.html")
     output = open(output_html, "w")
 
-    js_txt = open(os.path.join(app_dir, "build", "main.js"), 'r').read()
-    css_txt = open(os.path.join(app_dir, "build", "main.css"), 'r').read()
+    # js_txt = open(os.path.join(app_dir, "build", "main.js"), 'r').read()
+    # css_txt = open(os.path.join(app_dir, "build", "main.css"), 'r').read()
 
-    # html = html.replace('<script src="./main.js"></script>', f"<script>{js_txt}</script>")
-    # html = html.replace('<link href="./main.css" rel="stylesheet">', f"<style>{css_txt}</style>")
+    # # html = html.replace('<script src="./main.js"></script>', f"<script>{js_txt}</script>")
+    # # html = html.replace('<link href="./main.css" rel="stylesheet">', f"<style>{css_txt}</style>")
 
     output.write(html)
     output.close()

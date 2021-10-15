@@ -22,17 +22,20 @@ import * as d3 from "d3";
 // // import probabilitiesSource from "./ranked/probabilities.tsv";
 // import degsSource from "./ranked/degs3.tsv";
 
-import metadataSource from "./filters/metadata.tsv";
-import degsSource from "./filters/degs.tsv";
+// import metadataSource from "./filters/metadata.tsv";
+// import degsSource from "./filters/degs.tsv";
+// import filters from "./filters/filters.json";
 
-import filters from "./filters/filters.json";
+import metadataSource from "./peds/metadata.tsv";
+// import degsSource from "./filters/degs.tsv";
+import filters from "./peds/filters.json";
 
 const useFetchData = () => {
   const [data, setData] = useState({});
 
   useEffect(() => {
-    Promise.all([d3.tsv(metadataSource), d3.tsv(degsSource)]).then((data) => {
-      setData({ metadata: data[0], degs: data[1], filters });
+    Promise.all([d3.tsv(metadataSource)]).then((data) => {
+      setData({ metadata: data[0], degs: [], filters });
     });
   }, []);
 
