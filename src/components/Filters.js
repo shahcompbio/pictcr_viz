@@ -20,156 +20,11 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
 import makeStyles from "@mui/styles/makeStyles";
+const greyColor = "rgb(211 211 211)";
+const darkGrey = "rgb(153 153 153)";
+const fillGreen = "#47e547";
+const green = "#5fd538";
 
-// const useStyles = makeStyles({
-//   accordian: {
-//     //  background: "#f5f5f5",
-//     backgroundColor: "#e9eaed",
-//     borderRadius: 5,
-//     marginBottom: 5,
-//     "&.MuiAccordion-root:before": {
-//       top: 0,
-//     },
-//   },
-//   accordianList: {
-//     width: "100%",
-//     paddingTop: 0,
-//   },
-//   selectedAccordianItem: {
-//     backgroundColor: "#e7e7f1",
-//     fontSize: 12,
-//     paddingTop: 0,
-//     paddingBottom: 0,
-//   },
-//   accordianItem: {
-//     fontSize: 12,
-//     paddingTop: 0,
-//     paddingBottom: 0,
-//   },
-//   accordianDetails: {
-//     padding: 0,
-//     paddingLeft: 10,
-//     backgroundColor: "#f5f5f5",
-//     //marginLeft: 15,
-//   },
-//   root: {
-//     backgroundColor: "#f5f5f5",
-//     //  backgroundColor: "white",
-//     padding: 15,
-//     width: "100%",
-//     marginTop: 0,
-//     marginLeft: 15,
-//     marginBottom: 0,
-//   },
-//   rootWithMarginTop: {
-//     //  backgroundColor: "#f5f5f5",
-//     backgroundColor: "none",
-//     //  border: "#ababab",
-//     //  borderStyle: "solid",
-//     //  borderRadius: 5,
-//     //  borderWidth: 1,
-
-//     padding: 15,
-//     minWidth: 275,
-//     marginTop: 15,
-//     marginLeft: 15,
-//     marginBottom: 0,
-//   },
-//   clearButton: {
-//     float: "right",
-//     boxShadow: "none !important",
-//     backgroundColor: "#f7f8fb",
-//     border: "solid 1px",
-//   },
-//   clearSelectionWrapper: {
-//     paddingTop: 10,
-//     paddingBottom: 10,
-//     paddingLeft: 0,
-//   },
-//   heading: {
-//     marginLeft: 3,
-//   },
-//   button: {
-//     fontSize: 18,
-//     boxShadow: "none !important",
-//     backgroundColor: "#f7f8fb",
-//     border: "solid 1px",
-//   },
-//   content: {
-//     width: "100%",
-//     padding: 0,
-//     paddingBottom: "0 !important",
-//   },
-//   selectionContent: {
-//     //width: 200,
-//     padding: 10,
-//     paddingBottom: "10 !important",
-//     background: "white",
-//     border: "#ababab",
-//     borderStyle: "solid",
-//     borderRadius: 5,
-//     borderWidth: 1,
-//   },
-//   key: {
-//     fontWeight: "light",
-//     fontSize: 20,
-//     color: "#b3b3b3",
-//   },
-//   value: {
-//     fontSize: 20,
-//     color: "#81a6f9",
-//   },
-//   overallCells: {
-//     fontSize: 18,
-//     fontWeight: "bold",
-//     fontFamily: "Noto Sans",
-
-//     color: "#81a6f9",
-//     paddingTop: 5,
-//   },
-//   selectedClone: {
-//     fontSize: 28,
-//     fontFamily: "Noto Sans",
-//     color: "black",
-//   },
-//   selectedCells: {
-//     fontWeight: "bold",
-//     fontSize: 18,
-//     fontFamily: "Noto Sans",
-//     color: "black",
-//   },
-//   overallCellsValue: {
-//     fontSize: 25,
-//     fontFamily: "Noto Sans",
-//     color: "black",
-//   },
-//   popOver: { width: 350, maxWidth: 500 },
-//   bullet: {
-//     display: "inline-block",
-//     margin: "0 2px",
-//     transform: "scale(0.8)",
-//   },
-//   tabPanel: {
-//     height: 300,
-//   },
-//   tabTitle: {
-//     minWidth: "75px !important",
-//     textTransform: "none",
-//   },
-//   light: {
-//     fontFamily: "Noto Sans",
-//     fontWeight: "light",
-//   },
-//   title: {
-//     fontSize: 14,
-//     fill: "black",
-//     fontFamily: "Noto Sans",
-//     fontWeight: "bold",
-//   },
-//   pos: {
-//     marginBottom: 12,
-//   },
-// });
 const filterMapping = {
   response: "Response",
   patient: "Patient",
@@ -178,159 +33,13 @@ const filterMapping = {
   clone_id: "Clone ID",
   timepoint: "Timepoint",
 };
-const Filters = ({ filters, setFilters, selected }) => {
-  //   const classes = useStyles();
-  return (
-    <Card elevation={0}>
-      <CardContent>
-        <div style={{ height: 400, overflowY: "scroll", overflowX: "clip" }}>
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-around"
-            alignItems="flex-end"
-            style={{ marginBottom: 10 }}
-          >
-            <Grid item xs={9}>
-              <Typography varient="h4">Filters</Typography>
-            </Grid>
-            <Grid item>
-              <Button
-                variant="contained"
-                disabled={!selected}
-                // className={classes.clearButton}
-                onClick={() => setFilters(null)}
-              >
-                Clear
-              </Button>
-            </Grid>
-          </Grid>
-          <DrawerContent
-            filters={filters}
-            // classes={classes}
-            setFilters={setFilters}
-            selected={selected}
-          />
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
 
-const DrawerContent = ({ filters, classes, setFilters, selected }) => {
-  const [expanded, setExpanded] = useState({});
-
-  const handleChange = (panel) => (event, isExpanded) => {
-    var newExpanded = expanded;
-    newExpanded[panel] = isExpanded;
-    setExpanded(newExpanded);
-  };
-  return (
-    <div style={{ position: "relative" }}>
-      <div
-        style={{
-          position: "absolute",
-          marginLeft: 11,
-          borderLeft: "3px solid rgb(211 211 211)",
-          height: "100%",
-          zIndex: 10,
-        }}
-      />
-      <div
-        style={{ position: "relative", borderRight: "solid 10px transparent" }}
-      >
-        {filters
-          .filter((filter) => filter["name"] !== "clone_id")
-          .map((filter, index) => (
-            <Accordion
-              elevation={0}
-              // classes={{
-              //   root: classes.accordian,
-              // }}
-              key={"panel-" + index}
-              expanded={expanded["panel" + index]}
-              onChange={handleChange("panel" + index)}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls={"panel" + index + "bh-content"}
-                id={"panel" + index + "bh-header"}
-                key={"panel-summary-" + index}
-              >
-                <svg
-                  height="20"
-                  width="10"
-                  style={{
-                    zIndex: 20,
-                  }}
-                >
-                  <circle
-                    cx="5"
-                    cy="12"
-                    r="5"
-                    stroke="black"
-                    stroke-width="1"
-                    style={{
-                      fill:
-                        selected && selected[0] === filter["name"]
-                          ? "green"
-                          : "rgb(211 211 211)",
-                      //fill: "rgb(211 211 211)",
-                      stroke: "rgb(211 211 211)",
-                    }}
-                  />
-                </svg>
-                <Typography
-                  // className={classes.heading}
-                  key={"panel-title-" + index}
-                >
-                  {filterMapping[filter["name"]]}
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails
-                key={"panel-details-" + index}
-                //   className={classes.accordianDetails}
-              >
-                <List
-                  // className={classes.accordianList}
-                  component="nav"
-                  key={"panel-list-values-" + index}
-                >
-                  {filter["values"].map((value, i) => (
-                    <ListItem
-                      key={"panel-item-" + value}
-                      // className={
-                      //   selected && selected[1] === value
-                      //     ? classes.selectedAccordianItem
-                      //     : classes.accordianItem
-                      // }
-                      button
-                      onClick={(event) => {
-                        setFilters([filter["name"], value]);
-                      }}
-                    >
-                      <ListItemText
-                        primary={value}
-                        style={{ fontSize: 12 }}
-                        key={"panel-item-text-" + value}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </AccordionDetails>
-            </Accordion>
-          ))}
-      </div>
-    </div>
-  );
-};
-
-const Filters2 = ({ filters, selected, setFilters }) => (
+const Filters = ({ filters, selected, setFilters }) => (
   <Box
     sx={{
       width: "100%",
       maxWidth: 360,
-      bgcolor: "background.paper",
+      backgroundColor: "#f5f5f5",
       maxHeight: 400,
       overflowY: "scroll",
       overflowX: "clip",
@@ -338,25 +47,30 @@ const Filters2 = ({ filters, selected, setFilters }) => (
     }}
   >
     <List
-      sx={{ bgcolor: "background.paper" }}
+      style={{ backgroundColor: "#f5f5f5" }}
       component="div"
-      aria-labelledby="nested-list-subheader"
+      aria-labelledby="subheader"
       subheader={
-        <ListSubheader id="nested-list-subheader">
+        <ListSubheader
+          id="subheader"
+          style={{ backgroundColor: "#f5f5f5", position: "relative" }}
+        >
           <Grid
             container
             direction="row"
             justifyContent="space-around"
             alignItems="flex-end"
-            style={{ marginBottom: 10 }}
+            style={{ marginBottom: 10, backgroundColor: "#f5f5f5" }}
           >
             <Grid item xs={9}>
               <Typography varient="h4">Filters</Typography>
             </Grid>
             <Grid item>
               <Button
+                disableElevation
                 variant="contained"
                 disabled={!selected}
+                style={{ backgroundColor: "#ffffff" }}
                 onClick={() => setFilters(null)}
               >
                 Clear
@@ -394,6 +108,12 @@ const FilterDropdown = ({
   const handleClick = () => {
     setOpen(!open);
   };
+  const isSelected = selected && selected[0] === title;
+  const selectedValueIndex = isSelected
+    ? values
+        .map((value, index) => ({ v: value, index: index }))
+        .filter((v) => v["v"] === selected[1])[0]["index"]
+    : -1;
 
   return [
     <ListItemButton
@@ -406,7 +126,7 @@ const FilterDropdown = ({
     >
       <svg
         height="30"
-        width="20"
+        width="19.5"
         style={{
           zIndex: 20,
         }}
@@ -417,20 +137,19 @@ const FilterDropdown = ({
           width="3"
           height={bottom || open ? 30 : 20}
           style={{
-            fill: "rgb(211 211 211)",
-            stroke: "rgb(211 211 211)",
+            fill: isSelected ? green : greyColor,
+            stroke: isSelected ? green : greyColor,
           }}
         />
         <circle
           cx="10"
           cy="15"
-          r="5"
+          r="6"
           stroke="black"
           stroke-width="1"
           style={{
-            fill:
-              selected && selected[0] === title ? "green" : "rgb(211 211 211)",
-            stroke: "rgb(211 211 211)",
+            fill: isSelected ? green : greyColor,
+            stroke: isSelected ? green : greyColor,
           }}
         />
       </svg>
@@ -439,41 +158,150 @@ const FilterDropdown = ({
     </ListItemButton>,
     <Collapse in={open} timeout="auto" unmountOnExit>
       <List component="div" disablePadding>
-        {values.map((value) => (
-          <ListItemButton
-            style={{ display: "flex", paddingTop: 0, paddingBottom: 0 }}
-            key={`${title}-${value}`}
-            onClick={() => {
-              onValueClick([title, value]);
-            }}
-            selected={
-              selected && selected[0] === title && selected[1] === value
-            }
-          >
-            <svg
-              height="35"
-              width="20"
-              style={{
-                zIndex: 20,
+        {values.map((value, i) => {
+          const isFirstItem = i == 0;
+          const isLastItem = i === values.length - 1;
+          const isLitUp = selectedValueIndex !== -1 && i <= selectedValueIndex;
+          const isSelectedItem = isSelected && selectedValueIndex === i;
+          return (
+            <ListItemButton
+              style={{ display: "flex", paddingTop: 0, paddingBottom: 0 }}
+              key={`${title}-${value}`}
+              onClick={() => {
+                onValueClick([title, value]);
               }}
+              selected={isSelected && selected[1] === value}
             >
-              <rect
-                x="8"
-                y="0"
-                width="3"
+              <svg
                 height="35"
+                width="32"
                 style={{
-                  fill: "rgb(211 211 211)",
-                  stroke: "rgb(211 211 211)",
+                  zIndex: 20,
                 }}
+              >
+                <rect
+                  x="8"
+                  y="0"
+                  width="3"
+                  height="35"
+                  style={{
+                    fill: greyColor,
+                    stroke: greyColor,
+                  }}
+                />
+                <rect
+                  x={isFirstItem ? "5" : isLastItem ? "30" : "27"}
+                  y={isFirstItem ? "4" : isLastItem ? "-10" : "0"}
+                  width="3"
+                  rx={isFirstItem ? "10" : isLastItem ? "10" : "0"}
+                  height={isFirstItem ? "30" : isLastItem ? "25" : "35"}
+                  style={{
+                    transform: isFirstItem
+                      ? "rotate(316deg)"
+                      : isLastItem
+                      ? "rotate(49deg)"
+                      : 0,
+                    fill: isLitUp
+                      ? isLastItem
+                        ? greyColor
+                        : green
+                      : greyColor,
+                    stroke: isLitUp
+                      ? isLastItem
+                        ? greyColor
+                        : green
+                      : greyColor,
+                  }}
+                />
+                {!isFirstItem && !isLastItem && !isLitUp ? (
+                  <circle
+                    cx="28"
+                    cy="15"
+                    r="3"
+                    stroke="black"
+                    stroke-width="1"
+                    style={{
+                      stroke: darkGrey,
+                      fill: isSelectedItem ? fillGreen : darkGrey,
+                    }}
+                  />
+                ) : !isFirstItem && !isLastItem && isSelectedItem ? (
+                  <circle
+                    cx="28"
+                    cy="15"
+                    r="3"
+                    stroke="green"
+                    stroke-width="2"
+                    style={{
+                      stroke: darkGrey,
+                      fill: isSelectedItem ? fillGreen : darkGrey,
+                    }}
+                  />
+                ) : (
+                  <div />
+                )}
+                {isFirstItem && [
+                  <rect
+                    x={"27"}
+                    y={"18"}
+                    width="3"
+                    height="20"
+                    style={{
+                      fill: isLitUp ? green : greyColor,
+                      stroke: isLitUp ? green : greyColor,
+                    }}
+                  />,
+                  isLitUp && !isSelectedItem ? (
+                    <div />
+                  ) : (
+                    <circle
+                      cx="28.5"
+                      cy="18"
+                      r="3"
+                      stroke="black"
+                      stroke-width="1"
+                      style={{
+                        stroke: greyColor,
+                        fill: isSelectedItem ? fillGreen : darkGrey,
+                      }}
+                    />
+                  ),
+                ]}
+                {isLastItem && [
+                  <rect
+                    x={"27"}
+                    y={"0"}
+                    width="3"
+                    height="17"
+                    style={{
+                      fill: isLitUp ? green : greyColor,
+                      stroke: isLitUp ? green : greyColor,
+                    }}
+                  />,
+                  <circle
+                    cx="28.5"
+                    cy="15"
+                    r="3"
+                    stroke="black"
+                    stroke-width="1"
+                    style={{
+                      stroke: greyColor,
+                      fill: isSelectedItem ? fillGreen : darkGrey,
+                    }}
+                  />,
+                ]}
+              </svg>
+              <ListItemText
+                primary={value}
+                sx={{ pl: 4 }}
+                style={{ fontSize: "12px !important" }}
               />
-            </svg>
-            <ListItemText primary={value} sx={{ pl: 4 }} />
-          </ListItemButton>
-        ))}
+            </ListItemButton>
+          );
+        })}
       </List>
     </Collapse>,
   ];
 };
 
-export default Filters2;
+export default Filters;
