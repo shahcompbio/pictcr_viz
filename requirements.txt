@@ -1,3 +1,6 @@
 jinja2
 pandas
 scanpy
+flask
+flask-session
+redis
