@@ -19,6 +19,10 @@
 *.h5ad
 /src/data/**/*.json
 
+
+# server
+*.pyc
+
 # misc
 .DS_Store
 .env.local
