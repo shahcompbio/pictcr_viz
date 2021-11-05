@@ -26,8 +26,7 @@ def load(directory=None):
     # given directory, load data
     session.clear()
     if directory:
-        adata = sc.read(directory)
-        adata = adata[adata.obs["clone_id"].notnull()]
+        adata = sc.read("/" + directory)
         sc.tl.umap(adata)
 
         gene_matrix = csr_matrix(adata.X)
@@ -35,6 +34,17 @@ def load(directory=None):
 
         gene_matrix = pd.DataFrame(
             list(zip(*nonzero)), columns=['cell_idx', 'gene_idx', 'expression'])
+
+        genes = adata.var.reset_index().rename(columns={'index': 'gene_id'})
+        gene_matrix = gene_matrix.merge(
+            genes[['gene_id']], left_on='gene_idx', right_index=True)
+
+        cells = adata.obs.reset_index().rename(columns={'index': 'cell_id'})
+
+        gene_matrix = gene_matrix.merge(
+            cells[['cell_id']], left_on='cell_idx', right_index=True)
+
+        session['gene_matrix'] = gene_matrix
 
         # data = load_qc_data("/" + directory)
         # session['bins'] = get_bins_data(data)
@@ -56,6 +66,13 @@ def load(directory=None):
         #     qc_records.append(record)
 
         return 'Loaded'
+
+
+@app.route('/test')
+def test():
+    data = session['gene_matrix']
+
+    return jsonify(data[0:10].to_dict(orient="record"))
 
 
 @app.route('/ttest/<cell_ids>')
