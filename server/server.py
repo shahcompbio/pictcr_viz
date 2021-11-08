@@ -6,7 +6,10 @@ import numpy as np
 import scanpy as sc
 from scipy.sparse import csr_matrix, find
 
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app)
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
@@ -65,14 +68,18 @@ def load(directory=None):
         #     record['segs'] = cell_segs
         #     qc_records.append(record)
 
-        return 'Loaded'
+        response = jsonify(gene_matrix[0:10].to_dict(orient="record"))
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+        # return 'Loaded'
 
 
 @app.route('/test')
 def test():
     data = session['gene_matrix']
-
-    return jsonify(data[0:10].to_dict(orient="record"))
+    response = jsonify(data[0:10].to_dict(orient="record"))
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 @app.route('/ttest/<cell_ids>')
