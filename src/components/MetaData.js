@@ -200,64 +200,55 @@ const MetaData = ({
       justifyContent="flex-start"
       alignItems="stretch"
     >
-      <Grid item>
+      <Grid item style={{ marginLeft: 16 }}>
         <Header classes={classes} sample={sample} totalCount={totalCount} />
         <Divider variant="middle" style={{ marginLeft: 30 }} />
-
-        <Card className={classes.root} elevation={0}>
-          <CardContent className={classes.content}>
-            <Grid
-              container
-              direction="row"
-              justifyContent="space-around"
-              alignItems="flex-end"
-              style={{ marginBottom: 0 }}
+        <Grid
+          container
+          direction="row"
+          justifyContent="space-around"
+          alignItems="flex-end"
+          style={{
+            marginBottom: 0,
+            padding: 15,
+            marginLeft: 5,
+            //paddingRight: 5,
+          }}
+        >
+          <Grid item xs={9}>
+            {highlighted || selected ? (
+              <Typography
+                varient="h4"
+                style={{
+                  color: "black",
+                }}
+              >
+                {highlighted.length} selected
+              </Typography>
+            ) : (
+              <Typography
+                varient="h4"
+                style={{
+                  color: "grey",
+                }}
+              >
+                Selection
+              </Typography>
+            )}
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              disabled={!selected && !highlighted}
+              className={classes.clearButton}
+              onClick={() => setHighlight()}
+              disableElevation
+              style={{ backgroundColor: "#ffffff" }}
             >
-              <Grid item xs={9}>
-                {highlighted ? (
-                  <Typography
-                    varient="h4"
-                    style={{
-                      color: "black",
-                    }}
-                  >
-                    {highlighted.length} selected
-                  </Typography>
-                ) : selected ? (
-                  <Typography
-                    varient="h4"
-                    style={{
-                      color: "black",
-                    }}
-                  >
-                    {selected.length} selected
-                  </Typography>
-                ) : (
-                  <Typography
-                    varient="h4"
-                    style={{
-                      color: "grey",
-                    }}
-                  >
-                    Selection
-                  </Typography>
-                )}
-              </Grid>
-              <Grid item>
-                <Button
-                  variant="contained"
-                  disabled={!selected && !highlighted}
-                  className={classes.clearButton}
-                  onClick={() => setHighlight()}
-                  disableElevation
-                  style={{ backgroundColor: "#ffffff" }}
-                >
-                  Clear
-                </Button>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
+              Clear
+            </Button>
+          </Grid>
+        </Grid>
         <Divider variant="middle" style={{ marginLeft: 30 }} />
       </Grid>
     </Grid>

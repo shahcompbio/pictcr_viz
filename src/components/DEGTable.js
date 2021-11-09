@@ -7,6 +7,11 @@ import Button from "@mui/material/Button";
 import ClearIcon from "@mui/icons-material/Clear";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
+import Switch from "@mui/material/Switch";
+import QueryStatsIcon from "@mui/icons-material/QueryStats";
+import Avatar from "@mui/material/Avatar";
+import Tooltip from "@mui/material/Tooltip";
+
 import * as d3Dsv from "d3-dsv";
 import DataTable from "react-data-table-component";
 const formatCols = ["adj_pval", "log_fc"];
@@ -81,6 +86,14 @@ const DEGTable = ({ data, chartDim, selectedSubtype }) => {
           />
         </SearchIcon>,
         <DownloadIcon download={download} />,
+        <Avatar
+          style={{ width: 30, height: 30, marginRight: 10 }}
+          variant="rounded"
+        >
+          <Tooltip title={"T-Test"} arrow>
+            <QueryStatsIcon sx={{ fontSize: 30 }} />
+          </Tooltip>
+        </Avatar>,
       ]}
     >
       <Grid
