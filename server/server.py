@@ -1,12 +1,17 @@
-from flask import Flask, session, jsonify
+from flask import Flask, session, jsonify, request
 from flask_session import Session
 import redis
 import pandas as pd
 import numpy as np
 import scanpy as sc
 from scipy.sparse import csr_matrix, find
+import statistics
+from scipy.stats import ttest_ind
+import statsmodels.stats.multitest as smt
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
@@ -71,12 +76,32 @@ def load(directory=None):
 @app.route('/test')
 def test():
     data = session['gene_matrix']
+    lasso_ids = ["Pre_P1_C1_P4_M11"]
+    lasso_dict = { cell_id : True for cell_id in lasso_ids }
 
-    return jsonify(data[0:10].to_dict(orient="record"))
+    included = []
+    excluded = []
+    all_data = data.to_dict(orient="record")
 
+    for d in all_data:
+        if  d["cell_id"] in lasso_dict:
+            included.append(d)
+        else:
+            excluded.append(d)
+
+    included_exp = [ exp["expression"] for exp in included]
+    excluded_exp = [ exp["expression"] for exp in excluded]
+    mean_included = statistics.mean(included_exp)
+    mean_excluded = statistics.mean(excluded_exp)
+
+    t = ttest_ind(mean_included,mean_excluded)
+
+    p_val = t.pvalue
+    response = jsonify({"p": p_val, "mean_included": mean_included, "mean_excluded": mean_excluded, "table_included":included })
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 @app.route('/ttest/<cell_ids>')
 def ttest(cell_ids):
     # data = session['genes']
-
     return []
