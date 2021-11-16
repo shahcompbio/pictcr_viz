@@ -17,7 +17,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles({
   accordian: {
@@ -77,7 +77,8 @@ const useStyles = makeStyles({
     float: "right",
     boxShadow: "none !important",
     backgroundColor: "#f7f8fb",
-    border: "solid 1px",
+    marginRight: 7,
+    //  border: "solid 1px",
   },
   clearSelectionWrapper: {
     paddingTop: 10,
@@ -102,7 +103,7 @@ const useStyles = makeStyles({
     //width: 200,
     padding: 10,
     paddingBottom: "10 !important",
-    background: "white",
+    background: "#f5f5f5",
     border: "#ababab",
     borderStyle: "solid",
     borderRadius: 5,
@@ -248,6 +249,8 @@ const MetaData = ({
                   disabled={!selected && !highlighted}
                   className={classes.clearButton}
                   onClick={() => setHighlight()}
+                  disableElevation
+                  style={{ backgroundColor: "#ffffff" }}
                 >
                   Clear
                 </Button>
@@ -272,7 +275,12 @@ const Header = ({ classes, sample, totalCount }) => (
       <Typography>Sample:</Typography>
       <Typography>{sample}</Typography>
     </Grid>
-    <Grid container direction="row" justifyContent="flex-start" alignItems="stretch">
+    <Grid
+      container
+      direction="row"
+      justifyContent="flex-start"
+      alignItems="stretch"
+    >
       <Typography>Data Points:</Typography>
       <Typography>{totalCount}</Typography>
     </Grid>

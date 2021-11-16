@@ -4,7 +4,7 @@ import * as d3 from "d3";
 import { useD3, DownloadIcon } from "@shahlab/planetarium";
 import _ from "lodash";
 
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 import { Layout } from "@shahlab/planetarium";
 import Tooltip from "@mui/material/Tooltip";
@@ -20,7 +20,11 @@ const useStyles = makeStyles((theme) => ({
   tooltip: {
     minWidth: 220,
   },
-  tooltipWrapper: { position: "relative", width: "10px", height: "10px" },
+  tooltipWrapper: {
+    position: "relative",
+    width: "10px",
+    height: "10px",
+  },
 }));
 
 const download = async (ref, width, height) => {
@@ -181,6 +185,8 @@ const Sunburst = ({
       .attr("transform", `translate(${width / 2},${height / 2})`);
 
     var small = {};
+
+    d3.select(tooltipRef.current).style("pointer-events", "none");
 
     const path = g
       .append("g")
@@ -397,6 +403,7 @@ const Sunburst = ({
           <Tooltip
             PopperProps={{
               disablePortal: true,
+              style: { pointerEvents: "none" },
             }}
             classes={{ tooltip: classes.tooltip }}
             arrow
