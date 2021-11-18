@@ -1,89 +1,117 @@
-from flask import Flask, session, jsonify
+from flask import Flask, session, jsonify, request, make_response
 from flask_session import Session
+from datetime import timedelta
 import redis
 import pandas as pd
 import numpy as np
 import scanpy as sc
 from scipy.sparse import csr_matrix, find
+import statistics
+from scipy.stats import ttest_ind
+import statsmodels.stats.multitest as smt
+from flask_cors import CORS, cross_origin
 
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_PERMANENT'] = True
 app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_COOKIE_NAME'] = "permanent_cookie"
 app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=5)
+
+app.secret_key = "test"
 server_session = Session(app)
 
-app.secret_key = "pictctrtest"
+@app.route('/isLoaded/')
+def isLoaded():
+    response = jsonify({"data":False})
+    if 'gene_matrix' in session:
+        data = session['gene_matrix']
+
+        response = jsonify({"data":True})
+        #response = jsonify(data[0:100].to_dict(orient="record"))
+
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3001')
+    return response
 
 
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
+@app.route('/table/')
+def table():
+    data = session['gene_matrix']
+    response = jsonify(data[0:100].to_dict(orient="record"))
 
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3001')
+
+    return response
+
+@app.route('/testing/<path:included>/')
+def testing(included=None):
+    if included:
+        included = included.split(",")
+        adata = session['gene_matrix']
+        gene_matrix = csr_matrix(adata.X)
+        nonzero = find(gene_matrix)
+
+        inc = []
+        for d in adata.obs.index.tolist():
+            if  d in included:
+                inc.append("included")
+            else:
+                inc.append("excluded")
+        adata.obs["included"] = inc
+
+        sc.tl.rank_genes_groups(adata,"included")
+
+        logfc = list(zip(*adata.uns['rank_genes_groups']["logfoldchanges"].tolist()))
+        genes = list(zip(*adata.uns['rank_genes_groups']["names"].tolist()))
+        adjpvals = list(zip(*adata.uns['rank_genes_groups']["pvals_adj"].tolist()))
+        order = ["included","excluded"]
+
+
+        timepoint = sc.tl.rank_genes_groups(adata,"included")
+
+        final = []
+
+        for cond,fcs,gene,pvalues in zip(order,logfc,genes,adjpvals):
+            for fc, g, pval in zip(fcs,gene,pvalues):
+                pre = adata[adata.obs["included"]=="included"]
+                post = adata[adata.obs["included"]=="excluded"]
+                premean = np.mean(pre.X[:,pre.var.index.tolist().index(g)])
+                postmean = np.mean(post.X[:,post.var.index.tolist().index(g)])
+                if str(fc) == "nan":
+                    if premean < postmean:
+                        fc = "*+"
+                    if premean > postmean:
+                        fc = "*-"
+                if (pval != 0):
+                    final.append({"gene":g, "includedMean":str(premean),"excludedMean":str(postmean),"fc":str(fc),"p":str(pval)})
+        final = sorted(final, key=lambda x: float(x['p']))
+        response = jsonify({"data":final})
+    else:
+        response = jsonify({"data":"None"})
+        print("none")
+
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3001")
+    return response
 
 @app.route('/load/<path:directory>/')
 def load(directory=None):
     # given directory, load data
-    session.clear()
+    response = jsonify({"data":False})
     if directory:
         adata = sc.read("/" + directory)
-        sc.tl.umap(adata)
-
-        gene_matrix = csr_matrix(adata.X)
-        nonzero = find(gene_matrix)
-
-        gene_matrix = pd.DataFrame(
-            list(zip(*nonzero)), columns=['cell_idx', 'gene_idx', 'expression'])
-
-        genes = adata.var.reset_index().rename(columns={'index': 'gene_id'})
-        gene_matrix = gene_matrix.merge(
-            genes[['gene_id']], left_on='gene_idx', right_index=True)
-
-        cells = adata.obs.reset_index().rename(columns={'index': 'cell_id'})
-
-        gene_matrix = gene_matrix.merge(
-            cells[['cell_id']], left_on='cell_idx', right_index=True)
-
-        session['gene_matrix'] = gene_matrix
-
-        # data = load_qc_data("/" + directory)
-        # session['bins'] = get_bins_data(data)
-        # gc_bias = get_gc_bias_data(data)
-        # segs = get_segs_data(data)
-        # qc = get_qc_data(data)
-
-        # grouped_segs = segs.groupby(['id'])
-
-        # qc_records = []
-        # for record in qc.to_dict(orient="records"):
-        #     clean_nans(record)
-        #     cell_segs = []
-        #     for seg_record in grouped_segs.get_group(record['id']).to_dict(orient='record'):
-        #         clean_nans(seg_record)
-        #         cell_segs.append(seg_record)
-
-        #     record['segs'] = cell_segs
-        #     qc_records.append(record)
-
-        response = jsonify(gene_matrix[0:10].to_dict(orient="record"))
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        return response
-        # return 'Loaded'
+        session['gene_matrix'] = adata
+        response = jsonify({"data":True})
 
 
-@app.route('/test')
-def test():
-    data = session['gene_matrix']
-    response = jsonify(data[0:10].to_dict(orient="record"))
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Credentials", "true")
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3001")
+
     return response
-
-
-@app.route('/ttest/<cell_ids>')
-def ttest(cell_ids):
-    # data = session['genes']
-
-    return []

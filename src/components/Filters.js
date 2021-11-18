@@ -60,6 +60,7 @@ const Filters = ({ filters, selected, setFilters }) => (
             direction="row"
             justifyContent="space-around"
             alignItems="flex-end"
+            wrap="nowrap"
             style={{ marginBottom: 10, backgroundColor: "#f5f5f5" }}
           >
             <Grid item xs={9}>

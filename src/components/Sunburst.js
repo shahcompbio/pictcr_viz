@@ -15,6 +15,13 @@ import { INFO } from "../config";
 import { jsPDF } from "jspdf";
 import canvg from "canvg";
 
+const b = {
+  w: 75,
+  h: 30,
+  s: 3,
+  t: 10,
+};
+
 const ANGLE = 0.01;
 const useStyles = makeStyles((theme) => ({
   tooltip: {
@@ -176,6 +183,15 @@ const Sunburst = ({
     return small;
   };
 
+  const drawBreadCrumbs = (svg) => {
+    var trail = svg
+      .append("svg")
+      .attr("width", 100)
+      .attr("height", 300)
+      .attr("id", "trail");
+    trail.append("text").attr("id", "endlabel").style("fill", "#000");
+  };
+
   const drawArea = (svg, setIsTooltipOpen, setHoveredItem, colors) => {
     const root = partition(hierarchy);
     root.each((d) => (d.current = d));
@@ -289,10 +305,86 @@ const Sunburst = ({
       .attr("pointer-events", "all")
       .on("click", clicked);
 
+    function breadcrumbPoints(d, i) {
+      var points = [];
+      points.push("0,0");
+      points.push(b.w + ",0");
+      points.push(b.w + b.t + "," + b.h / 2);
+      points.push(b.w + "," + b.h);
+      points.push("0," + b.h);
+      if (i > 0) {
+        // Leftmost breadcrumb; don't include 6th vertex.
+        points.push(b.t + "," + b.h / 2);
+      }
+      // debugger;
+      return points.join(" ");
+    }
+    function updateBreadcrumbs(nodeArray, percentageString) {
+      // Data join; key function combines name and depth (= position in sequence).
+      var g = d3
+        .select("#trail")
+        .selectAll("g")
+        .data(nodeArray, function (d) {
+          return d.data.name + d.depth;
+        });
+
+      // Add breadcrumb and label for entering nodes.
+      var entering = g
+        .enter()
+        .append("g")
+        .attr("transform", function (d, i) {
+          return "translate(0, " + i * (b.h + b.s) + ")";
+        });
+
+      entering
+        .append("polygon")
+        .attr("points", breadcrumbPoints)
+        .style("fill", function (d) {
+          console.log(d);
+          return colorScale(d.data.name);
+        });
+
+      entering
+        .append("text")
+        .attr("x", (b.w + b.t) / 2)
+        .attr("y", b.h / 2)
+        .attr("dy", "0.35em")
+        .attr("text-anchor", "middle")
+        .text(function (d) {
+          return d.data.name;
+        });
+
+      // Set position for entering and updating nodes.
+
+      // Remove exiting nodes.
+      g.exit().remove();
+
+      // Now move and update the percentage at the end.
+      d3.select("#trail")
+        .select("#endlabel")
+        .attr("x", b.w / 2)
+        .attr("y", (nodeArray.length + 0.5) * (b.h + b.s))
+        .attr("dy", "0.35em")
+        .attr("text-anchor", "middle")
+        .text("Count:" + percentageString);
+
+      // Make the breadcrumb trail visible, if it's hidden.
+      d3.select("#trail").style("visibility", "");
+    }
+
     function mouseout(d, i) {
       setHoverItem(null);
       setIsTooltipOpen(false);
       setRootParent(null);
+    }
+    function getAncestors(node) {
+      var path = [];
+      var current = node;
+      while (current.parent) {
+        path.unshift(current);
+        current = current.parent;
+      }
+      return path;
     }
     function mouseover(d, i) {
       const arcLocation = arc.centroid(d.current, i);
@@ -304,7 +396,14 @@ const Sunburst = ({
         .transition()
         .style("left", arcLocation[0] + width / 2 + "px")
         .style("top", arcLocation[1] + height / 2 + "px");
+      console.log(totalCount);
+      var sizeCount = d.data.children.length;
+
+      var sequenceArray = getAncestors(d);
+
+      updateBreadcrumbs(sequenceArray, sizeCount);
     }
+
     function clicked(p) {
       parent.datum(p.parent || root);
 
@@ -381,6 +480,8 @@ const Sunburst = ({
   const ref = useD3(
     (svg) => {
       drawArea(svg, setIsTooltipOpen, setHoverItem, colors);
+
+      drawBreadCrumbs(svg);
     },
     width,
     height,

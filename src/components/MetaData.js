@@ -51,7 +51,7 @@ const useStyles = makeStyles({
     //marginLeft: 15,
   },
   root: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#f5f5f5 !important",
     //  backgroundColor: "white",
     padding: 15,
     width: "100%",
@@ -77,7 +77,7 @@ const useStyles = makeStyles({
     float: "right",
     boxShadow: "none !important",
     backgroundColor: "#f7f8fb",
-    marginRight: 7,
+
     //  border: "solid 1px",
   },
   clearSelectionWrapper: {
@@ -98,12 +98,13 @@ const useStyles = makeStyles({
     width: "100%",
     padding: 0,
     paddingBottom: "0 !important",
+    backgroundColor: "none",
   },
   selectionContent: {
     //width: 200,
     padding: 10,
     paddingBottom: "10 !important",
-    background: "#f5f5f5",
+    //background: "#f5f5f5",
     border: "#ababab",
     borderStyle: "solid",
     borderRadius: 5,
@@ -204,13 +205,18 @@ const MetaData = ({
         <Header classes={classes} sample={sample} totalCount={totalCount} />
         <Divider variant="middle" style={{ marginLeft: 30 }} />
 
-        <Card className={classes.root} elevation={0}>
+        <Card
+          className={classes.root}
+          elevation={0}
+          style={{ backgroundColor: "none !important" }}
+        >
           <CardContent className={classes.content}>
             <Grid
               container
               direction="row"
               justifyContent="space-around"
               alignItems="flex-end"
+              wrap="nowrap"
               style={{ marginBottom: 0 }}
             >
               <Grid item xs={9}>
@@ -243,7 +249,7 @@ const MetaData = ({
                   </Typography>
                 )}
               </Grid>
-              <Grid item>
+              <Grid item style={{ marginRight: 10 }}>
                 <Button
                   variant="contained"
                   disabled={!selected && !highlighted}

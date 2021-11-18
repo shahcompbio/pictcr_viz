@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import _ from "lodash";
 import * as d3 from "d3";
 
@@ -70,12 +70,32 @@ export const VDJ = ({ metadata, degs, filters }) => {
 
   const [selectFilters, setSelectFilters] = useState(null);
 
+  const [tTestData, settTestData] = useState([]);
   const data =
     selectFilters === null
       ? metadata
       : metadata.filter(
           (datum) => datum[selectFilters[0]] === selectFilters[1]
         );
+
+  useEffect(() => {
+    if (selectIDs !== null) {
+      if (selectIDs.length !== 0) {
+        const param = selectIDs.join(",");
+        fetch("http://127.0.0.1:5000/testing/" + param + "/", {
+          credentials: "include",
+        })
+          .then((res) => res.json())
+          .then((result) => {
+            if (result.data) {
+              settTestData(result.data);
+            }
+          });
+      } else {
+        settTestData([]);
+      }
+    }
+  }, [selectIDs]);
 
   // Remove none
   const clonotypeCounts = _.countBy(
@@ -145,6 +165,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
           direction="column"
           justifyContent="flex-start"
           alignItems="flex-start"
+          style={{ xOverflow: "none" }}
         >
           <Grid
             container
@@ -229,13 +250,15 @@ export const VDJ = ({ metadata, degs, filters }) => {
                       otherSubsetParam={clonotypeParam}
                       subsetParam={subset}
                       Select={
-                        <Select
-                          width={200}
-                          title={"Color By"}
-                          value={subset}
-                          options={filters.map((datum) => datum["name"])}
-                          onSelect={setSubset}
-                        />
+                        <span style={{ marginRight: 10 }}>
+                          <Select
+                            width={200}
+                            title={"Color By"}
+                            value={subset}
+                            options={filters.map((datum) => datum["name"])}
+                            onSelect={setSubset}
+                          />
+                        </span>
                       }
                     />
                   </Grid>
@@ -300,15 +323,84 @@ export const VDJ = ({ metadata, degs, filters }) => {
               disable={activeGraph !== null && activeGraph !== "phenoUMAP"}
               highlightIDs={highlightIDs}
               Select={
-                <Select
-                  width={200}
-                  title={"Color By"}
-                  value={subset}
-                  options={filters.map((datum) => datum["name"])}
-                  onSelect={setSubset}
-                />
+                <span style={{ marginRight: 10 }}>
+                  <Select
+                    width={200}
+                    title={"Color By"}
+                    value={subset}
+                    options={filters.map((datum) => datum["name"])}
+                    onSelect={setSubset}
+                  />
+                </span>
               }
+              tTestData={tTestData}
             />
+          </Grid>
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-end"
+          >
+            <Layout
+              title={INFO["HEATMAP"]["title"]}
+              infoText={INFO["HEATMAP"]["text"]}
+            >
+              <Heatmap
+                width={750}
+                height={550}
+                font={"MyFontLight"}
+                data={probabilities}
+                column={clonotypeParam}
+                row={subtypeParam}
+                highlightedRow={selectPhenotype}
+                highlightedColumn={selectClone}
+                columnLabels={clonotypeLabels}
+                rowTotal={subtypeTotals}
+              />
+            </Layout>
+            <ClonotypeExpansion
+              chartName={"BARPLOT"}
+              data={probabilities}
+              width={750}
+              height={550}
+              highlightedRow={selectPhenotype}
+            />
+          </Grid>
+          <Grid
+            item
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
+            <Layout
+              title={INFO["HISTOGRAM"]["title"]}
+              infoText={INFO["HISTOGRAM"]["text"]}
+            >
+              <ProbabilityHistogram
+                data={probabilities}
+                width={750}
+                height={500}
+                probParam={logProbParam}
+                subgroupParam={subtypeParam}
+                observationParam={clonotypeParam}
+                highlightedObservation={selectClone}
+                highlightedSubgroup={selectPhenotype}
+              />
+            </Layout>
+            <Layout
+              title={INFO["RANKED"]["title"]}
+              infoText={INFO["RANKED"]["text"]}
+            >
+              <RankedOrder
+                width={800}
+                height={500}
+                data={probabilities}
+                highlight={selectPhenotype}
+              />
+            </Layout>
           </Grid>
           {/* <Grid
             item

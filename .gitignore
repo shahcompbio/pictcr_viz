@@ -7,6 +7,9 @@
 /venv
 /__pycache__
 
+/server/flask/*
+/server/env/*
+
 # testing
 /coverage
 

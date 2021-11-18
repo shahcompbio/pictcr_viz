@@ -5,6 +5,8 @@ import { INFO } from "../config.js";
 import { Layout, UMAP } from "@shahlab/planetarium";
 import { CircularProgress } from "@mui/material";
 
+import TtestResults from "./TtestResults";
+
 const PhenotypeUMAP = ({
   data,
   xParam,
@@ -17,6 +19,8 @@ const PhenotypeUMAP = ({
   disable,
   highlightIDs,
   Select,
+  loadingTest,
+  tTestData,
 }) => {
   return (
     <Layout
@@ -34,31 +38,18 @@ const PhenotypeUMAP = ({
         idParam={idParam}
         colorScale={colorScale}
         onLasso={onLasso}
-        fontFamily={"Noto Sans"}
         onLegendClick={onLegendClick}
         disable={disable}
         highlightIDs={highlightIDs}
+        MoreInfoComponent={() => (
+          <TtestResults
+            data={tTestData}
+            count={highlightIDs ? highlightIDs.length : null}
+          />
+        )}
       />
     </Layout>
   );
 };
-/*      <div
-        style={{
-          position: "absolute",
-          width: 700,
-          height: 600,
-          background: "#f8f8f",
-          marginTop: 250,
-        }}
-      >
-        <CircularProgress size={150} thickness={7} />
-      </div>
-      <div
-        style={{
-          filter: "blur(3px)",
-          opacity: 0.3,
-        }}
-      >
-        {componentUmap}
-      </div>*/
+
 export default PhenotypeUMAP;
