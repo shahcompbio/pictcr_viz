@@ -7,7 +7,10 @@ const App = () => {
 
   useEffect(() => {
     fetch(
-      "http://127.0.0.1:5000/load/Users/leungs1/Desktop/pictcr_viz/src/data/hacohen_viz.h5ad"
+      "http://127.0.0.1:5000/l/Users/vbojilova/Projects/pictcr_viz/src/data/hacohen_viz.h5ad",
+      {
+        credentials: "include",
+      }
     )
       .then((res) => res.json())
       .then(

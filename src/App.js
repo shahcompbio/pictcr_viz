@@ -13,5 +13,5 @@ const DevApp = () => {
 
 const ProdApp = () => <App data={window.isablData} />;
 
-export default Test;
-// export default process.env.NODE_ENV === "development" ? DevApp : ProdApp;
+//export default Test;
+export default process.env.NODE_ENV === "development" ? DevApp : ProdApp;

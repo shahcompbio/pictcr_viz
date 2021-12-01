@@ -118,38 +118,41 @@ def get_probabilities(adata):
     df = df.reset_index(drop=True)
 
     return df
-
-# metadata = pd.read_csv(os.path.join(data_dir, "metadata.tsv"), sep="\t")
-# metadata = metadata.to_dict('records')
-
-# probabilities = pd.read_csv(os.path.join(data_dir, "probabilities.tsv"), sep="\t")
-# probabilities = probabilities.to_dict("records")
-
-# degs = pd.read_csv(os.path.join(data_dir, "degs.tsv"), sep="\t")
-# degs = degs.to_dict("records")
+    # metadata = pd.read_csv(os.path.join(data_dir, "metadata.tsv"), sep="\t")
+    # metadata = metadata.to_dict('records')
+    #
+    # probabilities = pd.read_csv(os.path.join(data_dir, "probabilities.tsv"), sep="\t")
+    # probabilities = probabilities.to_dict("records")
+    #
+    # degs = pd.read_csv(os.path.join(data_dir, "degs.tsv"), sep="\t")
+    # degs = degs.to_dict("records")
 
 # data = {
 #     "metadata": metadata,
 #     "probabilities": probabilities,
 #     "degs": degs
 # }
-
+    #return df
 
 def output_data(filepath, output):
     adata = sc.read(filepath)
-    get_metadata(adata).to_csv(os.path.join(output, "metadata.tsv"),
-                               sep="\t", index=False, na_rep='None')
-    get_degs(adata).to_csv(os.path.join(output, "degs.tsv"),
-                           sep="\t", index=False, na_rep='None')
-    get_probabilities(adata).to_csv(os.path.join(
-        output, "probabilities.tsv"), sep="\t", index=False, na_rep='None')
+    #get_metadata(adata).to_csv(os.path.join(output, "metadata.tsv"),
+    #                           sep="\t", index=False, na_rep='None')
+    #get_degs(adata).to_csv(os.path.join(output, "degs.tsv"),
+    #                       sep="\t", index=False, na_rep='None')
+    f = get_filter(adata)
+    print(f)
+    with open('filters.json', 'w') as file:
+     json.dumps(f)
+    #get_probabilities(adata).to_csv(os.path.join(
+    #    output, "probabilities.tsv"), sep="\t", index=False, na_rep='None')
 
 
 if __name__ == "__main__":
     filename = sys.argv[1]
 
-    # output = sys.argv[2]
-    # output_data(filename, output)
+    #output = sys.argv[2]
+    #output_data(filename, output)
     data = get_data(filename)
     data = json.dumps(data, indent=4)
 
