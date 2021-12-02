@@ -28,7 +28,6 @@ app.secret_key = "test"
 server_session = Session(app)
 
 @app.route('/isLoaded/')
-@cross_origin(supports_credentials=True)
 def isLoaded():
     response = jsonify({"data":False})
     if 'gene_matrix' in session:
@@ -38,7 +37,8 @@ def isLoaded():
         #response = jsonify(data[0:100].to_dict(orient="record"))
 
     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add("Access-Control-Allow-Origin",request.environ['HTTP_ORIGIN'])
+    #response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     return response
 
 
@@ -49,7 +49,8 @@ def table():
     response = jsonify(data[0:100].to_dict(orient="record"))
 
     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add("Access-Control-Allow-Origin",request.environ['HTTP_ORIGIN'])
+    #response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
 
     return response
 
@@ -110,7 +111,8 @@ def testing(included=None):
         print("none")
 
     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+    response.headers.add("Access-Control-Allow-Origin",request.environ['HTTP_ORIGIN'])
+    #response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
     return response
 
 @app.route('/l/<path:directory>/')
@@ -124,6 +126,7 @@ def load(directory=None):
         response = jsonify({"data":True})
 
     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+    response.headers.add("Access-Control-Allow-Origin",request.environ['HTTP_ORIGIN'])
+    #response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
 
     return response

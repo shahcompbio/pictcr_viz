@@ -82,14 +82,45 @@ export const VDJ = ({ metadata, degs, filters }) => {
     if (selectIDs !== null) {
       if (selectIDs.length !== 0) {
         const param = selectIDs.join(",");
-        fetch("http://127.0.0.1:5000/testing/" + param + "/", {
+        fetch("http://localhost:5000/isLoaded/", {
           credentials: "include",
         })
           .then((res) => res.json())
           .then((result) => {
-            if (result.data) {
-              settTestData(result.data);
+            if (!result.data) {
+              console.log("loading");
+              //    "http://localhost:5000/l/home/ceglian/pictcr_viz/src/data/hacohen_viz.h5ad",
+              //"http://localhost:5000/l/Users/vbojilova/Projects/pictcr_viz/src/data/hacohen_viz.h5ad/"
+              fetch(
+                "http://localhost:5000/l/home/ceglian/pictcr_viz/src/data/hacohen_viz.h5ad/",
+                {
+                  credentials: "include",
+                }
+              )
+                .then((res) => res.json())
+                .then((result) => {
+                  fetch("http://localhost:5000/testing/" + param + "/", {
+                    credentials: "include",
+                  })
+                    .then((res) => res.json())
+                    .then((result) => {
+                      if (result.data) {
+                        settTestData(result.data);
+                      }
+                    });
+                });
+            } else {
+              fetch("http://localhost:5000/testing/" + param + "/", {
+                credentials: "include",
+              })
+                .then((res) => res.json())
+                .then((result) => {
+                  if (result.data) {
+                    settTestData(result.data);
+                  }
+                });
             }
+            console.log(result);
           });
       } else {
         settTestData([]);
