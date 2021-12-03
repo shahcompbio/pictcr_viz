@@ -61,9 +61,10 @@ const Filters = ({ filters, selected, setFilters }) => (
             justifyContent="space-around"
             alignItems="flex-end"
             wrap="nowrap"
+            spacing={2}
             style={{ marginBottom: 10, backgroundColor: "#f5f5f5" }}
           >
-            <Grid item xs={9}>
+            <Grid item xs={8}>
               <Typography varient="h4">Filters</Typography>
             </Grid>
             <Grid item>
@@ -198,7 +199,7 @@ const FilterDropdown = ({
                   height={isFirstItem ? "30" : isLastItem ? "25" : "35"}
                   style={{
                     transform: isFirstItem
-                      ? "rotate(316deg)"
+                      ? "rotate(314deg)"
                       : isLastItem
                       ? "rotate(49deg)"
                       : 0,
@@ -216,13 +217,13 @@ const FilterDropdown = ({
                 />
                 {!isFirstItem && !isLastItem && !isLitUp ? (
                   <circle
-                    cx="28"
+                    cx="28.5"
                     cy="15"
                     r="3"
                     stroke="black"
                     stroke-width="1"
                     style={{
-                      stroke: darkGrey,
+                      stroke: greyColor,
                       fill: isSelectedItem ? fillGreen : darkGrey,
                     }}
                   />

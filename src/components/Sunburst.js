@@ -3,6 +3,7 @@ import React, { useState, useRef, Fragment } from "react";
 import * as d3 from "d3";
 import { useD3, DownloadIcon } from "@shahlab/planetarium";
 import _ from "lodash";
+import { rgb } from "d3-color";
 
 import makeStyles from "@mui/styles/makeStyles";
 
@@ -340,8 +341,13 @@ const Sunburst = ({
         .append("polygon")
         .attr("points", breadcrumbPoints)
         .style("fill", function (d) {
-          console.log(d);
-          return colorScale(d.data.name);
+          if (d.depth === 1) {
+            return colorScale(d.data.name);
+          } else {
+            var color = rgb(colorScale(d.parent.data.name));
+            color.opacity = 0.6;
+            return color;
+          }
         });
 
       entering
@@ -396,7 +402,7 @@ const Sunburst = ({
         .transition()
         .style("left", arcLocation[0] + width / 2 + "px")
         .style("top", arcLocation[1] + height / 2 + "px");
-      console.log(totalCount);
+
       var sizeCount = d.data.children.length;
 
       var sequenceArray = getAncestors(d);
