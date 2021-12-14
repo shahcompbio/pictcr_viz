@@ -39,7 +39,7 @@ const TtestResults = ({ data, type, isLoading, count }) =>
           sx={{
             display: "flex",
             height: 250,
-            width: 170,
+            width: 150,
             paddingTop: 25,
             justifyContent: "space-evenly",
           }}
