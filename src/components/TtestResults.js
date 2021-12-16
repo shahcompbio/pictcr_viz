@@ -25,8 +25,10 @@ const useStyles = makeStyles((theme) => ({
   root: {},
 }));
 
-const TtestResults = ({ data, type, isLoading, count }) =>
-  count ? (
+const TtestResults = ({ data, type, isLoading, count }) => {
+  console.log(count);
+  console.log(data);
+  return count ? (
     <div style={{ height: 400, overflowY: "scroll", overflowX: "none" }}>
       <Typography color="textSecondary" gutterBottom>
         <b>{count}</b> cells selected
@@ -74,5 +76,6 @@ const TtestResults = ({ data, type, isLoading, count }) =>
   ) : (
     <div />
   );
+};
 
 export default TtestResults;
