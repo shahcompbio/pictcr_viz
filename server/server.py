@@ -34,7 +34,6 @@ def isLoaded():
         data = session['gene_matrix']
 
         response = jsonify({"data":True})
-        #response = jsonify(data[0:100].to_dict(orient="record"))
 
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     #response.headers.add("Access-Control-Allow-Origin",request.environ['HTTP_ORIGIN'])
@@ -59,8 +58,6 @@ adata = sc.read("")
 def testing(included=None):
     if included:
         included = included.split(",")
-
-        #adata = session['gene_matrix']
 
         adata.obs["included"] = adata.obs.index.isin(included)
         adata.obs['included'] = adata.obs.apply(lambda x: "included" if x.included else "excluded", axis=1)
@@ -88,7 +85,6 @@ def testing(included=None):
 
 @app.route('/l/<path:directory>/')
 def load(directory=None):
-    # given directory, load data
     response = jsonify({"data":False})
     print(request.environ['HTTP_ORIGIN'])
     if directory:
