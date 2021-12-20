@@ -26,8 +26,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TtestResults = ({ data, type, isLoading, count }) => {
-  console.log(count);
-  console.log(data);
   return count ? (
     <div style={{ height: 400, overflowY: "scroll", overflowX: "none" }}>
       <Typography color="textSecondary" gutterBottom>
