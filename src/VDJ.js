@@ -55,7 +55,8 @@ const DataWrapper = ({ data }) => (
     degs={data["degs"]}
   />
 );
-
+//const url = "https://spectrum-staging.shahlab.mskcc.org";
+const url = process.env.HOST ? process.env.HOST : "http://localhost:5000";
 export const VDJ = ({ metadata, degs, filters }) => {
   const { clonotypeParam, subtypeParam, logProbParam, xParam, yParam } =
     CONSTANTS;
@@ -82,8 +83,10 @@ export const VDJ = ({ metadata, degs, filters }) => {
     if (selectIDs !== null) {
       if (selectIDs.length !== 0) {
         const param = selectIDs.join(",");
-        fetch("http://localhost:5000/testing/" + param + "/", {
+        fetch(url + "/ttest/", {
+          method: "POST",
           credentials: "include",
+          body: JSON.stringify({ data: param }),
         })
           .then((res) => res.json())
           .then((result) => {
@@ -91,49 +94,6 @@ export const VDJ = ({ metadata, degs, filters }) => {
               settTestData(result.data);
             }
           });
-
-        /*  fetch("http://localhost:5000/isLoaded/", {
-          credentials: "include",
-        })
-          .then((res) => res.json())
-          .then((result) => {
-            if (!result.data) {
-              console.log("loading");
-
-              fetch(
-                "http://localhost:5000/l/Users/vbojilova/Projects/pictcr_viz/src/data/hacohen_viz.h5ad/",
-                {
-                  credentials: "include",
-                }
-              )
-                .then((res) => res.json())
-                .then((result) => {
-                  fetch("http://localhost:5000/testing/" + param + "/", {
-                    credentials: "include",
-                  })
-                    .then((res) => res.json())
-                    .then((result) => {
-                      if (result.data) {
-                        settTestData(result.data);
-                      }
-                    });
-                });
-            } else {
-              fetch("http://localhost:5000/testing/" + param + "/", {
-                credentials: "include",
-              })
-                .then((res) => res.json())
-                .then((result) => {
-                  if (result.data) {
-                    settTestData(result.data);
-                  }
-                });
-            }
-            console.log(result);
-          });
-      } else {
-        settTestData([]);
-      }*/
       }
     }
   }, [selectIDs]);
@@ -206,7 +166,12 @@ export const VDJ = ({ metadata, degs, filters }) => {
           direction="column"
           justifyContent="flex-start"
           alignItems="flex-start"
-          style={{ xOverflow: "none" }}
+          style={{
+            minWidth: 1600,
+            xOverflow: "scroll",
+            padding: 15,
+            marginBottom: 10,
+          }}
         >
           <Grid
             container
@@ -225,12 +190,13 @@ export const VDJ = ({ metadata, degs, filters }) => {
                 }}
               >
                 <MetaData
-                  width={250}
-                  data={data}
                   sample="Hacohen"
-                  filters={filters}
-                  highlighted={highlightData}
-                  selected={selectClone || selectSubset}
+                  hasSelection={
+                    highlightData ||
+                    selectClone ||
+                    selectSubset ||
+                    selectFilters
+                  }
                   setHighlight={() => {
                     setSelectIDs(null);
                     setSelectClone(null);
@@ -238,9 +204,6 @@ export const VDJ = ({ metadata, degs, filters }) => {
                     setActiveGraph(null);
                     setSelectFilters(null);
                   }}
-                  selectFilters={selectFilters}
-                  selectedType={selectClone ? "Clone" : selectSubset}
-                  setFilters={setSelectFilters}
                   totalCount={metadata.length}
                 />
                 <Filters
@@ -391,7 +354,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
               <Heatmap
                 width={750}
                 height={550}
-                font={"MyFontLight"}
+                font={"Helvetica"}
                 data={probabilities}
                 column={clonotypeParam}
                 row={subtypeParam}
@@ -422,6 +385,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
             >
               <ProbabilityHistogram
                 data={probabilities}
+                font={"Helvetica"}
                 width={750}
                 height={500}
                 probParam={logProbParam}
@@ -436,7 +400,7 @@ export const VDJ = ({ metadata, degs, filters }) => {
               infoText={INFO["RANKED"]["text"]}
             >
               <RankedOrder
-                width={800}
+                width={700}
                 height={500}
                 data={probabilities}
                 highlight={selectPhenotype}

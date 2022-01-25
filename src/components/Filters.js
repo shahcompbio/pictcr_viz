@@ -19,7 +19,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
-import makeStyles from "@mui/styles/makeStyles";
+import { createUseStyles } from "react-jss";
+
 const greyColor = "rgb(211 211 211)";
 const darkGrey = "rgb(153 153 153)";
 const fillGreen = "#47e547";
@@ -38,12 +39,14 @@ const Filters = ({ filters, selected, setFilters }) => (
   <Box
     sx={{
       width: "100%",
-      maxWidth: 360,
+      //maxWidth: 360,
       backgroundColor: "#f5f5f5",
       maxHeight: 400,
       overflowY: "scroll",
       overflowX: "clip",
-      ml: 4,
+      //ml: 4,
+      marginLeft: 4,
+      paddingRight: 2,
     }}
   >
     <List
@@ -58,26 +61,21 @@ const Filters = ({ filters, selected, setFilters }) => (
           <Grid
             container
             direction="row"
-            justifyContent="space-around"
-            alignItems="flex-end"
+            justifyContent="flex-start"
+            alignItems="flex-start"
             wrap="nowrap"
             spacing={2}
             style={{ marginBottom: 10, backgroundColor: "#f5f5f5" }}
           >
             <Grid item xs={8}>
-              <Typography varient="h4">Filters</Typography>
-            </Grid>
-            <Grid item>
-              <Button
-                disableElevation
-                variant="contained"
-                disabled={!selected}
-                style={{ backgroundColor: "#ffffff" }}
-                onClick={() => setFilters(null)}
+              <Typography
+                varient="h3"
+                style={{ margin: 5, marginBottom: -12, paddingBottom: 0 }}
               >
-                Clear
-              </Button>
+                Filter Data
+              </Typography>
             </Grid>
+            <Grid />
           </Grid>
         </ListSubheader>
       }
@@ -96,6 +94,16 @@ const Filters = ({ filters, selected, setFilters }) => (
     </List>
   </Box>
 );
+const useStyles = createUseStyles({
+  root: {
+    marginTop: "-2.5px !important",
+    marginBottom: "-2.5px !important",
+    "& span": {
+      marginTop: "15px",
+      marginLeft: "3px",
+    },
+  },
+});
 
 const FilterDropdown = ({
   title,
@@ -105,6 +113,7 @@ const FilterDropdown = ({
   top = true,
   bottom = true,
 }) => {
+  const classes = useStyles();
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {
@@ -127,7 +136,7 @@ const FilterDropdown = ({
       }}
     >
       <svg
-        height="30"
+        height="40"
         width="19.5"
         style={{
           zIndex: 20,
@@ -137,10 +146,10 @@ const FilterDropdown = ({
           x="8"
           y={top ? "0" : "10"}
           width="3"
-          height={bottom || open ? 30 : 20}
+          height={bottom || open ? 40 : 20}
           style={{
-            fill: isSelected ? green : greyColor,
-            stroke: isSelected ? green : greyColor,
+            fill: isSelected ? fillGreen : greyColor,
+            stroke: isSelected ? fillGreen : greyColor,
           }}
         />
         <circle
@@ -150,12 +159,16 @@ const FilterDropdown = ({
           stroke="black"
           stroke-width="1"
           style={{
-            fill: isSelected ? green : greyColor,
-            stroke: isSelected ? green : greyColor,
+            fill: isSelected ? fillGreen : greyColor,
+            stroke: isSelected ? fillGreen : greyColor,
           }}
         />
       </svg>
-      <ListItemText primary={filterMapping[title]} sx={{ pl: 2, m: 0 }} />
+      <ListItemText
+        primary={filterMapping[title]}
+        sx={{ pl: 2, m: 0 }}
+        style={{ margin: 5 }}
+      />
       {open ? <ExpandLess /> : <ExpandMore />}
     </ListItemButton>,
     <Collapse in={open} timeout="auto" unmountOnExit>
@@ -165,8 +178,14 @@ const FilterDropdown = ({
           const isLastItem = i === values.length - 1;
           const isLitUp = selectedValueIndex !== -1 && i <= selectedValueIndex;
           const isSelectedItem = isSelected && selectedValueIndex === i;
+          const isMiddleItem = !isFirstItem && !isLastItem;
           return (
             <ListItemButton
+              sx={{
+                "&.MuiListItemText-root:hover": {
+                  bgcolor: "none",
+                },
+              }}
               style={{ display: "flex", paddingTop: 0, paddingBottom: 0 }}
               key={`${title}-${value}`}
               onClick={() => {
@@ -176,7 +195,7 @@ const FilterDropdown = ({
             >
               <svg
                 height="35"
-                width="32"
+                width="37"
                 style={{
                   zIndex: 20,
                 }}
@@ -191,79 +210,134 @@ const FilterDropdown = ({
                     stroke: greyColor,
                   }}
                 />
-                <rect
-                  x={isFirstItem ? "5" : isLastItem ? "30" : "27"}
-                  y={isFirstItem ? "4" : isLastItem ? "-10" : "0"}
-                  width="3"
-                  rx={isFirstItem ? "10" : isLastItem ? "10" : "0"}
-                  height={isFirstItem ? "30" : isLastItem ? "25" : "35"}
-                  style={{
-                    transform: isFirstItem
-                      ? "rotate(314deg)"
-                      : isLastItem
-                      ? "rotate(49deg)"
-                      : 0,
-                    fill: isLitUp
-                      ? isLastItem
-                        ? greyColor
-                        : green
-                      : greyColor,
-                    stroke: isLitUp
-                      ? isLastItem
-                        ? greyColor
-                        : green
-                      : greyColor,
-                  }}
-                />
-                {!isFirstItem && !isLastItem && !isLitUp ? (
-                  <circle
-                    cx="28.5"
-                    cy="15"
-                    r="3"
-                    stroke="black"
-                    stroke-width="1"
+                //nothing is selected
+                {isMiddleItem &&
+                  !isSelected && [
+                    <rect
+                      x={"31"}
+                      y={"0"}
+                      width="3"
+                      height="100%"
+                      style={{
+                        fill: greyColor,
+                        stroke: greyColor,
+                      }}
+                    />,
+                    <circle
+                      cx="32"
+                      cy="25"
+                      r="4"
+                      stroke="black"
+                      stroke-width="1"
+                      style={{
+                        stroke: greyColor,
+                        fill: darkGrey,
+                      }}
+                    />,
+                  ]}
+                //you are below the selected item
+                {isMiddleItem &&
+                  !isLitUp &&
+                  isSelected &&
+                  !isSelectedItem && [
+                    <rect
+                      x={"31"}
+                      y={"0"}
+                      width="2.5"
+                      height="100%"
+                      style={{
+                        fill: greyColor,
+                        stroke: greyColor,
+                      }}
+                    />,
+                    <circle
+                      cx="32"
+                      cy="25"
+                      r="4"
+                      stroke="black"
+                      stroke-width="1"
+                      style={{
+                        stroke: greyColor,
+                        fill: greyColor,
+                      }}
+                    />,
+                  ]}
+                {isMiddleItem &&
+                  isSelectedItem && [
+                    <rect
+                      x={"31"}
+                      y={"0"}
+                      width="2.5"
+                      height="25"
+                      style={{
+                        fill: fillGreen,
+                        stroke: fillGreen,
+                      }}
+                    />,
+                    <rect
+                      x={"31"}
+                      y={"25"}
+                      width="2.5"
+                      height="100%"
+                      style={{
+                        fill: greyColor,
+                        stroke: greyColor,
+                      }}
+                    />,
+                    <circle
+                      cx="32"
+                      cy="25"
+                      r="4"
+                      stroke="green"
+                      stroke-width="2"
+                      style={{
+                        stroke: fillGreen,
+                        fill: fillGreen,
+                      }}
+                    />,
+                  ]}
+                //you are a green rect above a selected item
+                {isMiddleItem && !isSelectedItem && isSelected && isLitUp && (
+                  <rect
+                    x={"31"}
+                    y={"0"}
+                    width="2.5"
+                    height="100%"
                     style={{
-                      stroke: greyColor,
-                      fill: isSelectedItem ? fillGreen : darkGrey,
+                      fill: fillGreen,
+                      stroke: fillGreen,
                     }}
                   />
-                ) : !isFirstItem && !isLastItem && isSelectedItem ? (
-                  <circle
-                    cx="28"
-                    cy="15"
-                    r="3"
-                    stroke="green"
-                    stroke-width="2"
-                    style={{
-                      stroke: darkGrey,
-                      fill: isSelectedItem ? fillGreen : darkGrey,
-                    }}
-                  />
-                ) : (
-                  <div />
                 )}
                 {isFirstItem && [
+                  <path
+                    d="M10,0 C9,24 25,8 32.5,25"
+                    stroke={isSelectedItem || isLitUp ? fillGreen : greyColor}
+                    strokeWidth="3"
+                    fill="transparent"
+                  />,
                   <rect
-                    x={"27"}
-                    y={"18"}
-                    width="3"
+                    x={"31"}
+                    y={"25"}
+                    width="2.5"
                     height="20"
                     style={{
-                      fill: isLitUp ? green : greyColor,
-                      stroke: isLitUp ? green : greyColor,
+                      fill: isLitUp && !isSelectedItem ? fillGreen : greyColor,
+                      stroke:
+                        isLitUp && !isSelectedItem ? fillGreen : greyColor,
                     }}
                   />,
                   isLitUp && !isSelectedItem ? (
                     <div />
                   ) : (
                     <circle
-                      cx="28.5"
-                      cy="18"
-                      r="3"
+                      cx="32"
+                      cy="25"
+                      r="4"
                       stroke="black"
                       stroke-width="1"
                       style={{
-                        stroke: greyColor,
+                        stroke: isSelectedItem ? fillGreen : greyColor,
                         fill: isSelectedItem ? fillGreen : darkGrey,
                       }}
                     />
@@ -271,23 +345,29 @@ const FilterDropdown = ({
                 ]}
                 {isLastItem && [
                   <rect
-                    x={"27"}
+                    x={"31"}
                     y={"0"}
-                    width="3"
-                    height="17"
+                    width="2.5"
+                    height="21"
                     style={{
-                      fill: isLitUp ? green : greyColor,
-                      stroke: isLitUp ? green : greyColor,
+                      fill: isLitUp ? fillGreen : greyColor,
+                      stroke: isLitUp ? fillGreen : greyColor,
                     }}
                   />,
+                  <path
+                    d="M8,40 C12,21 29,39 33,22"
+                    stroke={greyColor}
+                    strokeWidth="3"
+                    fill="transparent"
+                  />,
                   <circle
-                    cx="28.5"
-                    cy="15"
-                    r="3"
+                    cx="32"
+                    cy="25"
+                    r="4"
                     stroke="black"
                     stroke-width="1"
                     style={{
-                      stroke: greyColor,
+                      stroke: isSelectedItem ? fillGreen : greyColor,
                       fill: isSelectedItem ? fillGreen : darkGrey,
                     }}
                   />,
@@ -295,8 +375,13 @@ const FilterDropdown = ({
               </svg>
               <ListItemText
                 primary={value}
+                className={classes.root}
                 sx={{ pl: 4 }}
-                style={{ fontSize: "12px !important" }}
+                style={{
+                  fontSize: "12px !important",
+                  paddingTop: 0,
+                  paddingLeft: 0,
+                }}
               />
             </ListItemButton>
           );

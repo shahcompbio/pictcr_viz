@@ -8,7 +8,7 @@ export const theme = createTheme(
       },
     },
     typography: {
-      fontFamily: ["Noto Sans"].join(","),
+      fontFamily: ["Helvetica"].join(","),
     },
     palette: {
       primary: {

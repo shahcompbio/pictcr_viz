@@ -357,33 +357,63 @@ const drawLineGraph = (
 
   const groupedData = _.groupBy(data, subsetParam);
 
-  subsetLabels.forEach((subset) => {
-    context.lineWidth = 2;
-    context.globalAlpha = isHighlighted(subset, highlighted) ? 1 : 0.5;
+  subsetLabels.forEach((subset, i) => {
+    if (i !== subsetLabels.length - 1) {
+      context.lineWidth = 2;
+      context.globalAlpha = isHighlighted(subset, highlighted) ? 1 : 0.5;
 
-    context.strokeStyle = isHighlighted(subset, highlighted)
-      ? colorScale(subset)
-      : UNHIGHLIGHTED_POINT_COLOR;
+      context.strokeStyle = isHighlighted(subset, highlighted)
+        ? colorScale(subset)
+        : UNHIGHLIGHTED_POINT_COLOR;
 
-    const xDensity = kde(
-      epanechnikov(1),
-      xScale.ticks(100),
-      groupedData[subset].map((row) => parseFloat(row[xParam]))
-    );
+      const xDensity = kde(
+        epanechnikov(1),
+        xScale.ticks(100),
+        groupedData[subset].map((row) => parseFloat(row[xParam]))
+      );
 
-    context.beginPath();
-    xLine(xDensity);
-    context.stroke();
+      context.beginPath();
+      xLine(xDensity);
+      context.stroke();
 
-    const yDensity = kde(
-      epanechnikov(1),
-      yScale.ticks(100),
-      groupedData[subset].map((row) => parseFloat(row[yParam]))
-    );
+      const yDensity = kde(
+        epanechnikov(1),
+        yScale.ticks(100),
+        groupedData[subset].map((row) => parseFloat(row[yParam]))
+      );
 
-    context.beginPath();
-    yLine(yDensity);
-    context.stroke();
+      context.beginPath();
+      yLine(yDensity);
+      context.stroke();
+    } else {
+      context.lineWidth = 2;
+      context.globalAlpha = isHighlighted(subset, highlighted) ? 1 : 0.5;
+
+      context.strokeStyle = isHighlighted(subset, highlighted)
+        ? colorScale(subset)
+        : UNHIGHLIGHTED_POINT_COLOR;
+      context.filleStyle = "rgba(255, 255, 255, 0.01)";
+
+      const xDensity = kde(
+        epanechnikov(1),
+        xScale.ticks(100),
+        groupedData[subset].map((row) => parseFloat(row[xParam]))
+      );
+      context.closePath();
+      context.beginPath();
+      xLine(xDensity);
+      context.stroke();
+
+      const yDensity = kde(
+        epanechnikov(1),
+        yScale.ticks(100),
+        groupedData[subset].map((row) => parseFloat(row[yParam]))
+      );
+
+      context.beginPath();
+      yLine(yDensity);
+      context.stroke();
+    }
   });
 
   if (highlighted) {
@@ -400,6 +430,7 @@ const drawLineGraph = (
     context.beginPath();
     xLine(xDensity);
     context.stroke();
+    context.closePath();
 
     const yDensity = kde(
       epanechnikov(1),
@@ -410,6 +441,7 @@ const drawLineGraph = (
     context.beginPath();
     yLine(yDensity);
     context.stroke();
+    context.closePath();
   }
 };
 

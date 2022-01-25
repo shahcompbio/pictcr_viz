@@ -19,7 +19,7 @@ import canvg from "canvg";
 const b = {
   w: 75,
   h: 30,
-  s: 3,
+  s: 5,
   t: 10,
 };
 
@@ -107,9 +107,17 @@ const Sunburst = ({
   const subsetCounts = Object.keys(allSubsets).sort(
     (a, b) => allSubsets[b].length - allSubsets[a].length
   );
-
   const topTenSubsetCounts = subsetCounts.slice(0, 10);
+  const topTenCount = topTenSubsetCounts.reduce(
+    (final, d) => (final = final + allSubsets[d].length),
+    0
+  );
+
   const resetSubsetcounts = subsetCounts.slice(10, subsetCounts.length);
+
+  const restCount = resetSubsetcounts
+    .filter((d) => allSubsets[d].length !== 1)
+    .reduce((final, d) => (final = final + allSubsets[d].length), 0);
 
   const singletonCounts = resetSubsetcounts
     .map((d) => ({
@@ -117,6 +125,7 @@ const Sunburst = ({
       children: allSubsets[d],
     }))
     .filter((d) => d.children.length === 1);
+
   const restCounts = resetSubsetcounts
     .map((d) => ({
       name: d,
@@ -135,9 +144,22 @@ const Sunburst = ({
     name: d,
     children: allSubsets[d],
   }));
-  const topTenObj = { name: "Top Ten", children: [...topTen] };
-  const singleObj = { name: "Singleton", children: [...singletonCounts] };
-  const otherObj = { name: "Other", children: [...restCounts] };
+
+  const topTenObj = {
+    name: "Top Ten",
+    children: [...topTen],
+    count: topTenCount,
+  };
+  const singleObj = {
+    name: "Singleton",
+    children: [...singletonCounts],
+    count: singletonCounts.length,
+  };
+  const otherObj = {
+    name: "Other",
+    children: [...restCounts],
+    count: restCount,
+  };
   const hierarchy = {
     name: "flair",
     children: [topTenObj, otherObj, singleObj],
@@ -168,13 +190,16 @@ const Sunburst = ({
       if (small[parent]["start"] < arc.startAngle()(d)) {
         small[parent]["start"] = arc.startAngle()(d);
         small[parent]["startNode"] = d;
+        small[parent]["count"] = small[parent]["count"] + 1;
       }
       if (small[parent]["end"] > arc.startAngle()(d)) {
         small[parent]["end"] = arc.endAngle()(d);
         small[parent]["endNode"] = d;
+        small[parent]["count"] = small[parent]["count"] + 1;
       }
     } else {
       small[parent] = {
+        count: 1,
         start: arc.startAngle()(d),
         end: arc.endAngle()(d),
         startNode: d,
@@ -184,11 +209,12 @@ const Sunburst = ({
     return small;
   };
 
-  const drawBreadCrumbs = (svg) => {
+  const drawBreadCrumbs = (svg, height) => {
     var trail = svg
       .append("svg")
       .attr("width", 100)
       .attr("height", 300)
+      .attr("y", height - 100)
       .attr("id", "trail");
     trail.append("text").attr("id", "endlabel").style("fill", "#000");
   };
@@ -236,6 +262,7 @@ const Sunburst = ({
       .filter((d) => d !== "flair")
       .map((d) => {
         var curr = small[d]["startNode"].current;
+        curr["count"] = small[d]["count"];
         curr["x0"] = small[d]["endNode"].current["x0"];
         curr["y1"] = small[d]["endNode"].current["y1"];
         return curr;
@@ -306,6 +333,14 @@ const Sunburst = ({
       .attr("pointer-events", "all")
       .on("click", clicked);
 
+    g.append("text")
+      .attr("dx", -35)
+      .attr("dy", 5)
+      .attr("pointer-events", "none")
+      .text("zoom out")
+      .attr("display", "none")
+      .attr("id", "zoomText");
+
     function breadcrumbPoints(d, i) {
       var points = [];
       points.push("0,0");
@@ -314,27 +349,25 @@ const Sunburst = ({
       points.push(b.w + "," + b.h);
       points.push("0," + b.h);
       if (i > 0) {
-        // Leftmost breadcrumb; don't include 6th vertex.
         points.push(b.t + "," + b.h / 2);
       }
-      // debugger;
       return points.join(" ");
     }
-    function updateBreadcrumbs(nodeArray, percentageString) {
-      // Data join; key function combines name and depth (= position in sequence).
+    function updateBreadcrumbs(nodeArray, percentageString, data, isClicked) {
       var g = d3
         .select("#trail")
         .selectAll("g")
         .data(nodeArray, function (d) {
           return d.data.name + d.depth;
-        });
+        })
+        .attr("id", isClicked ? "clicked" : "");
 
       // Add breadcrumb and label for entering nodes.
       var entering = g
         .enter()
         .append("g")
         .attr("transform", function (d, i) {
-          return "translate(0, " + i * (b.h + b.s) + ")";
+          return "translate(10, " + i * (b.h + b.s) + ")";
         });
 
       entering
@@ -356,29 +389,39 @@ const Sunburst = ({
         .attr("y", b.h / 2)
         .attr("dy", "0.35em")
         .attr("text-anchor", "middle")
+        .attr("font-size", 12)
         .text(function (d) {
-          return d.data.name;
+          if (d.parent.data.name === "Top Ten") {
+            return "Clone " + d.data.name;
+          } else if (
+            d.parent &&
+            (d.parent.data.name === "Other" ||
+              d.parent.data.name === "Singleton")
+          ) {
+            return;
+          } else {
+            return d.data.name;
+          }
         });
 
-      // Set position for entering and updating nodes.
-
-      // Remove exiting nodes.
       g.exit().remove();
 
-      // Now move and update the percentage at the end.
       d3.select("#trail")
         .select("#endlabel")
-        .attr("x", b.w / 2)
+        .attr("x", b.w / 2 + 10)
         .attr("y", (nodeArray.length + 0.5) * (b.h + b.s))
         .attr("dy", "0.35em")
         .attr("text-anchor", "middle")
-        .text("Count:" + percentageString);
+        .text(percentageString + " cells");
 
       // Make the breadcrumb trail visible, if it's hidden.
-      d3.select("#trail").style("visibility", "");
+      d3.select("#trail").attr("display", "all");
     }
 
     function mouseout(d, i) {
+      if (!d3.select("#trail #clicked")) {
+        d3.select("#trail").attr("display", "none");
+      }
       setHoverItem(null);
       setIsTooltipOpen(false);
       setRootParent(null);
@@ -403,11 +446,15 @@ const Sunburst = ({
         .style("left", arcLocation[0] + width / 2 + "px")
         .style("top", arcLocation[1] + height / 2 + "px");
 
-      var sizeCount = d.data.children.length;
+      var sizeCount = d.data.count
+        ? d.data.count
+        : d.count
+        ? d.count
+        : d.data.children.length;
 
       var sequenceArray = getAncestors(d);
 
-      updateBreadcrumbs(sequenceArray, sizeCount);
+      updateBreadcrumbs(sequenceArray, sizeCount, d);
     }
 
     function clicked(p) {
@@ -466,6 +513,16 @@ const Sunburst = ({
         .transition(t)
         .attr("fill-opacity", (d) => +labelVisible(d.target))
         .attrTween("transform", (d) => () => labelTransform(d.current));
+
+      //d3.select("#zoomText").
+      var sequenceArray = getAncestors(p);
+      var sizeCount = p.data.count
+        ? p.data.count
+        : p.count
+        ? p.count
+        : p.data.children.length;
+
+      updateBreadcrumbs(sequenceArray, sizeCount, p, true);
     }
 
     function arcVisible(d) {
@@ -487,7 +544,7 @@ const Sunburst = ({
     (svg) => {
       drawArea(svg, setIsTooltipOpen, setHoverItem, colors);
 
-      drawBreadCrumbs(svg);
+      drawBreadCrumbs(svg, height);
     },
     width,
     height,
@@ -559,13 +616,17 @@ const TooltipText = ({
       {hoverItem && (
         <span>
           <Typography color="inherit" style={{ fontSize: 15 }}>
-            {hoverItem}
+            {hoverParent &&
+            hoverParent !== "flair" &&
+            hoverParent !== "Singleton"
+              ? "Clone " + hoverItem
+              : hoverItem}
           </Typography>
           {hoverParent && hoverParent !== "flair" && (
             <span style={{ fontSize: 13 }}>
               <span>
                 <b>{allSubsets[hoverItem].length}</b>
-                <em>{" - data points"}</em>
+                <em>{" cells"}</em>
               </span>
               <div>
                 <b>
@@ -587,7 +648,7 @@ const TooltipText = ({
                     0
                   )}
               </b>
-              <em>{" - data points"}</em>
+              <em>{" cells"}</em>
             </span>
           )}
         </span>

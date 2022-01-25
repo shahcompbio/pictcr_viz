@@ -96,7 +96,7 @@ const RankedOrder = ({ width, height, data, highlight = null }) => {
         xScale: rankScale,
         yScale: freqScale,
         ticks: 3,
-        font: "Noto Sans",
+        font: "Helvetica",
         label: "Clone Frequency",
       });
 
@@ -106,7 +106,7 @@ const RankedOrder = ({ width, height, data, highlight = null }) => {
         yScale: freqScale,
         ticks: 3,
         label: "Rank",
-        font: "Noto Sans",
+        font: "Helvetica",
         orientation: "horizontal",
       });
 
@@ -170,8 +170,8 @@ const RankedOrder = ({ width, height, data, highlight = null }) => {
       <Grid item>
         <VerticalLegend
           fontFamily={{
-            regular: "Noto Sans",
-            bold: "Noto Sans",
+            regular: "Helvetica",
+            bold: "Helvetica",
             labelOffset: -1,
           }}
           width={200}

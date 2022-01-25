@@ -24,7 +24,7 @@ const ClonotypeExpansion = ({ data, width, height, highlightedRow }) => {
     <Layout title={INFO["BARPLOT"]["title"]} infoText={INFO["BARPLOT"]["text"]}>
       <StackedHorizontalBar
         highlightedRow={highlightedRow}
-        font={"Noto Sans"}
+        font={"Helvetica"}
         data={countedClonotypes}
         width={width}
         height={height}
