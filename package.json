@@ -8,7 +8,7 @@
     "@mui/icons-material": "^5.0.1",
     "@mui/material": "^5.0.2",
     "@mui/styles": "^5.0.1",
-    "@shahlab/planetarium": "^1.1.6",
+    "@shahlab/planetarium": "^1.1.9",
     "canvas": "^2.8.0",
     "canvg": "^3.0.7",
     "d3": "^6.7.0",
@@ -16,22 +16,28 @@
     "d3-color": "^3.0.1",
     "d3-dsv": "^2.0.0",
     "d3-hexbin": "^0.2.2",
+    "env-cmd": "^10.1.0",
     "fontfaceobserver": "^2.1.0",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-data-table-component": "^6.11.7",
     "react-dom": "^17.0.2",
+    "react-jss": "^10.9.0",
     "react-scripts": "4.0.3",
     "styled-components": "^5.3.1"
   },
   "scripts": {
     "start": "react-scripts start",
+    "buildDocker": "react-scripts build",
     "build": "node build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "devServer": {
+    "disableHostCheck": true
   },
   "browserslist": [
     ">0.2%",
@@ -40,6 +46,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "env-cmd": "^10.1.0",
     "prettier": "^2.3.0",
     "rewire": "^5.0.0"
   },

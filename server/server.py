@@ -34,16 +34,15 @@ COLUMNS = ['phenotype', 'clone_id']
 
 
 adataSantosh = sc.read("./data/newfile.h5ad")
-@app.route('/getSantoshData/<path:file>/')
-def getSantoshData(file=None):
-        if file:
-            metadata = get_santosh_metadata(adataSantosh).to_dict(orient="records")
-            filters = get_santosh_filter(adataSantosh)
+@app.route('/getSantoshData/')
+def getSantoshData():
+    metadata = get_santosh_metadata(adataSantosh).to_dict(orient="records")
+    filters = get_santosh_filter(adataSantosh)
 
-            response = jsonify({"metadata":metadata,"filters": filters})
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
-            response.headers.add("Access-Control-Allow-Origin", "http://localhost:3001")
-            return response
+    response = jsonify({"metadata":metadata,"filters": filters})
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+    return response
 
 def get_santosh_metadata(adata):
     umap = pd.DataFrame(adata.obsm['X_umap'])
@@ -93,7 +92,7 @@ def ttestSantosh():
     response = jsonify({"data":final})
 
     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3001")
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
     return response
 
 
@@ -109,7 +108,7 @@ def getMetadata(file=None):
             response = jsonify({"metadata":metadata,"filters": filters})
             response.headers.add('Access-Control-Allow-Credentials', 'true')
             #response.headers.add("Access-Control-Allow-Origin", "https://spectrum-staging.shahlab.mskcc.org")
-            response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+            response.headers.add("Access-Control-Allow-Origin", "http://localhost:3001")
 
             return response
 
@@ -150,7 +149,7 @@ def get_metadata(adata):
 def ttest():
     data = json.loads(request.data)
     included = data["data"].split(",")
-    print(request.environ['HTTP_ORIGIN'])
+    print(request.environ)
     adata.obs["included"] = adata.obs.index.isin(included)
     adata.obs['included'] = adata.obs.apply(lambda x: "included" if x.included else "excluded", axis=1)
 
@@ -170,7 +169,7 @@ def ttest():
 
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     #response.headers.add("Access-Control-Allow-Origin",request.environ['HTTP_ORIGIN'])
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3001")
     return response
 
 @app.route('/l/<path:directory>/')

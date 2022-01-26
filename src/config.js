@@ -59,4 +59,8 @@ export const INFO = {
     title: "Ranked Clone Frequency",
     text: "Ranked order of clonotype frequency for each subtype",
   },
+  SANKEY: {
+    title: "Sankey",
+    text: "",
+  },
 };
