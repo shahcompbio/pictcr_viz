@@ -6,7 +6,24 @@ export const CONSTANTS = {
   subtypeParam: "subtype",
   logProbParam: "log10_probability",
 };
-
+export const PHENOTYPE_COLORS = [
+  "#5E4FA2",
+  "#3288BD",
+  "#66C2A5",
+  "#FEE08B",
+  "#FDAE61",
+  "#F46D43",
+  "#D53E4F",
+  "#c9cc76",
+  "#9E0142",
+  "#C6AEFF",
+  "#BDD8FF",
+  "#BDFFB2",
+  "#FFC8AE",
+  "#FF9FBB",
+  "#b2dbd6",
+  "#ffd470",
+];
 export const CLONOTYPE_COLORS = [
   "#674172",
   "#098dde",

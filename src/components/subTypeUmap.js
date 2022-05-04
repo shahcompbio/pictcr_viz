@@ -21,35 +21,27 @@ const PhenotypeUMAP = ({
   Select,
   loadingTest,
   tTestData,
-}) => {
-  return (
-    <Layout
-      title={INFO["SUBTYPEUMAP"]["title"]}
-      infoText={INFO["SUBTYPEUMAP"]["text"]}
-      addIcon={[Select]}
-    >
-      <UMAP
-        width={700}
-        height={600}
-        data={data}
-        xParam={xParam}
-        yParam={yParam}
-        subsetParam={subsetParam}
-        idParam={idParam}
-        colorScale={colorScale}
-        onLasso={onLasso}
-        onLegendClick={onLegendClick}
-        disable={disable}
-        highlightIDs={highlightIDs}
-        MoreInfoComponent={() => (
-          <TtestResults
-            data={tTestData}
-            count={highlightIDs ? highlightIDs.length : null}
-          />
-        )}
+}) => (
+  <UMAP
+    width={700}
+    height={600}
+    data={data}
+    xParam={xParam}
+    yParam={yParam}
+    subsetParam={subsetParam}
+    idParam={idParam}
+    colorScale={colorScale}
+    onLasso={onLasso}
+    onLegendClick={onLegendClick}
+    disable={disable}
+    highlightIDs={highlightIDs}
+    MoreInfoComponent={() => (
+      <TtestResults
+        data={tTestData}
+        count={highlightIDs ? highlightIDs.length : null}
       />
-    </Layout>
-  );
-};
+    )}
+  />
+);
 
 export default PhenotypeUMAP;

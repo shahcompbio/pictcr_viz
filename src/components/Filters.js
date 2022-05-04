@@ -1,30 +1,29 @@
-import React, { useState } from "react";
-import Card from "@mui/material/Card";
+import React, { useState, memo } from "react";
 import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListSubheader from "@mui/material/ListSubheader";
-import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import Collapse from "@mui/material/Collapse";
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
-
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MuiAccordion from "@mui/material/Accordion";
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import MuiAccordionDetails from "@mui/material/AccordionDetails";
+import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
+import Checkbox from "@mui/material/Checkbox";
+import Paper from "@mui/material/Paper";
 
+import MenuList from "@mui/material/MenuList";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import LayersClearIcon from "@mui/icons-material/LayersClear";
+import Chip from "@mui/material/Chip";
+
+import { styled } from "@mui/material/styles";
 import { createUseStyles } from "react-jss";
-
-const greyColor = "rgb(211 211 211)";
-const darkGrey = "rgb(153 153 153)";
-const fillGreen = "#47e547";
-const green = "#5fd538";
+import { useData } from "../provider/dataContext";
 
 const filterMapping = {
   response: "Response",
@@ -35,77 +34,174 @@ const filterMapping = {
   timepoint: "Timepoint",
 };
 
-const Filters = ({ filters, selected, setFilters }) => (
-  <Box
+const Filters = ({ hasSelection, setHighlight }) => {
+  const [{ selectFilters, filters }, dispatch] = useData();
+  const [expanded, setExpanded] = useState(
+    filters.reduce((final, curr) => {
+      final[curr.name] =
+        selectFilters && selectFilters[0] === curr.name ? true : false;
+      return final;
+    }, {})
+  );
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        //maxWidth: 360,
+        //backgroundColor: "#f5f5f5",
+        maxHeight: 500,
+        overflowY: "scroll",
+        overflowX: "clip",
+        //ml: 4,
+        marginLeft: 4,
+        paddingRight: 2,
+      }}
+    >
+      <List
+        style={{ backgroundColor: "white" }}
+        component="div"
+        aria-labelledby="subheader"
+        subheader={
+          <ListSubheader
+            id="subheader"
+            sx={{ position: "relative", paddingLeft: 0 }}
+          >
+            <Grid
+              container
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              wrap="nowrap"
+              spacing={2}
+              style={{ marginBottom: 10 }}
+            >
+              <Grid item xs={8}>
+                <Typography
+                  variant="h5"
+                  style={{
+                    marginBottom: -12,
+                    paddingBottom: 0,
+                  }}
+                >
+                  Filter Data
+                </Typography>
+              </Grid>
+              <Grid />
+            </Grid>
+            <Chips />
+          </ListSubheader>
+        }
+      >
+        {filters.map((filter, index) => (
+          <FilterDropdown
+            setExpand={(title) => {
+              setExpanded({ ...expanded, [title]: !expanded[title] });
+            }}
+            expanded={expanded}
+            key={filter["name"]}
+            title={filter["name"]}
+            values={filter["values"]}
+            onValueClick={(value) => {
+              dispatch({ type: "setSelectedFilters", value: value });
+            }}
+            selected={selectFilters}
+            top={index !== 0}
+            bottom={index !== filters.length - 1}
+          />
+        ))}
+      </List>
+      <ClearBox disabled={!hasSelection} onCLick={setHighlight} />
+    </Box>
+  );
+};
+export const ClearBox = ({ disabled, onClick, clearText = "Clear" }) => (
+  <Paper
     sx={{
+      position: "sticky",
       width: "100%",
-      //maxWidth: 360,
-      backgroundColor: "#f5f5f5",
-      maxHeight: 400,
-      overflowY: "scroll",
-      overflowX: "clip",
-      //ml: 4,
-      marginLeft: 4,
-      paddingRight: 2,
+      border: `1px solid grey`,
     }}
   >
-    <List
-      style={{ backgroundColor: "#f5f5f5" }}
-      component="div"
-      aria-labelledby="subheader"
-      subheader={
-        <ListSubheader
-          id="subheader"
-          style={{ backgroundColor: "#f5f5f5", position: "relative" }}
-        >
-          <Grid
-            container
-            direction="row"
-            justifyContent="flex-start"
-            alignItems="flex-start"
-            wrap="nowrap"
-            spacing={2}
-            style={{ marginBottom: 10, backgroundColor: "#f5f5f5" }}
-          >
-            <Grid item xs={8}>
-              <Typography
-                varient="h3"
-                style={{ margin: 5, marginBottom: -12, paddingBottom: 0 }}
-              >
-                Filter Data
-              </Typography>
-            </Grid>
-            <Grid />
-          </Grid>
-        </ListSubheader>
-      }
-    >
-      {filters.map((filter, index) => (
-        <FilterDropdown
-          key={filter["name"]}
-          title={filter["name"]}
-          values={filter["values"]}
-          onValueClick={setFilters}
-          selected={selected}
-          top={index !== 0}
-          bottom={index !== filters.length - 1}
-        />
-      ))}
-    </List>
-  </Box>
+    <MenuList style={{ padding: 0 }}>
+      <MenuItem
+        disabled={disabled}
+        onClick={() => {
+          onClick();
+        }}
+        style={{ height: "100%" }}
+      >
+        <ListItemIcon>
+          <LayersClearIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText>{clearText}</ListItemText>
+        <Typography variant="body2" color="text.secondary">
+          ⌘X
+        </Typography>
+      </MenuItem>
+    </MenuList>
+  </Paper>
 );
-const useStyles = createUseStyles({
-  root: {
-    marginTop: "-2.5px !important",
-    marginBottom: "-2.5px !important",
-    "& span": {
-      marginTop: "15px",
-      marginLeft: "3px",
-    },
+
+const Accordion = styled((props) => (
+  <MuiAccordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+  //backgroundColor: "white !important",
+  border: `1px solid ${theme.palette.divider}`,
+  marginBottom: theme.spacing(1),
+  borderRadius: "5px",
+  "&:not(:last-child)": {
+    borderBottom: 0,
   },
-});
+  "&:before": {
+    display: "none",
+  },
+}));
+
+const AccordionSummary = styled((props) => (
+  <MuiAccordionSummary
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
+    {...props}
+  />
+))(({ theme }) => ({
+  backgroundColor: "white",
+  borderRadius: "5px",
+  //marginBottom: theme.spacing(1),
+  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+    transform: "rotate(90deg)",
+    marginRight: theme.spacing(1),
+  },
+  "& .MuiAccordionSummary-content": {
+    marginLeft: theme.spacing(1),
+  },
+}));
+const Chips = () => {
+  const [{ selectFilters, filters }, dispatch] = useData();
+  return selectFilters !== null ? (
+    <Chip
+      label={
+        <span>
+          <span style={{ fontWeight: "bold" }}>
+            {filterMapping[selectFilters[0]]}:{" "}
+          </span>
+          <span>{selectFilters[1]}</span>
+        </span>
+      }
+      sx={{ paddingLeft: "-16px" }}
+      variant="outlined"
+      onClick={() => {}}
+      onDelete={() => {}}
+    />
+  ) : null;
+};
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: "1px solid rgba(0, 0, 0, .125)",
+  backgroundColor: "#f5f5f5",
+}));
 
 const FilterDropdown = ({
+  expanded,
+  setExpand,
   title,
   values,
   onValueClick,
@@ -113,73 +209,16 @@ const FilterDropdown = ({
   top = true,
   bottom = true,
 }) => {
-  const classes = useStyles();
-  const [open, setOpen] = useState(false);
-
-  const handleClick = () => {
-    setOpen(!open);
-  };
   const isSelected = selected && selected[0] === title;
-  const selectedValueIndex = isSelected
-    ? values
-        .map((value, index) => ({ v: value, index: index }))
-        .filter((v) => v["v"] === selected[1])[0]["index"]
-    : -1;
 
-  return [
-    <ListItemButton
-      onClick={handleClick}
-      style={{
-        display: "flex",
-        paddingTop: 0,
-        paddingBottom: 0,
-      }}
-    >
-      <svg
-        height="40"
-        width="19.5"
-        style={{
-          zIndex: 20,
-        }}
-      >
-        <rect
-          x="8"
-          y={top ? "0" : "10"}
-          width="3"
-          height={bottom || open ? 40 : 20}
-          style={{
-            fill: isSelected ? fillGreen : greyColor,
-            stroke: isSelected ? fillGreen : greyColor,
-          }}
-        />
-        <circle
-          cx="10"
-          cy="15"
-          r="6"
-          stroke="black"
-          stroke-width="1"
-          style={{
-            fill: isSelected ? fillGreen : greyColor,
-            stroke: isSelected ? fillGreen : greyColor,
-          }}
-        />
-      </svg>
-      <ListItemText
-        primary={filterMapping[title]}
-        sx={{ pl: 2, m: 0 }}
-        style={{ margin: 5 }}
-      />
-      {open ? <ExpandLess /> : <ExpandMore />}
-    </ListItemButton>,
-    <Collapse in={open} timeout="auto" unmountOnExit>
-      <List component="div" disablePadding>
-        {values.map((value, i) => {
-          const isFirstItem = i == 0;
-          const isLastItem = i === values.length - 1;
-          const isLitUp = selectedValueIndex !== -1 && i <= selectedValueIndex;
-          const isSelectedItem = isSelected && selectedValueIndex === i;
-          const isMiddleItem = !isFirstItem && !isLastItem;
-          return (
+  return (
+    <div>
+      <Accordion expanded={expanded[title]} onChange={() => setExpand(title)}>
+        <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
+          <Typography>{filterMapping[title]}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {values.map((value, i) => (
             <ListItemButton
               sx={{
                 "&.MuiListItemText-root:hover": {
@@ -191,191 +230,26 @@ const FilterDropdown = ({
               onClick={() => {
                 onValueClick([title, value]);
               }}
-              selected={isSelected && selected[1] === value}
+              //selected={isSelected && selected[1] === value}
             >
-              <svg
-                height="35"
-                width="37"
-                style={{
-                  zIndex: 20,
-                }}
-              >
-                <rect
-                  x="8"
-                  y="0"
-                  width="3"
-                  height="35"
-                  style={{
-                    fill: greyColor,
-                    stroke: greyColor,
+              <ListItemIcon>
+                <Checkbox
+                  edge="start"
+                  sx={{
+                    color: "#7d867d",
+
+                    "&.Mui-checked": {
+                      color: "#3D70B2",
+                    },
                   }}
+                  checked={isSelected && selected[1] === value}
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{ "aria-labelledby": value + "label" }}
                 />
-                //nothing is selected
-                {isMiddleItem &&
-                  !isSelected && [
-                    <rect
-                      x={"31"}
-                      y={"0"}
-                      width="3"
-                      height="100%"
-                      style={{
-                        fill: greyColor,
-                        stroke: greyColor,
-                      }}
-                    />,
-                    <circle
-                      cx="32"
-                      cy="25"
-                      r="4"
-                      stroke="black"
-                      stroke-width="1"
-                      style={{
-                        stroke: greyColor,
-                        fill: darkGrey,
-                      }}
-                    />,
-                  ]}
-                //you are below the selected item
-                {isMiddleItem &&
-                  !isLitUp &&
-                  isSelected &&
-                  !isSelectedItem && [
-                    <rect
-                      x={"31"}
-                      y={"0"}
-                      width="2.5"
-                      height="100%"
-                      style={{
-                        fill: greyColor,
-                        stroke: greyColor,
-                      }}
-                    />,
-                    <circle
-                      cx="32"
-                      cy="25"
-                      r="4"
-                      stroke="black"
-                      stroke-width="1"
-                      style={{
-                        stroke: greyColor,
-                        fill: greyColor,
-                      }}
-                    />,
-                  ]}
-                {isMiddleItem &&
-                  isSelectedItem && [
-                    <rect
-                      x={"31"}
-                      y={"0"}
-                      width="2.5"
-                      height="25"
-                      style={{
-                        fill: fillGreen,
-                        stroke: fillGreen,
-                      }}
-                    />,
-                    <rect
-                      x={"31"}
-                      y={"25"}
-                      width="2.5"
-                      height="100%"
-                      style={{
-                        fill: greyColor,
-                        stroke: greyColor,
-                      }}
-                    />,
-                    <circle
-                      cx="32"
-                      cy="25"
-                      r="4"
-                      stroke="green"
-                      stroke-width="2"
-                      style={{
-                        stroke: fillGreen,
-                        fill: fillGreen,
-                      }}
-                    />,
-                  ]}
-                //you are a green rect above a selected item
-                {isMiddleItem && !isSelectedItem && isSelected && isLitUp && (
-                  <rect
-                    x={"31"}
-                    y={"0"}
-                    width="2.5"
-                    height="100%"
-                    style={{
-                      fill: fillGreen,
-                      stroke: fillGreen,
-                    }}
-                  />
-                )}
-                {isFirstItem && [
-                  <path
-                    d="M10,0 C9,24 25,8 32.5,25"
-                    stroke={isSelectedItem || isLitUp ? fillGreen : greyColor}
-                    strokeWidth="3"
-                    fill="transparent"
-                  />,
-                  <rect
-                    x={"31"}
-                    y={"25"}
-                    width="2.5"
-                    height="20"
-                    style={{
-                      fill: isLitUp && !isSelectedItem ? fillGreen : greyColor,
-                      stroke:
-                        isLitUp && !isSelectedItem ? fillGreen : greyColor,
-                    }}
-                  />,
-                  isLitUp && !isSelectedItem ? (
-                    <div />
-                  ) : (
-                    <circle
-                      cx="32"
-                      cy="25"
-                      r="4"
-                      stroke="black"
-                      stroke-width="1"
-                      style={{
-                        stroke: isSelectedItem ? fillGreen : greyColor,
-                        fill: isSelectedItem ? fillGreen : darkGrey,
-                      }}
-                    />
-                  ),
-                ]}
-                {isLastItem && [
-                  <rect
-                    x={"31"}
-                    y={"0"}
-                    width="2.5"
-                    height="21"
-                    style={{
-                      fill: isLitUp ? fillGreen : greyColor,
-                      stroke: isLitUp ? fillGreen : greyColor,
-                    }}
-                  />,
-                  <path
-                    d="M8,40 C12,21 29,39 33,22"
-                    stroke={greyColor}
-                    strokeWidth="3"
-                    fill="transparent"
-                  />,
-                  <circle
-                    cx="32"
-                    cy="25"
-                    r="4"
-                    stroke="black"
-                    stroke-width="1"
-                    style={{
-                      stroke: isSelectedItem ? fillGreen : greyColor,
-                      fill: isSelectedItem ? fillGreen : darkGrey,
-                    }}
-                  />,
-                ]}
-              </svg>
+              </ListItemIcon>
               <ListItemText
                 primary={value}
-                className={classes.root}
                 sx={{ pl: 4 }}
                 style={{
                   fontSize: "12px !important",
@@ -384,11 +258,11 @@ const FilterDropdown = ({
                 }}
               />
             </ListItemButton>
-          );
-        })}
-      </List>
-    </Collapse>,
-  ];
+          ))}
+        </AccordionDetails>
+      </Accordion>
+    </div>
+  );
 };
 
-export default Filters;
+export default memo(Filters);

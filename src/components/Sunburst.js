@@ -6,10 +6,12 @@ import _ from "lodash";
 import { rgb } from "d3-color";
 
 import makeStyles from "@mui/styles/makeStyles";
-
+import InfoIcon from "@mui/icons-material/Info";
 import { Layout } from "@shahlab/planetarium";
 import Tooltip from "@mui/material/Tooltip";
+import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+import { StyledTitle } from "./util/util";
 
 import { INFO } from "../config";
 
@@ -550,57 +552,49 @@ const Sunburst = ({
     height,
     [data]
   );
+  /*      <Grid direction="row">
+          <StyledTitle>Sunburst</StyledTitle>
+          <InfoIcon style={{ color: "grey" }} />
+        </Grid>*/
   return (
-    <Layout
-      addIcon={
-        <DownloadIcon download={async () => download(ref, width, height)} />
-      }
-      title={INFO[type]["title"]}
-      infoText={INFO[type]["text"]}
-    >
-      <div style={{ position: "relative" }}>
-        <div
-          id="tooltipDiv"
-          ref={tooltipRef}
-          className={classes.tooltipWrapper}
-        >
-          <Tooltip
-            PopperProps={{
-              disablePortal: true,
-              style: { pointerEvents: "none" },
-            }}
-            classes={{ tooltip: classes.tooltip }}
-            arrow
-            title={
-              <TooltipText
-                hoverParent={hoverParent}
-                allSubsets={allSubsets}
-                hoverItem={hoverItem}
-                otherSubsetParam={otherSubsetParam}
-                hierarchy={hierarchy}
-                totalCount={totalCount}
-              />
-            }
-            open={isTooltipOpen}
-            disableFocusListener
-            disableHoverListener
-            disableTouchListener
-          >
-            <div
-              style={{
-                position: "absolute",
-                x: 100,
-                y: 100,
-                width: 5,
-                height: 5,
-                fill: "blue",
-              }}
+    <div style={{ position: "relative" }}>
+      <div id="tooltipDiv" ref={tooltipRef} className={classes.tooltipWrapper}>
+        <Tooltip
+          PopperProps={{
+            disablePortal: true,
+            style: { pointerEvents: "none" },
+          }}
+          classes={{ tooltip: classes.tooltip }}
+          arrow
+          title={
+            <TooltipText
+              hoverParent={hoverParent}
+              allSubsets={allSubsets}
+              hoverItem={hoverItem}
+              otherSubsetParam={otherSubsetParam}
+              hierarchy={hierarchy}
+              totalCount={totalCount}
             />
-          </Tooltip>
-        </div>
-        <svg ref={ref} />
+          }
+          open={isTooltipOpen}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+        >
+          <div
+            style={{
+              position: "absolute",
+              x: 100,
+              y: 100,
+              width: 5,
+              height: 5,
+              fill: "blue",
+            }}
+          />
+        </Tooltip>
       </div>
-    </Layout>
+      <svg ref={ref} />
+    </div>
   );
 };
 const TooltipText = ({

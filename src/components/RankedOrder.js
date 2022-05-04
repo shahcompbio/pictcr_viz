@@ -161,13 +161,21 @@ const RankedOrder = ({ width, height, data, highlight = null }) => {
     height,
     [data, highlightValue]
   );
-
+  /*    <Grid
+      container
+      rowSpacing={2}
+      spacing={8}
+      direction="row"
+      justify="space-between"
+      alignItems="flex-start"
+      style={{ padding: 0, width: width + 200 }}
+    >*/
   return (
-    <Grid container direction="row" style={{ padding: 0 }}>
-      <Grid item>
+    <div style={{ display: "flex" }}>
+      <div>
         <canvas ref={canvasRef} />
-      </Grid>
-      <Grid item>
+      </div>
+      <div item style={{ paddingLeft: "0px", marginTop: "20px" }}>
         <VerticalLegend
           fontFamily={{
             regular: "Helvetica",
@@ -180,8 +188,8 @@ const RankedOrder = ({ width, height, data, highlight = null }) => {
           colorScale={subsetColors}
           // onHover={setHoverSubset}
         />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 };
 

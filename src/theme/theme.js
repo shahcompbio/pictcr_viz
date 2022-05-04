@@ -1,5 +1,5 @@
 import { createTheme, adaptV4Theme } from "@mui/material/styles";
-
+import Merriweather from "./Merriweather-Regular.ttf";
 export const theme = createTheme(
   adaptV4Theme({
     props: {
@@ -22,7 +22,7 @@ export const theme = createTheme(
         main: "#BC4746",
       },
       background: {
-        default: "#F5F5F5",
+        default: "white",
       },
       overrides: {
         MuiFab: {

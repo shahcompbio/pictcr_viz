@@ -6,12 +6,14 @@ import {
   VerticalLegend,
   useCanvas,
   useLasso,
+  useGL,
   drawUMAPAxis,
   isHighlighted,
 } from "@shahlab/planetarium";
-
+import ReglUmap from "./util/ReglUmap";
 import Grid from "@mui/material/Grid";
 import Slider from "@mui/material/Slider";
+import { drawAxis, getLassoObj } from "./util/util";
 
 import { CONSTANTS } from "../config";
 
@@ -27,6 +29,50 @@ const NULL_POINT_COLOR = "#d2d7d3";
 const UNHIGHLIGHTED_POINT_COLOR = "grey";
 const POINT_RADIUS = 2;
 
+const GREY_VEC4 = "[0.810, 0.786, 0.786, 1.0]";
+
+const COLOR_ARRAY = [
+  "[0.369,0.31,0.635,1.0]",
+  "[0.196,0.533,0.741,1.0]",
+  "[0.4,0.761,0.647,1.0]",
+  "[0.996,0.878,0.545,1.0]",
+  "[0.957,0.427,0.263,1.0]",
+  "[0.835,0.243,0.31,1.0]",
+  "[0.788,0.8,0.463,1.0]",
+  "[0.62,0.004,0.259,1.0]",
+  "[0.776,0.682,1.0,1.0]",
+  "[0.741,0.847,1.0,1.0]",
+  "[0.741,1.0,0.698,1.0]",
+  "[1.0,0.784,0.682,1.0]",
+  "[1.0,0.624,0.733,1.0]",
+  "[0.698,0.859,0.839,1.0]",
+  "[1.0,0.831,0.439,1.0]",
+];
+
+const layerNames = ["umapPhenotypeCanvas"];
+const getColorScale = ({ data, subsetParam, isCategorical }) => {
+  if (isCategorical) {
+    const subsetGroups = _.groupBy(data, subsetParam);
+    const subsetValues = Object.keys(subsetGroups).sort();
+
+    return d3
+      .scaleOrdinal()
+      .domain(subsetValues)
+      .range(
+        COLOR_ARRAY.slice(0, Math.min(subsetValues.length, COLOR_ARRAY.length))
+      );
+  } else {
+    const subsetData = data
+      .filter((d) => d.hasOwnProperty(subsetParam))
+      .map((d) => parseFloat(d[subsetParam]));
+
+    const subsetMax = Math.max(...subsetData);
+    return d3
+      .scaleSequential(d3.interpolateViridis)
+      .domain([0, subsetMax])
+      .nice();
+  }
+};
 const UMAP = ({
   width,
   height,
@@ -41,6 +87,7 @@ const UMAP = ({
   onLegendClick,
   disable,
 }) => {
+  const [canvas, setCanvas] = useState(null);
   const [radiusRatio, setRadiusRatio] = useState(1);
   const canvasWidth = width - LEGEND_WIDTH - PADDING;
   const canvasHeight = height;
@@ -49,6 +96,8 @@ const UMAP = ({
     canvasWidth - AXIS_SPACE - PADDING - PADDING - LINE_GRAPH_SPACE;
   const chartHeight =
     canvasHeight - AXIS_SPACE - PADDING - PADDING - LINE_GRAPH_SPACE;
+
+  const [wrapperRef] = useGL(chartWidth, chartHeight, layerNames);
 
   const chartX = PADDING;
   const chartY = PADDING + LINE_GRAPH_SPACE;
@@ -104,6 +153,15 @@ const UMAP = ({
       ? highlightIDs
       : data.map((datum) => datum[idParam]);
 
+  useEffect(() => {
+    const layers = layerNames.map((layer) => {
+      const canvasLayer = d3.select("#" + layer);
+      canvasLayer.attr("position", "absolute");
+      return canvasLayer.node();
+    });
+    setCanvas(layers[0]);
+  }, [wrapperRef]);
+
   const canvasRef = useCanvas(
     (canvas) => {
       const context = canvas.getContext("2d");
@@ -114,19 +172,6 @@ const UMAP = ({
         xLabel: xParam,
         yLabel: yParam,
       });
-      drawPoints(
-        context,
-        data,
-        xScale,
-        yScale,
-        xParam,
-        yParam,
-        subsetParam,
-        subsettedIDs,
-        colorScale.domain(),
-        colorScale,
-        radiusRatio
-      );
 
       drawLineGraph(
         context,
@@ -149,16 +194,118 @@ const UMAP = ({
     canvasHeight,
     [highlightIDs, radiusRatio, lassoData, hoverClone, data]
   );
+  const getDataWithAttributes = (
+    data,
+    colorScale,
+    subsetParam,
+    xParam,
+    yParam,
+    highlighted
+  ) => {
+    const subsetLabels = colorScale.domain();
+    const [subsetData, backgroundData] = _.partition(data, (datum) =>
+      subsetLabels.includes(datum[subsetParam])
+    );
+
+    const backgroundDataWithAttr = backgroundData.map((d) => ({
+      ...d,
+      color: GREY_VEC4,
+      pointSize: 2,
+    }));
+
+    const yData = data.map((d) => parseFloat(d[yParam]));
+    const xData = data.map((d) => parseFloat(d[xParam]));
+
+    const yMin = Math.min(...yData);
+    const yMax = Math.max(...yData);
+    const xMin = Math.min(...xData);
+    const xMax = Math.max(...xData);
+
+    const groupedData = _.groupBy(subsetData, subsetParam);
+
+    const freqData = subsetLabels.reduce((records, subset) => {
+      const bins = d3Hexbin
+        .hexbin()
+        .x((d) => d[xParam])
+        .y((d) => d[yParam])
+        .radius((xMax - xMin) / 16)
+        .extent([
+          [xMin, xMax],
+          [yMin, yMax],
+        ])(groupedData[subset]);
+
+      const freqData = bins.reduce((records, bin) => {
+        const freq = bin.length;
+
+        return [...records, ...bin.map((record) => ({ ...record, freq }))];
+      }, []);
+
+      return [...records, ...freqData];
+    }, []);
+
+    const radiusScale = d3
+      .scaleLinear()
+      .domain([1, Math.max(...freqData.map((record) => record["freq"]))])
+      .range([POINT_RADIUS, POINT_RADIUS * 3]);
+
+    const freqDataWithAttr = freqData.map((point) => {
+      const opacity =
+        highlighted === null || highlighted.includes(point["cell_id"]);
+
+      const colour =
+        highlighted === null || highlighted.includes(point["cell_id"])
+          ? colorScale(point[subsetParam])
+          : UNHIGHLIGHTED_POINT_COLOR;
+
+      return { ...point, color: colour, pointSize: radiusScale(point["freq"]) };
+    });
+
+    if (highlighted) {
+      //  context.globalAlpha = 1;
+      freqData
+        .filter((datum) => highlighted.includes(datum["cell_id"]))
+        .forEach((point) => {
+          /*  context.fillStyle = colorScale(point[subsetParam]);
+
+          context.beginPath();
+          context.arc(
+            xScale(point[xParam]),
+            yScale(point[yParam]),
+            radiusScale(point["freq"]),
+            0,
+            Math.PI * 2,
+            true
+          );
+          context.fill();*/
+        });
+    }
+    return [...backgroundDataWithAttr, ...freqDataWithAttr];
+  };
+
+  const modifiedData = getDataWithAttributes(
+    data,
+    colorScale,
+    subsetParam,
+    xParam,
+    yParam,
+    null
+  );
 
   return (
-    <Grid container direction="row" style={{ padding: 0 }}>
-      <Grid item>
-        <canvas ref={canvasRef} />
-      </Grid>
+    <Grid
+      container
+      direction="row"
+      style={{
+        padding: 0,
+        position: "relative",
+        height: height,
+        width: width,
+      }}
+    >
       <Grid
         container
         direction="column"
-        style={{ padding: 0, width: LEGEND_WIDTH }}
+        style={{ padding: 0, width: LEGEND_WIDTH, paddingTop: "30px" }}
       >
         <Grid item>
           <VerticalLegend
@@ -192,6 +339,34 @@ const UMAP = ({
             }}
           />
         </Grid>
+      </Grid>
+      <Grid
+        item
+        style={{ position: "", padding: 0, width: chartWidth + 50 }}
+        ref={wrapperRef}
+      >
+        {canvas && modifiedData && modifiedData.length > 0 && (
+          <ReglUmap
+            canvasRef={canvas}
+            pointSize={4}
+            data={modifiedData}
+            lassoDataObj={
+              lassoData && lassoData.length > 0
+                ? getLassoObj(lassoData, idParam)
+                : {}
+            }
+            isCategorical={false}
+            width={chartWidth}
+            height={chartHeight}
+            xParam={xParam}
+            yParam={yParam}
+            xScale={xScale}
+            yScale={yScale}
+            idParam={idParam}
+            subsetParam={subsetParam}
+          />
+        )}
+        <canvas ref={canvasRef} style={{ zIndex: 100, position: "absolute" }} />
       </Grid>
     </Grid>
   );

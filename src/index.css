@@ -1,13 +1,14 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "Noto Sans";
+  font-family: "Merriweather";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: white;
 }
 
 code {
-  font-family: "MyFontRegular";
+  font-family: "Merriweather";
 }
 
 ::-webkit-scrollbar {
@@ -16,7 +17,6 @@ code {
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background-color: rgb(164 168 182);
-  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+  width: 0; /* Remove scrollbar space */
+  background: transparent; /* Optional: just make scrollbar invisible */
 }

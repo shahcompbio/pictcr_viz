@@ -41,27 +41,6 @@ const MetaData = ({ sample, hasSelection, totalCount, setHighlight }) => {
     >
       <Grid item>
         <Header classes={classes} sample={sample} totalCount={totalCount} />
-        <Paper
-          sx={{ width: "100%", maxWidth: "90%", margin: 1, marginLeft: 8 }}
-        >
-          <MenuList style={{ padding: 0 }}>
-            <MenuItem
-              disabled={!hasSelection}
-              onClick={() => {
-                setHighlight();
-              }}
-              style={{ height: "100%" }}
-            >
-              <ListItemIcon>
-                <LayersClearIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Clear</ListItemText>
-              <Typography variant="body2" color="text.secondary">
-                ⌘X
-              </Typography>
-            </MenuItem>
-          </MenuList>
-        </Paper>
       </Grid>
     </Grid>
   );

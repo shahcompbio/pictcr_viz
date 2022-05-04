@@ -8,7 +8,7 @@ const useFetchData = () => {
   const [data, setData] = useState({});
 
   useEffect(() => {
-    fetch(url + "/getData/hacohen_viz.h5ad/", {
+    fetch(url + "/getData/", {
       credentials: "include",
     })
       .then((res) => res.json())

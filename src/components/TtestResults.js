@@ -1,4 +1,4 @@
-import React, { useState, useRef, Fragment } from "react";
+import React, { useState, useRef, Fragment, useEffect } from "react";
 
 import * as d3 from "d3";
 import { useD3, DownloadIcon } from "@shahlab/planetarium";
@@ -18,16 +18,40 @@ import {
   TableCell,
   TableRow,
 } from "@mui/material";
+import { ClearBox } from "./Filters";
 
 import { INFO } from "../config";
+const url = process.env.HOST ? process.env.HOST : "http://localhost:5000";
 
-const useStyles = makeStyles((theme) => ({
-  root: {},
-}));
+const TtestResults = ({ count, cells, idParam, resetLasso }) => {
+  const [data, settTestData] = useState([]);
 
-const TtestResults = ({ data, type, isLoading, count }) => {
+  useEffect(() => {
+    if (cells && cells.length > 0) {
+      const param = cells.map((d) => d[idParam]).join(",");
+      fetch(url + "/ttest/", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({ data: param }),
+      })
+        .then((res) => res.json())
+        .then((result) => {
+          if (result.data) {
+            settTestData(result.data);
+          }
+        });
+    }
+  }, [cells]);
+
   return count ? (
     <div style={{ height: 400, overflowY: "scroll", overflowX: "none" }}>
+      <div style={{ marginBottom: "10px" }}>
+        <ClearBox
+          disabled={false}
+          onClick={resetLasso}
+          clearText={"Clear Selection"}
+        />
+      </div>
       <Typography color="textSecondary" gutterBottom>
         <b>{count}</b> cells selected
       </Typography>

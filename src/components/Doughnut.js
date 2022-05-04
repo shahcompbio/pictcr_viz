@@ -1,10 +1,10 @@
 import React, { useState, useRef, Fragment } from "react";
 
 import * as d3 from "d3";
-import { useD3, DownloadIcon } from "@shahlab/planetarium";
+import { useD3, DownloadIcon, Select } from "@shahlab/planetarium";
 import _ from "lodash";
 
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 import { Layout } from "@shahlab/planetarium";
 import Tooltip from "@mui/material/Tooltip";
@@ -14,10 +14,11 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 
-import { INFO } from "../config";
+import { INFO, PHENOTYPE_COLORS } from "../config";
 
 import { jsPDF } from "jspdf";
 import canvg from "canvg";
+import { useData } from "../provider/dataContext";
 
 const TOP_NUM = 3;
 
@@ -73,17 +74,9 @@ const download = async (ref, width, height) => {
 
   doc.save("test.pdf");
 };
-const Doughnut = ({
-  data,
-  colors,
-  width,
-  height,
-  subsetParam,
-  type,
-  otherSubsetParam,
-  Select,
-  colorScale,
-}) => {
+const Doughnut = ({ data, width, height, type, otherSubsetParam }) => {
+  const [{ filters, subset }, dispatch] = useData();
+  const [subsetParam, setSubset] = useState(subset);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const tooltipRef = useRef(null);
   const [hoverItem, setHoverItem] = useState(null);
@@ -102,6 +95,18 @@ const Doughnut = ({
     key: d,
     value: allSubsets[d],
   }));
+  const subsetValues = Object.keys(_.groupBy(data, subsetParam)).sort();
+
+  const colorScale = d3
+    .scaleOrdinal()
+    .domain(subsetValues)
+    .range(
+      PHENOTYPE_COLORS.slice(
+        0,
+        Math.min(subsetValues.length, PHENOTYPE_COLORS.length)
+      )
+    )
+    .unknown("#e8e8e8");
 
   const radius = Math.min(width, height) / 2;
   const arc = d3
@@ -127,13 +132,6 @@ const Doughnut = ({
       .attr("stroke", "white")
       .selectAll("path")
       .data(arcs, (d) => d.data.key);
-
-    /*  path
-      .join("path")
-      .attr("fill", (d) => colorScale(d["data"].key))
-      .attr("d", arc)
-      .on("mouseover", mouseover)
-      .on("mouseout", mouseout);*/
 
     path
       .join("path", (update) =>
@@ -177,6 +175,7 @@ const Doughnut = ({
               " (" + d3.format(".0%")(d.data.value.length / totalCount) + ")"
           )
       );
+
     function mouseover(element, index, elements) {
       d3.select(elements[index])
         .transition()
@@ -231,54 +230,53 @@ const Doughnut = ({
     height,
     [data, subsetParam]
   );
+
   return (
-    <Layout
-      addIcon={
-        <DownloadIcon download={async () => download(ref, width, height)} />
-      }
-      title={INFO[type]["title"]}
-      infoText={INFO[type]["text"]}
-      addIcon={Select}
-    >
-      <div style={{ position: "relative" }}>
-        <div
-          id="tooltipDiv"
-          ref={tooltipRef}
-          style={{ position: "relative", width: "10px", height: "10px" }}
-        >
-          <Tooltip
-            PopperProps={{
-              disablePortal: true,
-            }}
-            classes={{ tooltip: classes.tooltip }}
-            arrow
-            title={
-              <TooltipText
-                allSubsets={allSubsets}
-                hoverItem={hoverItem}
-                otherSubsetParam={otherSubsetParam}
-              />
-            }
-            open={isTooltipOpen}
-            disableFocusListener
-            disableHoverListener
-            disableTouchListener
-          >
-            <div
-              style={{
-                position: "absolute",
-                x: 100,
-                y: 100,
-                width: 5,
-                height: 5,
-                fill: "blue",
-              }}
+    <div style={{ position: "relative" }}>
+      <Select
+        width={200}
+        title={"Color By"}
+        value={subsetParam}
+        options={filters.map((datum) => datum["name"])}
+        onSelect={setSubset}
+      />
+      <div
+        id="tooltipDiv"
+        ref={tooltipRef}
+        style={{ position: "relative", width: "10px", height: "10px" }}
+      >
+        <Tooltip
+          PopperProps={{
+            disablePortal: true,
+          }}
+          classes={{ tooltip: classes.tooltip }}
+          arrow
+          title={
+            <TooltipText
+              allSubsets={allSubsets}
+              hoverItem={hoverItem}
+              otherSubsetParam={otherSubsetParam}
             />
-          </Tooltip>
-        </div>
-        <svg ref={ref} />
+          }
+          open={isTooltipOpen}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+        >
+          <div
+            style={{
+              position: "absolute",
+              x: 100,
+              y: 100,
+              width: 5,
+              height: 5,
+              fill: "blue",
+            }}
+          />
+        </Tooltip>
       </div>
-    </Layout>
+      <svg ref={ref} />
+    </div>
   );
 };
 const TooltipText = ({ allSubsets, hoverItem, otherSubsetParam }) => (
