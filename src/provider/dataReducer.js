@@ -53,7 +53,7 @@ const dataReducer = (state, action) => {
         ...initValues,
       };
     }
-    case "setSelectedFilters": {
+    case "setSelectFilters": {
       return { ...state, selectFilters: action.value };
     }
     case "setSubset": {

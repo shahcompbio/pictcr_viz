@@ -165,7 +165,7 @@ const View1 = ({ metadata, filters, view, setView }) => {
         >
           <ViewButtons view={view} setView={setView} />
           <StyledGridItem id="filtersRef">
-            <Filters selected={selectFilters} filters={filters} />
+            <Filters filters={filters} />
           </StyledGridItem>
         </Grid>
         <StyledGridItem id="sunburstRef">
@@ -197,7 +197,7 @@ const View1 = ({ metadata, filters, view, setView }) => {
         </StyledGridItem>
         <StyledGridItem id="phenotypeRef">
           <PhenotypeUMAP
-            width={500}
+            width={400}
             height={600}
             data={data}
             xParam={xParam}

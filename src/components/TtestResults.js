@@ -17,13 +17,14 @@ import {
   TableHead,
   TableCell,
   TableRow,
+  TableContainer,
 } from "@mui/material";
 import { ClearBox } from "./Filters";
 
 import { INFO } from "../config";
 const url = process.env.HOST ? process.env.HOST : "http://localhost:5000";
 
-const TtestResults = ({ count, cells, idParam, resetLasso }) => {
+const TtestResults = ({ count, cells, idParam, resetLasso, width, height }) => {
   const [data, settTestData] = useState([]);
 
   useEffect(() => {
@@ -44,12 +45,17 @@ const TtestResults = ({ count, cells, idParam, resetLasso }) => {
   }, [cells]);
 
   return count ? (
-    <div style={{ height: 400, overflowY: "scroll", overflowX: "none" }}>
+    <div
+      style={{
+        height: height,
+        width: width,
+      }}
+    >
       <div style={{ marginBottom: "10px" }}>
         <ClearBox
           disabled={false}
           onClick={resetLasso}
-          clearText={"Clear Selection"}
+          clearText={"Clear Lasso"}
         />
       </div>
       <Typography color="textSecondary" gutterBottom>
@@ -71,28 +77,34 @@ const TtestResults = ({ count, cells, idParam, resetLasso }) => {
           <CircularProgress />
         </Box>
       ) : (
-        <Table size="small" style={{ height: 300 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell style={{ fontSize: "0.7rem" }}>Gene</TableCell>
-              <TableCell style={{ fontSize: "0.7rem" }} align="right">
-                Adjusted P value
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map((gene) => (
-              <TableRow key={gene["gene"]} style={{ paddingBottom: "5px" }}>
-                <TableCell style={{ borderBottom: "none" }}>
-                  <b>{gene["gene"]}</b>
-                </TableCell>
-                <TableCell style={{ borderBottom: "none" }}>
-                  {d3.format("0.3")(gene["p"])}
+        <TableContainer style={{ maxHeight: height - 100 }}>
+          <Table
+            stickyHeader
+            size="small"
+            style={{ overflowY: "scroll", overflowX: "none" }}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell style={{ fontSize: "0.7rem" }}>Gene</TableCell>
+                <TableCell style={{ fontSize: "0.7rem" }} align="right">
+                  Adjusted P value
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {data.map((gene) => (
+                <TableRow key={gene["gene"]} style={{ paddingBottom: "5px" }}>
+                  <TableCell style={{ borderBottom: "none" }}>
+                    <b>{gene["gene"]}</b>
+                  </TableCell>
+                  <TableCell style={{ borderBottom: "none" }}>
+                    {d3.format("0.3")(gene["p"])}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
     </div>
   ) : (

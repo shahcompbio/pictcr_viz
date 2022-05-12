@@ -11,6 +11,7 @@ import {
   Select,
   //  WebglUMAP,
 } from "@shahlab/planetarium";
+import ColorSelect from "./VertSelect";
 import ReglUmap from "./util/ReglUmap";
 import { useGL } from "./util/useGL";
 
@@ -26,7 +27,7 @@ const NUM_LEGEND_WIDTH = 250;
 const AXIS_LENGTH = 50;
 const AXIS_FONT = "Helvetica";
 const AXIS_COLOR = "#000000";
-const canvasWidth = 1000;
+const canvasWidth = 900;
 const canvasHeight = 600;
 const COLOR_ARRAY = [
   "#5E4FA2",
@@ -175,7 +176,8 @@ const PhenotypeUMAP = ({
           .filter((datum) => legendFilter(value, datum))
           .map((datum) => datum[idParam]);
   };
-
+  console.log(filters);
+  console.log(subset);
   return (
     <div style={{ width: canvasWidth }}>
       <Grid
@@ -197,9 +199,10 @@ const PhenotypeUMAP = ({
           }}
         >
           <span style={{ marginRight: 10 }}>
-            <Select
-              width={200}
-              title={"Color By"}
+            <ColorSelect
+              id={"phenotypeSelect"}
+              width={legendWidth}
+              title={"Colored By"}
               value={subset}
               options={filters.map((datum) => datum["name"])}
               onSelect={setSubset}
@@ -234,6 +237,8 @@ const PhenotypeUMAP = ({
             resetLasso={resetLasso}
             idParam={idParam}
             cells={lassoData}
+            height={canvasHeight / 2}
+            width={NUM_LEGEND_WIDTH}
             count={lassoData ? lassoData.length : null}
           />
         </Grid>

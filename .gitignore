@@ -9,6 +9,8 @@
 
 /server/flask/*
 /server/env/*
+/server/data/*
+/server/env/*
 
 # testing
 /coverage

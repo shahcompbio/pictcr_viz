@@ -34,7 +34,7 @@ const filterMapping = {
   timepoint: "Timepoint",
 };
 
-const Filters = ({ hasSelection, setHighlight }) => {
+const Filters = ({}) => {
   const [{ selectFilters, filters }, dispatch] = useData();
   const [expanded, setExpanded] = useState(
     filters.reduce((final, curr) => {
@@ -102,7 +102,7 @@ const Filters = ({ hasSelection, setHighlight }) => {
             title={filter["name"]}
             values={filter["values"]}
             onValueClick={(value) => {
-              dispatch({ type: "setSelectedFilters", value: value });
+              dispatch({ type: "setSelectFilters", value: value });
             }}
             selected={selectFilters}
             top={index !== 0}
@@ -110,7 +110,12 @@ const Filters = ({ hasSelection, setHighlight }) => {
           />
         ))}
       </List>
-      <ClearBox disabled={!hasSelection} onCLick={setHighlight} />
+      <ClearBox
+        disabled={!(selectFilters !== null)}
+        onClick={() => {
+          dispatch({ type: "setSelectFilters", value: null });
+        }}
+      />
     </Box>
   );
 };
@@ -189,7 +194,9 @@ const Chips = () => {
       sx={{ paddingLeft: "-16px" }}
       variant="outlined"
       onClick={() => {}}
-      onDelete={() => {}}
+      onDelete={() => {
+        dispatch({ type: "setSelectFilters", value: null });
+      }}
     />
   ) : null;
 };
