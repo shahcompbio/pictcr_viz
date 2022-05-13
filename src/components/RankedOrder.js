@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as d3 from "d3";
 import _ from "lodash";
 
@@ -8,7 +8,7 @@ import {
   drawCanvasAxis,
 } from "@shahlab/planetarium";
 
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 
 const COLOR_ARRAY = [
   "#5E4FA2",
@@ -28,10 +28,10 @@ const COLOR_ARRAY = [
   "#b2dbd6",
   "#ffd470",
 ];
-const PADDING = 50;
+const PADDING = 70;
 const format = d3.format(".3f");
 
-const RankedOrder = ({ width, height, data }) => {
+const RankedOrder = ({ width, height, data, highlight = null }) => {
   // need to calculate rank
   const subsets = _.groupBy(data, "subtype");
   const subsetValues = Object.keys(subsets).sort();
@@ -78,9 +78,13 @@ const RankedOrder = ({ width, height, data }) => {
 
   const subsetLabels = subsetValues.map((value) => ({
     value,
-    label: value,
+    label: `${value}`,
     color: subsetColors(value),
   }));
+
+  // const [hoverSubset, setHoverSubset] = useState(null);
+
+  const highlightValue = highlight;
 
   const canvasRef = useCanvas(
     (canvas) => {
@@ -92,6 +96,7 @@ const RankedOrder = ({ width, height, data }) => {
         xScale: rankScale,
         yScale: freqScale,
         ticks: 3,
+        font: "Helvetica",
         label: "Clone Frequency",
       });
 
@@ -101,6 +106,7 @@ const RankedOrder = ({ width, height, data }) => {
         yScale: freqScale,
         ticks: 3,
         label: "Rank",
+        font: "Helvetica",
         orientation: "horizontal",
       });
 
@@ -114,7 +120,10 @@ const RankedOrder = ({ width, height, data }) => {
         context.beginPath();
 
         context.fillStyle = subsetColors(subsetName);
-        context.strokeStyle = subsetColors(subsetName);
+        context.strokeStyle =
+          highlightValue === null || highlightValue === subsetName
+            ? subsetColors(subsetName)
+            : "#e8e8e8";
         context.moveTo(rankScale(1), freqScale(subsetData[0]["frequency"]));
         subsetData.forEach((record, index) => {
           // context.arc(
@@ -129,27 +138,58 @@ const RankedOrder = ({ width, height, data }) => {
           context.lineTo(rankScale(index + 1), freqScale(record["frequency"]));
           context.stroke();
         });
+
+        if (highlightValue) {
+          const index = subsetValues.indexOf(highlightValue);
+          const subsetData = records[index];
+          context.beginPath();
+
+          context.fillStyle = subsetColors(highlightValue);
+          context.strokeStyle = subsetColors(highlightValue);
+          context.moveTo(rankScale(1), freqScale(subsetData[0]["frequency"]));
+          subsetData.forEach((record, index) => {
+            context.lineTo(
+              rankScale(index + 1),
+              freqScale(record["frequency"])
+            );
+            context.stroke();
+          });
+        }
       });
     },
     width,
     height,
-    []
+    [data, highlightValue]
   );
-
+  /*    <Grid
+      container
+      rowSpacing={2}
+      spacing={8}
+      direction="row"
+      justify="space-between"
+      alignItems="flex-start"
+      style={{ padding: 0, width: width + 200 }}
+    >*/
   return (
-    <Grid container direction="row" style={{ padding: 0 }}>
-      <Grid item>
+    <div style={{ display: "flex" }}>
+      <div>
         <canvas ref={canvasRef} />
-      </Grid>
-      <Grid item>
+      </div>
+      <div item style={{ paddingLeft: "0px", marginTop: "20px" }}>
         <VerticalLegend
+          fontFamily={{
+            regular: "Helvetica",
+            bold: "Helvetica",
+            labelOffset: -1,
+          }}
           width={200}
           height={height}
-          labels={subsetLabels}
-          setHighlighted={() => {}}
+          ticks={subsetLabels}
+          colorScale={subsetColors}
+          // onHover={setHoverSubset}
         />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 };
 

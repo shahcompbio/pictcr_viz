@@ -7,9 +7,12 @@
   height: 40vmin;
   pointer-events: none;
 }
-
+#font {
+  font-family: Noto Sans;
+}
 .App-header {
-  background-color: #282c34;
+  /*background-color: #282c34;*/
+  background-color: white;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

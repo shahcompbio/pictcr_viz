@@ -1,45 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import _ from "lodash";
 import { INFO } from "../config.js";
 
 import { Layout, UMAP } from "@shahlab/planetarium";
+import { CircularProgress } from "@mui/material";
 
-import { CONSTANTS } from "../config";
+import TtestResults from "./TtestResults";
 
-const DataWrapper = ({
+const PhenotypeUMAP = ({
   data,
-  chartDim,
-  selectedSubtype,
-  hoveredSubtype,
-  setSelectedSubtype,
-}) => {
-  const { xParam, yParam, subtypeParam } = CONSTANTS;
-
-  return (
-    <Layout
-      title={INFO["SUBTYPEUMAP"]["title"]}
-      infoText={INFO["SUBTYPEUMAP"]["text"]}
-    >
-      <UMAP
-        width={chartDim["width"]}
-        height={chartDim["height"]}
-        data={data}
-        subset={hoveredSubtype || selectedSubtype}
-        xParam={xParam}
-        yParam={yParam}
-        subsetParam={subtypeParam}
-        idParam={"cell_id"}
-        onLegendHover={(value) => {
-          setSelectedSubtype({
-            hover: value,
-          });
-        }}
-        onLegendClick={(value) => {
-          setSelectedSubtype({ selected: value });
-        }}
+  xParam,
+  yParam,
+  subsetParam,
+  idParam,
+  colorScale,
+  onLasso,
+  onLegendClick,
+  disable,
+  highlightIDs,
+  Select,
+  loadingTest,
+  tTestData,
+}) => (
+  <UMAP
+    width={700}
+    height={600}
+    data={data}
+    xParam={xParam}
+    yParam={yParam}
+    subsetParam={subsetParam}
+    idParam={idParam}
+    colorScale={colorScale}
+    onLasso={onLasso}
+    onLegendClick={onLegendClick}
+    disable={disable}
+    highlightIDs={highlightIDs}
+    MoreInfoComponent={() => (
+      <TtestResults
+        data={tTestData}
+        count={highlightIDs ? highlightIDs.length : null}
       />
-    </Layout>
-  );
-};
+    )}
+  />
+);
 
-export default DataWrapper;
+export default PhenotypeUMAP;

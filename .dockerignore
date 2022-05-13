@@ -7,6 +7,9 @@
 
 # testing
 /coverage
+/server/data/*
+/server/env/*
+.git
 
 # production
 /build

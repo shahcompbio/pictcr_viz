@@ -7,6 +7,11 @@
 /venv
 /__pycache__
 
+/server/flask/*
+/server/env/*
+/server/data/*
+/server/env/*
+
 # testing
 /coverage
 
@@ -17,6 +22,11 @@
 # data
 *.tsv
 *.h5ad
+/src/data/**/*.json
+
+
+# server
+*.pyc
 
 # misc
 .DS_Store

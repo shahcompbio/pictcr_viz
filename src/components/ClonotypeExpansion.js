@@ -21,18 +21,17 @@ const ClonotypeExpansion = ({ data, width, height, highlightedRow }) => {
   }, {});
 
   return (
-    <Layout title={INFO["BARPLOT"]["title"]} infoText={INFO["BARPLOT"]["text"]}>
-      <StackedHorizontalBar
-        highlightedRow={highlightedRow}
-        data={countedClonotypes}
-        width={width}
-        height={height}
-        barLabels={Array.from(Array(10).keys()).map((value) => ({
-          value: value + 1,
-          label: value === 9 ? "≥10" : value + 1,
-        }))}
-      />
-    </Layout>
+    <StackedHorizontalBar
+      highlightedRow={highlightedRow}
+      font={"Helvetica"}
+      data={countedClonotypes}
+      width={width}
+      height={height}
+      barLabels={Array.from(Array(10).keys()).map((value) => ({
+        value: value + 1,
+        label: value === 9 ? "≥10" : value + 1,
+      }))}
+    />
   );
 };
 

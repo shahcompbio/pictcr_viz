@@ -6,7 +6,24 @@ export const CONSTANTS = {
   subtypeParam: "subtype",
   logProbParam: "log10_probability",
 };
-
+export const PHENOTYPE_COLORS = [
+  "#5E4FA2",
+  "#3288BD",
+  "#66C2A5",
+  "#FEE08B",
+  "#FDAE61",
+  "#F46D43",
+  "#D53E4F",
+  "#c9cc76",
+  "#9E0142",
+  "#C6AEFF",
+  "#BDD8FF",
+  "#BDFFB2",
+  "#FFC8AE",
+  "#FF9FBB",
+  "#b2dbd6",
+  "#ffd470",
+];
 export const CLONOTYPE_COLORS = [
   "#674172",
   "#098dde",
@@ -23,6 +40,14 @@ export const CLONOTYPE_COLORS = [
 ];
 
 export const INFO = {
+  SUBTYPEDOUGH: {
+    title: "Phenotype Distribution",
+    text: "",
+  },
+  CLONOTYPEDOUGH: {
+    title: "Clone Distribution",
+    text: "",
+  },
   UMAP: {
     title: "Clone UMAP",
     text: "UMAP embedding generated from the subset of CD8/CD4 T cells identified with CellAssign. The top 10 clones by frequency are mapped to cells in the embedding. The radius slider allows the user to highlight areas of high density for a given sequence that can be referenced against the phenotype UMAP.",
@@ -50,5 +75,9 @@ export const INFO = {
   RANKED: {
     title: "Ranked Clone Frequency",
     text: "Ranked order of clonotype frequency for each subtype",
+  },
+  SANKEY: {
+    title: "Sankey",
+    text: "",
   },
 };
