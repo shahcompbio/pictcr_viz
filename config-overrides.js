@@ -1,18 +1,16 @@
-/* config-overrides.js */
-/* config-overrides.js */
+module.exports = {
+  webpack: (config, env) => {
+    config.optimization.runtimeChunk = false;
+    config.optimization.splitChunks = {
+      cacheGroups: {
+        default: false,
+      },
+    };
 
-module.exports = function override(config, env) {
-  //do stuff with the webpack config...
-  return config;
+    config.output.filename = "static/js/[name].js";
+
+    config.plugins[5].options.filename = "static/css/[name].css";
+    config.plugins[5].options.moduleFilename = () => "static/css/main.css";
+    return config;
+  },
 };
-/*module.exports = {
-    // The Webpack config to use when compiling your react app for development or production.
-    webpack: function(config, env) {
-      // ...add your webpack config
-      return config;
-    },
-    paths: function(paths, env) {
-      // ...add your paths config
-      return paths;
-    }
-  };*/
