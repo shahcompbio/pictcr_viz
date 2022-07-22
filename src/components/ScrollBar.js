@@ -199,12 +199,6 @@ const ScrollBar = ({ inputRef, inputRefMapping, scrollBarWidth, height }) => {
               )["width"];
             d3.select("#scroller").attr("width", finalWidth);
 
-            console.log(
-              "only scroll x, lastScroll: ",
-              lastScrollLeft,
-              " documentScrollNow",
-              documentScrollLeft
-            );
             lastScrollLeft = documentScrollLeft;
           }
 
@@ -304,27 +298,14 @@ const ScrollBar = ({ inputRef, inputRefMapping, scrollBarWidth, height }) => {
           bandWidth: barWidths[d]["bandWidth"],
         }))
         .sort((a, b) => a["xStart"] - b["xStart"]);
-      console.log(event.x);
-      console.log(sortedBarWidths);
       //sortedBarWidths.map;
     };
     const setScrollerPosition = (event, d) => {
-      /*  const closestXPos =
-        Math.floor(event.x / getBandWidth(d)) * getBandWidth(d);
-      const xPos = closestXPos > maxXPos ? maxXPos : closestXPos;
-      const i =
-        event.type === "click"
-          ? xPos / getBandWidth(d) - 1
-          : xPos / getBandWidth(d);*/
-
       moveScrollerToSpot(event.x);
-      //  d3.select("#scroller").attr("width", 50);
-      //  scrollToByRef(inputRefMapping[i]["refName"]);
     };
     const setScrollWidth = (event) => {
       snapToGrid(event);
       getScrollerWidth();
-      //d3.select("#scroller").attr("width", 100);
     };
     const scroller = svg.append("rect").attr("id", "scroller");
 
@@ -336,7 +317,7 @@ const ScrollBar = ({ inputRef, inputRefMapping, scrollBarWidth, height }) => {
     scroller
       .attr("x", 0)
       .attr("y", 2.5)
-      .attr("fill", "#8686db")
+      //.attr("fill", "#8686db")
       .attr("height", 40)
       .attr("width", getScrollerWidth())
       //  .attr("width", (d) => getBandWidth(d))
@@ -368,6 +349,7 @@ const ScrollBar = ({ inputRef, inputRefMapping, scrollBarWidth, height }) => {
         background: "white",
       }}
     >
+      Scroll To:
       <svg ref={ref} style={{ display: "block", margin: "auto" }} />
     </div>
   );

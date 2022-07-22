@@ -290,7 +290,7 @@ const UMAP = ({
     yParam,
     null
   );
-
+  console.log(modifiedData);
   return (
     <Grid
       container

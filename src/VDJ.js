@@ -9,9 +9,9 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { useData } from "./provider/dataContext";
 
 export const VDJ = () => {
-  const [{ metadata, filters }] = useData();
+  const [{ metadata, filters, stats }] = useData();
   const [view, setView] = useState("1");
-
+  console.log(metadata);
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>

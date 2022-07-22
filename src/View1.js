@@ -20,6 +20,9 @@ import { styled } from "@mui/material/styles";
 
 import { useData } from "./provider/dataContext";
 
+import parseClonotypeData from "./util/parseClonotypeData.js";
+import parsePhenotypeData from "./util/parsePhenotypeData.js";
+
 import { CONSTANTS, CLONOTYPE_COLORS } from "./config";
 
 const PHENOTYPE_COLORS = [
@@ -40,12 +43,15 @@ const PHENOTYPE_COLORS = [
   "#b2dbd6",
   "#ffd470",
 ];
-const View1 = ({ metadata, filters, view, setView }) => {
+const View1 = ({ view, setView }) => {
   const { clonotypeParam, subtypeParam, logProbParam, xParam, yParam } =
     CONSTANTS;
 
   const [
     {
+      metadata,
+      filters,
+      stats,
       inputRefMapping,
       selectPhenotype,
       selectClone,
@@ -57,6 +63,7 @@ const View1 = ({ metadata, filters, view, setView }) => {
     },
     dispatch,
   ] = useData();
+
   const inputRef = useRef([]);
 
   const data =
@@ -66,43 +73,17 @@ const View1 = ({ metadata, filters, view, setView }) => {
           (datum) => datum[selectFilters[0]] === selectFilters[1]
         );
 
-  // Remove none
-  const clonotypeCounts = _.countBy(
-    data.filter((datum) => datum[clonotypeParam] !== "None"),
-    clonotypeParam
+  const {
+    clonotypeCounts,
+    clonotypeLabels,
+    cloneColorScale,
+    clonotypeDataIsLoaded,
+  } = parseClonotypeData(data, stats);
+
+  const { phenotypeColorScale, phenotypeValues } = parsePhenotypeData(
+    data,
+    subset
   );
-
-  const clonotypeLabels = Object.keys(clonotypeCounts)
-    .sort((a, b) => clonotypeCounts[b] - clonotypeCounts[a])
-    .slice(0, 10)
-    .map((value, index) => ({
-      value,
-      label: `Clone ${value}`,
-      color: CLONOTYPE_COLORS[index],
-    }));
-
-  const cloneColorScale = d3
-    .scaleOrdinal()
-    .domain(clonotypeLabels.map((label) => label["value"]))
-    .range(
-      CLONOTYPE_COLORS.slice(
-        0,
-        Math.min(clonotypeLabels.length, CLONOTYPE_COLORS.length)
-      )
-    )
-    .unknown("#e8e8e8");
-
-  const phenotypeValues = Object.keys(_.groupBy(data, subset)).sort();
-  const phenotypeColorScale = d3
-    .scaleOrdinal()
-    .domain(phenotypeValues)
-    .range(
-      PHENOTYPE_COLORS.slice(
-        0,
-        Math.min(phenotypeValues.length, PHENOTYPE_COLORS.length)
-      )
-    )
-    .unknown("#e8e8e8");
 
   const highlightData =
     selectIDs !== null
@@ -195,6 +176,33 @@ const View1 = ({ metadata, filters, view, setView }) => {
             subsetParam={subset}
           />
         </StyledGridItem>
+        <StyledGridItem id="cloneumapRef">
+          {clonotypeDataIsLoaded && (
+            <ClonotypeUMAP
+              width={800}
+              height={600}
+              data={data}
+              xParam={xParam}
+              yParam={yParam}
+              subsetParam={clonotypeParam}
+              idParam={clonotypeParam}
+              colorScale={cloneColorScale}
+              labels={(value) => `Clone ${value}`}
+              highlightIDs={highlightIDs}
+              onLasso={(data) => {
+                /*      setSelectIDs(
+                  data === null ? null : data.map((datum) => datum["cell_id"])
+                );
+                setActiveGraph(data === null ? null : "cloneUMAP");*/
+              }}
+              onLegendClick={(value) => {
+                /*setSelectClone(value);
+                setActiveGraph(value === null ? null : "cloneUMAP");*/
+              }}
+              disable={activeGraph !== null && activeGraph !== "cloneUMAP"}
+            />
+          )}
+        </StyledGridItem>
         <StyledGridItem id="phenotypeRef">
           <PhenotypeUMAP
             width={400}
@@ -225,31 +233,7 @@ const View1 = ({ metadata, filters, view, setView }) => {
             highlightIDs={highlightIDs}
           />
         </StyledGridItem>
-        <StyledGridItem id="cloneumapRef">
-          <ClonotypeUMAP
-            width={800}
-            height={600}
-            data={data}
-            xParam={xParam}
-            yParam={yParam}
-            subsetParam={clonotypeParam}
-            idParam="cell_id"
-            colorScale={cloneColorScale}
-            labels={(value) => `Clone ${value}`}
-            highlightIDs={highlightIDs}
-            onLasso={(data) => {
-              /*      setSelectIDs(
-                data === null ? null : data.map((datum) => datum["cell_id"])
-              );
-              setActiveGraph(data === null ? null : "cloneUMAP");*/
-            }}
-            onLegendClick={(value) => {
-              /*setSelectClone(value);
-              setActiveGraph(value === null ? null : "cloneUMAP");*/
-            }}
-            disable={activeGraph !== null && activeGraph !== "cloneUMAP"}
-          />
-        </StyledGridItem>
+
         <StyledGridItem id="heatmapRef">
           <Heatmap
             width={750}

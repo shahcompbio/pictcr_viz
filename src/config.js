@@ -1,9 +1,9 @@
 export const CONSTANTS = {
   xParam: "UMAP_1",
   yParam: "UMAP_2",
-  clonotypeParam: "clone_id",
+  clonotypeParam: "IR_VDJ_1_junction_aa",
   cellIdParam: "cell_id",
-  subtypeParam: "subtype",
+  subtypeParam: "cell_type",
   logProbParam: "log10_probability",
 };
 export const PHENOTYPE_COLORS = [
@@ -25,6 +25,23 @@ export const PHENOTYPE_COLORS = [
   "#ffd470",
 ];
 export const CLONOTYPE_COLORS = [
+  "[0.369,0.31,0.635,1.0]",
+  "[0.196,0.533,0.741,1.0]",
+  "[0.4,0.761,0.647,1.0]",
+  "[0.996,0.878,0.545,1.0]",
+  "[0.957,0.427,0.263,1.0]",
+  "[0.835,0.243,0.31,1.0]",
+  "[0.788,0.8,0.463,1.0]",
+  "[0.62,0.004,0.259,1.0]",
+  "[0.776,0.682,1.0,1.0]",
+  "[0.741,0.847,1.0,1.0]",
+  "[0.741,1.0,0.698,1.0]",
+  "[1.0,0.784,0.682,1.0]",
+  "[1.0,0.624,0.733,1.0]",
+  "[0.698,0.859,0.839,1.0]",
+  "[1.0,0.831,0.439,1.0]",
+];
+/*export const CLONOTYPE_COLORS = [
   "#674172",
   "#098dde",
   "#fa832f",
@@ -37,8 +54,7 @@ export const CLONOTYPE_COLORS = [
   "#5aebed",
   "#8f8f3f",
   "#ed1a1a",
-];
-
+];*/
 export const INFO = {
   SUBTYPEDOUGH: {
     title: "Phenotype Distribution",

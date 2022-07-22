@@ -12,6 +12,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { StyledTitle } from "./util/util";
+import Title from "./Title.js";
 
 import { INFO } from "../config";
 
@@ -19,7 +20,7 @@ import { jsPDF } from "jspdf";
 import canvg from "canvg";
 
 const b = {
-  w: 75,
+  w: 100,
   h: 30,
   s: 5,
   t: 10,
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     height: "10px",
   },
 }));
-
+const parentIsTopTen = (d) => d.parent.data.name === "Top Ten";
 const download = async (ref, width, height) => {
   var doc = new jsPDF("L", "px", [width, height]);
 
@@ -150,17 +151,20 @@ const Sunburst = ({
   const topTenObj = {
     name: "Top Ten",
     children: [...topTen],
-    count: topTenCount,
+    cellCount: topTenCount,
   };
   const singleObj = {
     name: "Singleton",
     children: [...singletonCounts],
-    count: singletonCounts.length,
+    cellCount: singletonCounts.length,
   };
   const otherObj = {
     name: "Other",
     children: [...restCounts],
-    count: restCount,
+    cellCount: restCounts.reduce(
+      (final, curr) => final + curr.children.length,
+      0
+    ),
   };
   const hierarchy = {
     name: "flair",
@@ -192,16 +196,16 @@ const Sunburst = ({
       if (small[parent]["start"] < arc.startAngle()(d)) {
         small[parent]["start"] = arc.startAngle()(d);
         small[parent]["startNode"] = d;
-        small[parent]["count"] = small[parent]["count"] + 1;
+        small[parent]["cellCount"] = small[parent]["cellCount"] + 1;
       }
       if (small[parent]["end"] > arc.startAngle()(d)) {
         small[parent]["end"] = arc.endAngle()(d);
         small[parent]["endNode"] = d;
-        small[parent]["count"] = small[parent]["count"] + 1;
+        small[parent]["cellCount"] = small[parent]["cellCount"] + 1;
       }
     } else {
       small[parent] = {
-        count: 1,
+        cellCount: 1,
         start: arc.startAngle()(d),
         end: arc.endAngle()(d),
         startNode: d,
@@ -214,9 +218,9 @@ const Sunburst = ({
   const drawBreadCrumbs = (svg, height) => {
     var trail = svg
       .append("svg")
-      .attr("width", 100)
+      .attr("width", 200)
       .attr("height", 300)
-      .attr("y", height - 100)
+      .attr("y", 10)
       .attr("id", "trail");
     trail.append("text").attr("id", "endlabel").style("fill", "#000");
   };
@@ -264,7 +268,7 @@ const Sunburst = ({
       .filter((d) => d !== "flair")
       .map((d) => {
         var curr = small[d]["startNode"].current;
-        curr["count"] = small[d]["count"];
+        curr["cellCount"] = small[d]["cellCount"];
         curr["x0"] = small[d]["endNode"].current["x0"];
         curr["y1"] = small[d]["endNode"].current["y1"];
         return curr;
@@ -368,9 +372,7 @@ const Sunburst = ({
       var entering = g
         .enter()
         .append("g")
-        .attr("transform", function (d, i) {
-          return "translate(10, " + i * (b.h + b.s) + ")";
-        });
+        .attr("transform", (d, i) => "translate(10, " + i * (b.h + b.s) + ")");
 
       entering
         .append("polygon")
@@ -388,34 +390,45 @@ const Sunburst = ({
       entering
         .append("text")
         .attr("x", (b.w + b.t) / 2)
-        .attr("y", b.h / 2)
+        .attr("y", (d) => {
+          if (d.depth === 2 && !parentIsTopTen(d)) {
+            return -b.h;
+          } else {
+            return b.h / 2;
+          }
+        })
         .attr("dy", "0.35em")
         .attr("text-anchor", "middle")
         .attr("font-size", 12)
         .text(function (d) {
-          if (d.parent.data.name === "Top Ten") {
+          if (parentIsTopTen(d)) {
             return "Clone " + d.data.name;
           } else if (
             d.parent &&
             (d.parent.data.name === "Other" ||
               d.parent.data.name === "Singleton")
           ) {
-            return;
+            return "";
           } else {
-            return d.data.name;
+            return d.data.name + " Clones";
           }
         });
 
       g.exit().remove();
+      const yPos =
+        nodeArray.length !== 1 && !parentIsTopTen(nodeArray[1])
+          ? -(b.h + 10) + (nodeArray.length + 0.5) * (b.h + b.s)
+          : (nodeArray.length + 0.5) * (b.h + b.s);
 
+      //  if (typeof percentageString !== "function") {
       d3.select("#trail")
         .select("#endlabel")
         .attr("x", b.w / 2 + 10)
-        .attr("y", (nodeArray.length + 0.5) * (b.h + b.s))
+        .attr("y", yPos)
         .attr("dy", "0.35em")
         .attr("text-anchor", "middle")
         .text(percentageString + " cells");
-
+      //  }
       // Make the breadcrumb trail visible, if it's hidden.
       d3.select("#trail").attr("display", "all");
     }
@@ -448,14 +461,13 @@ const Sunburst = ({
         .style("left", arcLocation[0] + width / 2 + "px")
         .style("top", arcLocation[1] + height / 2 + "px");
 
-      var sizeCount = d.data.count
-        ? d.data.count
-        : d.count
-        ? d.count
+      var sizeCount = d.data.cellCount
+        ? d.data.cellCount
+        : d.cellCount
+        ? d.cellCount
         : d.data.children.length;
 
       var sequenceArray = getAncestors(d);
-
       updateBreadcrumbs(sequenceArray, sizeCount, d);
     }
 
@@ -518,10 +530,10 @@ const Sunburst = ({
 
       //d3.select("#zoomText").
       var sequenceArray = getAncestors(p);
-      var sizeCount = p.data.count
-        ? p.data.count
-        : p.count
-        ? p.count
+      var sizeCount = p.data.cellCount
+        ? p.data.cellCount
+        : p.cellCount
+        ? p.cellCount
         : p.data.children.length;
 
       updateBreadcrumbs(sequenceArray, sizeCount, p, true);
@@ -552,12 +564,10 @@ const Sunburst = ({
     height,
     [data]
   );
-  /*      <Grid direction="row">
-          <StyledTitle>Sunburst</StyledTitle>
-          <InfoIcon style={{ color: "grey" }} />
-        </Grid>*/
+
   return (
     <div style={{ position: "relative" }}>
+      <Title title="Clone Distribution" />
       <div id="tooltipDiv" ref={tooltipRef} className={classes.tooltipWrapper}>
         <Tooltip
           PopperProps={{
@@ -614,12 +624,17 @@ const TooltipText = ({
             hoverParent !== "flair" &&
             hoverParent !== "Singleton"
               ? "Clone " + hoverItem
-              : hoverItem}
+              : hoverItem + " Clones"}
           </Typography>
           {hoverParent && hoverParent !== "flair" && (
             <span style={{ fontSize: 13 }}>
               <span>
-                <b>{allSubsets[hoverItem].length}</b>
+                <b>
+                  {Object.keys(allSubsets[hoverItem]).reduce(
+                    (final, curr) => final + allSubsets[hoverItem][curr].length,
+                    0
+                  )}
+                </b>
                 <em>{" cells"}</em>
               </span>
               <div>
@@ -642,7 +657,7 @@ const TooltipText = ({
                     0
                   )}
               </b>
-              <em>{" cells"}</em>
+              <em>{" / " + totalCount + " cells"}</em>
             </span>
           )}
         </span>

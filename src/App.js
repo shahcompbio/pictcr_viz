@@ -8,21 +8,23 @@ import { useData } from "./provider/dataContext";
 const DevApp = () => {
   const data = fetchFileData();
   const [{}, dispatch] = useData();
-
-  useEffect(() => {
-    if (Object.keys(data).length !== 0) {
-      dispatch({
-        type: "initialSetup",
-        values: [
-          {
+  /*          {
             value: data["metadata"],
             valueType: "metadata",
           },
           {
             value: data["filters"].filter((d) => d.name !== "clone_id"),
             valueType: "filters",
-          },
-        ],
+          },*/
+  useEffect(() => {
+    if (Object.keys(data).length !== 0) {
+      const values = Object.keys(data).map((d) => ({
+        value: data[d],
+        valueType: d,
+      }));
+      dispatch({
+        type: "initialSetup",
+        values: [...values],
       });
     }
   }, [data]);

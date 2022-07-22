@@ -10,6 +10,8 @@ import {
 
 import { Grid } from "@mui/material";
 
+import { CONSTANTS } from "../config";
+
 const COLOR_ARRAY = [
   "#5E4FA2",
   "#3288BD",
@@ -32,14 +34,16 @@ const PADDING = 70;
 const format = d3.format(".3f");
 
 const RankedOrder = ({ width, height, data, highlight = null }) => {
+  const { subtypeParam, clonotypeParam } = CONSTANTS;
   // need to calculate rank
-  const subsets = _.groupBy(data, "subtype");
+  const subsets = _.groupBy(data, subtypeParam);
   const subsetValues = Object.keys(subsets).sort();
+
   // group by clonotype, get counts, create records, then sort
   const records = subsetValues.map((subsetName) => {
     const subsetData = subsets[subsetName];
 
-    const cloneGroups = _.groupBy(subsetData, "clone_id");
+    const cloneGroups = _.groupBy(subsetData, clonotypeParam);
     const cloneValues = Object.keys(cloneGroups).sort();
 
     return cloneValues
@@ -114,7 +118,7 @@ const RankedOrder = ({ width, height, data, highlight = null }) => {
       context.beginPath();
       context.lineWidth = 2;
       context.globalAlpha = 1;
-
+      console.log(subsetValues);
       subsetValues.forEach((subsetName, index) => {
         const subsetData = records[index];
         context.beginPath();

@@ -25,7 +25,7 @@ const initialState = {
       { plotName: "Sunburst", refName: "sunburstRef" },
       { plotName: "Doughnut", refName: "doughnutRef" },
       { plotName: "Phenotype UMAP", refName: "phenotypeRef" },
-      { plotName: "Clonotype UMAP", refName: "cloneumapRef" },
+      //{ plotName: "Clonotype UMAP", refName: "cloneumapRef" },
       { plotName: "Heatmap", refName: "heatmapRef" },
       { plotName: "Clonotype Expansion", refName: "clonotypeExpansionRef" },
       { plotName: "Probability Histogram", refName: "probabilityHistogramRef" },

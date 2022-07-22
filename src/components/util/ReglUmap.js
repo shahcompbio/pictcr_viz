@@ -32,6 +32,7 @@ const getColorScale = ({ data, subsetParam, isCategorical }) => {
   if (isCategorical) {
     const subsetGroups = _.groupBy(data, subsetParam);
     const subsetValues = Object.keys(subsetGroups).sort();
+
     return d3
       .scaleOrdinal()
       .domain(subsetValues)
@@ -93,11 +94,10 @@ const ReglUmap = ({
       ...d,
       x: x,
       y: y,
-      color: subsetColors(d[subsetParam]),
+      color: color,
       pointSize: d["pointSize"],
     };
   });
-
   return newData.length > 0 ? (
     <ReglFrame
       canvasRef={canvasRef}

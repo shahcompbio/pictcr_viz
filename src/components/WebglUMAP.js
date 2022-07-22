@@ -176,8 +176,7 @@ const PhenotypeUMAP = ({
           .filter((datum) => legendFilter(value, datum))
           .map((datum) => datum[idParam]);
   };
-  console.log(filters);
-  console.log(subset);
+  console.log(data);
   return (
     <div style={{ width: canvasWidth }}>
       <Grid
