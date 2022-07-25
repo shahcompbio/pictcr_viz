@@ -5,7 +5,7 @@ import { useData } from "../provider/dataContext";
 
 import { PHENOTYPE_COLORS } from "../config";
 
-const parseClonotypeData = (data, subset) => {
+const parsePhenotypeData = (data, subset) => {
   const phenotypeValues = Object.keys(_.groupBy(data, subset)).sort();
   const phenotypeColorScale = d3
     .scaleOrdinal()

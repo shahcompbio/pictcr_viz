@@ -18,25 +18,20 @@ from flask_cors import CORS
 import argparse
 from itertools import islice
 from dotenv import dotenv_values
+
 from multiprocessing.managers import BaseManager
 import flask
 from server.blueprint import blueprint
 
-#import blueprint
 config = dict(dotenv_values(".env"))
 port = "3006"
 MAX_RESPONSE_LENGTH = 10000
-#COLUMNS = ['phenotype', 'clone_id']
+#clone_id = 'IR_VDJ_1_junction_aa'
 COLUMNS = ['IR_VDJ_1_junction_aa','cell_type']
 
-def get_test():
-    print("get test")
-    return "hello from test"
-
-def open_data(filepath, timepoint, phenotype, clone_id):
+def open_data(filepath, phenotype, clone_id):
     adata = sc.read(filepath)
     #assert clone_id in adata.obs.columns, 'Missing field in obs: ' + clone_id
-    #assert timepoint in adata.obs.columns, 'Missing field in obs: ' + timepoint
     #assert phenotype in adata.obs.columns, 'Missing field in obs: ' + phenotype
     return adata
 
@@ -53,23 +48,19 @@ def get_filter(adata, range=[]):
         records.append(record)
     return records
 
-def configure_app(path, project_id, timepoint, phenotype, clone, app):
-    adata = open_data(path, timepoint, phenotype, clone)
-
+def configure_app(path, project_id, phenotype, clone_id, app):
+    print(clone_id)
+    adata = open_data(path, phenotype, clone_id)
 
     #replace NAN
-    adata.obs["IR_VDJ_1_junction_aa"] = adata.obs["IR_VDJ_1_junction_aa"].cat.add_categories('NA')
-    adata.obs["IR_VDJ_1_junction_aa"].fillna('NA', inplace =True)
-    #print(adata.obs)
-    #print(list(adata.obs.columns))
+    adata.obs[clone_id] = adata.obs[clone_id].cat.add_categories('NA')
+    adata.obs[clone_id].fillna('NA', inplace =True)
 
-    olga = get_olga(adata)
+    #get different params
+    olga = get_olga(adata, clone_id)
     metadata = get_metadata(adata).to_dict(orient="records")
     filters = get_filter(adata)
-    stats = get_stats(adata)
-
-    #get_rserve()
-
+    stats = get_stats(adata, clone_id)
 
     app.config.update(
         project_id=project_id,
@@ -77,13 +68,12 @@ def configure_app(path, project_id, timepoint, phenotype, clone, app):
         metadata=metadata,
         filters=filters,
         stats=stats,
-        timepoint=timepoint,
         phenotype=phenotype,
-        clone=clone
+        clone_id=clone_id
     )
 
-def get_olga(adata):
-    data = adata.obs["IR_VDJ_1_junction"]
+def get_olga(adata, clone_id):
+    data = adata.obs[clone_id]
     df = pd.DataFrame(data).dropna().reset_index(drop=True)
     df.to_csv("./data/example_seqs.tsv", sep="\t")
     return adata
@@ -99,19 +89,24 @@ def get_metadata(adata):
     df = df.rename(columns={'index': 'cell_id',
                             'pgen': 'log10_probability', 'phenotype': 'subtype'})
     df = df.replace(to_replace="nan", value="None")
-    #print(df.groupby("IR_VDJ_1_junction_aa").head(2))
-    #count = df.groupby(["IR_VDJ_1_junction_aa"]).size().sort_values(ascending=False).head(11)
-    #df["IR_VDJ_1_junction_aa"+"-stats"] = count
-    #print(count.groupby(["IR_VDJ_1_junction_aa"]).sum().sort_values("IR_VDJ_1_junction_aa",ascending=False).head(10))
-    #print(df)
+
     return df
 
-def get_stats(adata):
+def clean_record(record):
+    floats = [field for field in record if isinstance(record[field], float)]
+    for field in floats:
+        if np.isnan(record[field]):
+            record[field] = "None"
+
+    return record
+
+def get_stats(adata, clone_id):
     df = adata.obs[COLUMNS]
-    count = df.groupby(["IR_VDJ_1_junction_aa"]).size().sort_values(ascending=False).head(11)
-    return {"IR_VDJ_1_junction_aa"+"-stats": count.to_json()}
+    count = df.groupby([clone_id]).size().sort_values(ascending=False).head(11)
+    return {clone_id+"-stats": count.to_json()}
 
 def create_app(config=config):
+    print(config)
     print("creating application with env file")
 
     app = Flask(__name__)
@@ -130,7 +125,7 @@ def create_app(config=config):
     print(app.url_map)
     server_session = Session(app)
 
-    configure_app(config["path"], config["project_id"], config["timepoint"], config["phenotype"], config["clone"],app)
+    configure_app(config["path"], config["project_id"], config["phenotype"], config["clone_id"],app)
 
     print("created app with config")
     print(config)
@@ -138,12 +133,3 @@ def create_app(config=config):
     return app
 
 app = create_app()
-
-
-def clean_record(record):
-    floats = [field for field in record if isinstance(record[field], float)]
-    for field in floats:
-        if np.isnan(record[field]):
-            record[field] = "None"
-
-    return record

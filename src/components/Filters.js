@@ -31,6 +31,8 @@ const filterMapping = {
   treatment: "Treatment",
   subtype: "Subtype",
   clone_id: "Clone ID",
+  IR_VDJ_1_junction_aa: "Clone ID",
+  cell_type: "Cell Type",
   timepoint: "Timepoint",
 };
 
@@ -181,6 +183,7 @@ const AccordionSummary = styled((props) => (
 }));
 const Chips = () => {
   const [{ selectFilters, filters }, dispatch] = useData();
+
   return selectFilters !== null ? (
     <Chip
       label={
@@ -217,7 +220,7 @@ const FilterDropdown = ({
   bottom = true,
 }) => {
   const isSelected = selected && selected[0] === title;
-
+  console.log(title);
   return (
     <div>
       <Accordion expanded={expanded[title]} onChange={() => setExpand(title)}>

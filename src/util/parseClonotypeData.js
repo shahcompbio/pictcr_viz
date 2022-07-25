@@ -1,19 +1,16 @@
 import _ from "lodash";
 import * as d3 from "d3";
 
-import { CONSTANTS, CLONOTYPE_COLORS } from "./config";
+import { CONSTANTS, CLONOTYPE_COLORS } from "../config";
 
 const parseClonotypeData = (data, stats) => {
   const { clonotypeParam } = CONSTANTS;
-  console.log(data);
-  console.log(stats);
+
   if (data && data.length !== 0 && stats) {
     const clonotypeCounts = _.countBy(
       data.filter((datum) => datum[clonotypeParam] !== "None"),
       clonotypeParam
     );
-
-    console.log(stats);
 
     const clonotypeLabels = Object.keys(stats)
       .sort((a, b) => stats[b] - stats[a])
@@ -24,7 +21,6 @@ const parseClonotypeData = (data, stats) => {
         color: CLONOTYPE_COLORS[index],
       }));
 
-    console.log(clonotypeLabels);
     const cloneColorScale = d3
       .scaleOrdinal()
       .domain(clonotypeLabels.map((label) => label["value"]))

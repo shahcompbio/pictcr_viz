@@ -1,5 +1,4 @@
 from flask import Flask, session, jsonify, request, make_response, stream_with_context, Response, g, session
-from flask_session import Session
 from datetime import timedelta
 import redis
 import sys
