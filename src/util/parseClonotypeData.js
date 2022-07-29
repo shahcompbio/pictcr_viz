@@ -1,7 +1,7 @@
 import _ from "lodash";
 import * as d3 from "d3";
 
-import { CONSTANTS, CLONOTYPE_COLORS } from "../config";
+import { CONSTANTS, CLONOTYPE_COLORS, CLONOTYPE_COLORS_2 } from "../config";
 
 const parseClonotypeData = (data, stats) => {
   const { clonotypeParam } = CONSTANTS;
@@ -32,10 +32,20 @@ const parseClonotypeData = (data, stats) => {
       )
       .unknown("[0.91,0.91,0.91,1.0]");
 
+    const cloneHEXColorScale = d3
+      .scaleOrdinal()
+      .domain(clonotypeLabels.map((label) => label["value"]))
+      .range(
+        CLONOTYPE_COLORS_2.slice(
+          0,
+          Math.min(clonotypeLabels.length, CLONOTYPE_COLORS_2.length)
+        )
+      );
     return {
       clonotypeCounts: clonotypeCounts,
       clonotypeLabels: clonotypeLabels,
       cloneColorScale: cloneColorScale,
+      cloneHEXColorScale: cloneHEXColorScale,
       clonotypeDataIsLoaded: true,
     };
   } else {
@@ -43,6 +53,7 @@ const parseClonotypeData = (data, stats) => {
       clonotypeCounts: null,
       clonotypeLabels: null,
       cloneColorScale: null,
+      cloneHEXColorScale: null,
       clonotypeDataIsLoaded: false,
     };
   }

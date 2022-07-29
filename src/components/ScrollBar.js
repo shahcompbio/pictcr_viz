@@ -35,8 +35,7 @@ const ScrollBar = ({ inputRef, inputRefMapping, scrollBarWidth, height }) => {
   const [xScale, setXScale] = useState(null);
 
   const getBandWidth = (d, scrollBarWidthMapping, fullBodyWidth) =>
-    (scrollBarWidthMapping[d["refName"]] * scrollBarWidth) /
-    (fullBodyWidth - 342);
+    (scrollBarWidthMapping[d["refName"]] * scrollBarWidth) / fullBodyWidth;
 
   const getPlotWidths = (inputRefMapping, inputRef) => {
     const fullBodyWidth = d3.select("body").node().scrollWidth;
@@ -231,9 +230,9 @@ const ScrollBar = ({ inputRef, inputRefMapping, scrollBarWidth, height }) => {
       var plotIndex = 0;
       const lastScrollLeft = window.scrollX + window.screen.availWidth;
 
-      const filters = d3.select("#filters-grid").node().getBoundingClientRect();
+      //const filters = d3.select("#filters-grid").node().getBoundingClientRect();
 
-      [filters.width, ...plotWidths].reduce((total, currWidth, i) => {
+      plotWidths.reduce((total, currWidth, i) => {
         if (total !== null) {
           if (total + currWidth > lastScrollLeft) {
             total = null;

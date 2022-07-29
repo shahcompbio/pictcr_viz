@@ -23,8 +23,8 @@ const initialState = {
   inputRefMapping: {
     1: [
       { plotName: "Sunburst", refName: "sunburstRef" },
-      { plotName: "Doughnut", refName: "doughnutRef" },
       { plotName: "Phenotype UMAP", refName: "phenotypeRef" },
+      { plotName: "Doughnut", refName: "doughnutRef" },
       //{ plotName: "Clonotype UMAP", refName: "cloneumapRef" },
       { plotName: "Heatmap", refName: "heatmapRef" },
       { plotName: "Clonotype Expansion", refName: "clonotypeExpansionRef" },

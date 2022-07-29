@@ -49,49 +49,24 @@ const Filters = ({}) => {
     <Box
       sx={{
         width: "100%",
-        //maxWidth: 360,
-        //backgroundColor: "#f5f5f5",
         maxHeight: 500,
         overflowY: "scroll",
         overflowX: "clip",
-        //ml: 4,
-        marginLeft: 4,
-        paddingRight: 2,
       }}
     >
       <List
-        style={{ backgroundColor: "white" }}
+        style={{ backgroundColor: "whitesmoke" }}
         component="div"
         aria-labelledby="subheader"
         subheader={
-          <ListSubheader
-            id="subheader"
-            sx={{ position: "relative", paddingLeft: 0 }}
-          >
-            <Grid
-              container
-              direction="row"
-              justifyContent="flex-start"
-              alignItems="flex-start"
-              wrap="nowrap"
-              spacing={2}
-              style={{ marginBottom: 10 }}
+          selectFilters !== null && (
+            <ListSubheader
+              id="subheader"
+              sx={{ position: "relative", paddingLeft: 0 }}
             >
-              <Grid item xs={8}>
-                <Typography
-                  variant="h5"
-                  style={{
-                    marginBottom: -12,
-                    paddingBottom: 0,
-                  }}
-                >
-                  Filter Data
-                </Typography>
-              </Grid>
-              <Grid />
-            </Grid>
-            <Chips />
-          </ListSubheader>
+              <Chips />
+            </ListSubheader>
+          )
         }
       >
         {filters.map((filter, index) => (
@@ -149,7 +124,7 @@ export const ClearBox = ({ disabled, onClick, clearText = "Clear" }) => (
   </Paper>
 );
 
-const Accordion = styled((props) => (
+export const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
   //backgroundColor: "white !important",
@@ -164,7 +139,7 @@ const Accordion = styled((props) => (
   },
 }));
 
-const AccordionSummary = styled((props) => (
+export const AccordionSummary = styled((props) => (
   <MuiAccordionSummary
     expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
     {...props}
@@ -172,6 +147,8 @@ const AccordionSummary = styled((props) => (
 ))(({ theme }) => ({
   backgroundColor: "white",
   borderRadius: "5px",
+  marginTop: "0px",
+  marginBottom: "0px",
   //marginBottom: theme.spacing(1),
   "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
     transform: "rotate(90deg)",
@@ -179,6 +156,8 @@ const AccordionSummary = styled((props) => (
   },
   "& .MuiAccordionSummary-content": {
     marginLeft: theme.spacing(1),
+    marginTop: "0px",
+    marginBottom: "0px",
   },
 }));
 const Chips = () => {
@@ -203,8 +182,8 @@ const Chips = () => {
     />
   ) : null;
 };
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(2),
+export const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: "0px 0px 8px 8px",
   borderTop: "1px solid rgba(0, 0, 0, .125)",
   backgroundColor: "#f5f5f5",
 }));
@@ -220,7 +199,7 @@ const FilterDropdown = ({
   bottom = true,
 }) => {
   const isSelected = selected && selected[0] === title;
-  console.log(title);
+
   return (
     <div>
       <Accordion expanded={expanded[title]} onChange={() => setExpand(title)}>
@@ -231,6 +210,7 @@ const FilterDropdown = ({
           {values.map((value, i) => (
             <ListItemButton
               sx={{
+                pl: 0,
                 "&.MuiListItemText-root:hover": {
                   bgcolor: "none",
                 },
@@ -242,7 +222,7 @@ const FilterDropdown = ({
               }}
               //selected={isSelected && selected[1] === value}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: "10px" }}>
                 <Checkbox
                   edge="start"
                   sx={{
@@ -260,7 +240,6 @@ const FilterDropdown = ({
               </ListItemIcon>
               <ListItemText
                 primary={value}
-                sx={{ pl: 4 }}
                 style={{
                   fontSize: "12px !important",
                   paddingTop: 0,

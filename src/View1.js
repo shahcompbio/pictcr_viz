@@ -23,7 +23,7 @@ import { useData } from "./provider/dataContext";
 import parseClonotypeData from "./util/parseClonotypeData.js";
 import parsePhenotypeData from "./util/parsePhenotypeData.js";
 
-import { CONSTANTS, CLONOTYPE_COLORS } from "./config";
+import { CONSTANTS, CLONOTYPE_COLORS, CLONOTYPE_COLORS_2 } from "./config";
 
 const PHENOTYPE_COLORS = [
   "#5E4FA2",
@@ -77,6 +77,7 @@ const View1 = ({ view, setView }) => {
     clonotypeCounts,
     clonotypeLabels,
     cloneColorScale,
+    cloneHEXColorScale,
     clonotypeDataIsLoaded,
   } = parseClonotypeData(data, stats);
 
@@ -135,28 +136,15 @@ const View1 = ({ view, setView }) => {
           marginTop: 50,
         }}
       >
-        <Grid
-          item
-          container
-          direction="column"
-          justifyContent="flex-start"
-          alignItems="flex-start"
-          id="filters-grid"
-          style={{ width: 400 }}
-        >
-          <ViewButtons view={view} setView={setView} />
-          <StyledGridItem id="filtersRef">
-            <Filters filters={filters} />
-          </StyledGridItem>
-        </Grid>
         <StyledGridItem id="sunburstRef">
           <Sunburst
             data={highlightData || data}
             type={"CLONOTYPEDOUGH"}
-            colors={CLONOTYPE_COLORS}
+            colors={CLONOTYPE_COLORS_2}
             selectedCloneColor={
               selectClone ? cloneColorScale(selectClone) : null
             }
+            cloneHEXColorScale={cloneHEXColorScale}
             cloneColorScale={cloneColorScale}
             width={450}
             height={350}
@@ -164,28 +152,17 @@ const View1 = ({ view, setView }) => {
             subsetParam={clonotypeParam}
           />
         </StyledGridItem>
-        <StyledGridItem id="doughnutRef">
-          <Doughnut
-            data={highlightData || data}
-            type={"SUBTYPEDOUGH"}
-            colors={CLONOTYPE_COLORS}
-            colorScale={phenotypeColorScale}
-            width={450}
-            height={350}
-            otherSubsetParam={clonotypeParam}
-            subsetParam={subset}
-          />
-        </StyledGridItem>
         <StyledGridItem id="cloneumapRef">
           {clonotypeDataIsLoaded && (
             <ClonotypeUMAP
-              width={800}
+              width={900}
               height={600}
               data={data}
               xParam={xParam}
               yParam={yParam}
               subsetParam={clonotypeParam}
               idParam={clonotypeParam}
+              cloneHEXColorScale={cloneHEXColorScale}
               colorScale={cloneColorScale}
               labels={(value) => `Clone ${value}`}
               highlightIDs={highlightIDs}
@@ -203,89 +180,9 @@ const View1 = ({ view, setView }) => {
             />
           )}
         </StyledGridItem>
-        <StyledGridItem id="phenotypeRef">
-          <PhenotypeUMAP
-            width={400}
-            height={600}
-            data={data}
-            xParam={xParam}
-            yParam={yParam}
-            subsetParam={subset}
-            idParam="cell_id"
-            colorScale={phenotypeColorScale}
-            onLasso={(data) => {
-              /*  setSelectIDs(
-                data === null ? null : data.map((datum) => datum["cell_id"])
-              );
-              setActiveGraph(data === null ? null : "phenoUMAP");*/
-            }}
-            onLegendClick={(value) => {
-              /*  dispatch({
-                type: "setSelectSubset",
-                value: value,
-              });
-              dispatch({
-                type: "setActiveGraph",
-                value: value === null ? null : "phenoUMAP",
-              });*/
-            }}
-            disable={activeGraph !== null && activeGraph !== "phenoUMAP"}
-            highlightIDs={highlightIDs}
-          />
-        </StyledGridItem>
-
-        <StyledGridItem id="heatmapRef">
-          <Heatmap
-            width={750}
-            height={550}
-            font={"Helvetica"}
-            data={probabilities}
-            column={clonotypeParam}
-            row={subtypeParam}
-            highlightedRow={selectPhenotype}
-            highlightedColumn={selectClone}
-            columnLabels={clonotypeLabels}
-            rowTotal={subtypeTotals}
-          />
-        </StyledGridItem>
-        <StyledGridItem id="clonotypeExpansionRef">
-          <ClonotypeExpansion
-            chartName={"BARPLOT"}
-            data={probabilities}
-            width={750}
-            height={550}
-            highlightedRow={selectPhenotype}
-          />
-        </StyledGridItem>
-        <StyledGridItem id="probabilityHistogramRef">
-          <ProbabilityHistogram
-            data={probabilities}
-            font={"Helvetica"}
-            width={750}
-            height={500}
-            probParam={logProbParam}
-            subgroupParam={subtypeParam}
-            observationParam={clonotypeParam}
-            highlightedObservation={selectClone}
-            highlightedSubgroup={selectPhenotype}
-          />
-        </StyledGridItem>
-        <StyledGridItem id="rankedOrderRef">
-          <RankedOrder
-            width={700}
-            height={500}
-            data={probabilities}
-            highlight={selectPhenotype}
-          />
-        </StyledGridItem>
       </Grid>
-      <ScrollBar
-        scrollBarWidth={1600}
-        height={50}
-        inputRef={inputRef}
-        inputRefMapping={inputRefMapping[view]}
-      />
     </span>
   );
 };
+
 export default View1;

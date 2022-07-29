@@ -38,53 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const parentIsTopTen = (d) => d.parent.data.name === "Top Ten";
-const download = async (ref, width, height) => {
-  var doc = new jsPDF("L", "px", [width, height]);
 
-  const newCanvas = document.createElement("canvas");
-  const context = newCanvas.getContext("2d");
-
-  //const currCanvas = ref.current;
-  //const currContext = canvas.getContext("2d");
-
-  let scale = window.devicePixelRatio;
-  newCanvas.style.width = width + "px";
-  newCanvas.style.height = height + "px";
-  newCanvas.width = width * scale;
-  newCanvas.height = height * scale;
-
-  context.scale(scale, scale);
-
-  const plot = d3.select(ref.current).node();
-  //const profile = canvg.fromString(context, plot.outerHTML, { useCORS: true });
-
-  // Render only first frame, ignoring animations.
-  //await profile.render();
-
-  //const png = newCanvas.toBuffer();
-
-  //  const imgProfileBackground = context.drawImage(img, 0, 0, width, height);
-  //  context.stroke(path);
-  //const currContext = canvas.getContext("2d");
-
-  const plotOuter = plot.outerHTML;
-  const profile = canvg.fromString(context, plotOuter);
-  profile.start();
-
-  const imgProfileBackground = newCanvas.toDataURL("image/png", 1.0);
-  //const docWidth = Math.round((width * 25.4) / 96);
-  //const docHeight = Math.round((height * 25.4) / 96);
-  doc.addImage(
-    imgProfileBackground,
-    "PNG",
-    0,
-    0,
-    width / scale,
-    height / scale
-  );
-
-  doc.save("test.pdf");
-};
 const Sunburst = ({
   data,
   colors,
@@ -94,6 +48,7 @@ const Sunburst = ({
   type,
   otherSubsetParam,
   cloneColorScale,
+  cloneHEXColorScale,
   selectedCloneColor = null,
 }) => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
@@ -566,7 +521,7 @@ const Sunburst = ({
   );
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", marginTop: -145 }}>
       <Title title="Clone Distribution" />
       <div id="tooltipDiv" ref={tooltipRef} className={classes.tooltipWrapper}>
         <Tooltip

@@ -7,15 +7,6 @@ const { clonotypeParam } = CONSTANTS;
 const useFetchData = () => {
   const [data, setData] = useState({});
 
-  /*useEffect(() => {
-    fetch(url + "/getStreamData/", {
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setData({ metadata: data["metadata"], filters: data["filters"] });
-      });
-  }, []);*/
   useEffect(() => {
     fetch(url + "/getStats/", {
       credentials: "include",
@@ -69,11 +60,6 @@ const useFetchData = () => {
         }).text();
       })
       .then((result) => {
-        console.log(result);
-        //.split("&/").reduce((final, d) => {
-        //    return [...final, JSON.parse(d)];
-        //    }, []),
-        //  });
         setData({
           ...data,
           metadata: [

@@ -13,6 +13,8 @@ import {
 import ReglUmap from "./util/ReglUmap";
 import Grid from "@mui/material/Grid";
 import Slider from "@mui/material/Slider";
+import Title from "./Title.js";
+
 import { drawAxis, getLassoObj } from "./util/util";
 
 import { CONSTANTS } from "../config";
@@ -21,7 +23,7 @@ import _ from "lodash";
 
 const PADDING = 10;
 const AXIS_SPACE = 20;
-const LEGEND_WIDTH = 220;
+const LEGEND_WIDTH = 320;
 
 const LINE_GRAPH_SPACE = 50;
 
@@ -82,13 +84,14 @@ const UMAP = ({
   subsetParam,
   idParam,
   colorScale,
+  cloneHEXColorScale,
   highlightIDs,
   onLasso,
   onLegendClick,
   disable,
 }) => {
   const [canvas, setCanvas] = useState(null);
-  const [radiusRatio, setRadiusRatio] = useState(1);
+  const [radiusRatio, setRadiusRatio] = useState(2);
   const canvasWidth = width - LEGEND_WIDTH - PADDING;
   const canvasHeight = height;
 
@@ -182,7 +185,7 @@ const UMAP = ({
         xParam,
         yParam,
         subsetParam,
-        colorScale,
+        cloneHEXColorScale,
         hoverClone, // highlight
         chartX + chartWidth + 3
       );
@@ -200,17 +203,18 @@ const UMAP = ({
     subsetParam,
     xParam,
     yParam,
-    highlighted
+    highlighted,
+    radiusRatio
   ) => {
     const subsetLabels = colorScale.domain();
     const [subsetData, backgroundData] = _.partition(data, (datum) =>
       subsetLabels.includes(datum[subsetParam])
     );
-
+    console.log(radiusRatio);
     const backgroundDataWithAttr = backgroundData.map((d) => ({
       ...d,
       color: GREY_VEC4,
-      pointSize: 2,
+      pointSize: radiusRatio,
     }));
 
     const yData = data.map((d) => parseFloat(d[yParam]));
@@ -288,9 +292,9 @@ const UMAP = ({
     subsetParam,
     xParam,
     yParam,
-    null
+    null,
+    radiusRatio
   );
-  console.log(modifiedData);
   return (
     <Grid
       container
@@ -307,6 +311,7 @@ const UMAP = ({
         direction="column"
         style={{ padding: 0, width: LEGEND_WIDTH, paddingTop: "30px" }}
       >
+        <Title title="Clonotype UMAP" />
         <Grid item>
           <VerticalLegend
             width={LEGEND_WIDTH}
@@ -314,7 +319,7 @@ const UMAP = ({
             ticks={colorScale
               .domain()
               .map((value) => ({ value, label: `Clone ${value}` }))}
-            colorScale={colorScale}
+            colorScale={cloneHEXColorScale}
             onHover={setHoverClone}
             title={null}
             onClick={onLegendClick}
@@ -326,12 +331,15 @@ const UMAP = ({
             disable={disable}
           />
         </Grid>
-        <Grid item>
+        <Grid item sx={{ width: "80%" }}>
           Radius Adjustment
           <Slider
             min={0}
-            max={3}
+            max={10}
             step={0.05}
+            sx={{
+              color: "black",
+            }}
             value={radiusRatio}
             disabled={highlightIDs !== null}
             onChange={(event, newValue) => {
@@ -348,7 +356,7 @@ const UMAP = ({
         {canvas && modifiedData && modifiedData.length > 0 && (
           <ReglUmap
             canvasRef={canvas}
-            pointSize={4}
+            pointSize={radiusRatio}
             data={modifiedData}
             lassoDataObj={
               lassoData && lassoData.length > 0
@@ -383,6 +391,7 @@ const drawPoints = (
   highlighted,
   subsetLabels,
   colorScale,
+  colorHexScale,
   radiusRatio
 ) => {
   context.lineWidth = 1;

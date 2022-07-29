@@ -41,7 +41,7 @@ export const CLONOTYPE_COLORS = [
   "[0.698,0.859,0.839,1.0]",
   "[1.0,0.831,0.439,1.0]",
 ];
-/*export const CLONOTYPE_COLORS = [
+export const CLONOTYPE_COLORS_2 = [
   "#674172",
   "#098dde",
   "#fa832f",
@@ -54,7 +54,7 @@ export const CLONOTYPE_COLORS = [
   "#5aebed",
   "#8f8f3f",
   "#ed1a1a",
-];*/
+];
 export const INFO = {
   SUBTYPEDOUGH: {
     title: "Phenotype Distribution",
