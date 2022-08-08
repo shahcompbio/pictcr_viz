@@ -102,7 +102,7 @@ def clean_record(record):
 
 def get_stats(adata, clone_id):
     df = adata.obs[COLUMNS]
-    count = df.groupby([clone_id]).size().sort_values(ascending=False).head(11)
+    count = df.groupby([clone_id]).size().sort_values(ascending=False).head(100)
     return {clone_id+"-stats": count.to_json()}
 
 def create_app(config=config):

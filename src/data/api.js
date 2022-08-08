@@ -60,17 +60,18 @@ const useFetchData = () => {
         }).text();
       })
       .then((result) => {
+        const metadata = result.split("&/").reduce((final, d) => {
+          if (d.length !== 0) {
+            return [...final, ...JSON.parse(d)];
+          } else {
+            return [...final];
+          }
+        }, []);
+
         setData({
           ...data,
-          metadata: [
-            ...result.split("&/").reduce((final, d) => {
-              if (d.length !== 0) {
-                return [...final, ...JSON.parse(d)];
-              } else {
-                return [...final];
-              }
-            }, []),
-          ],
+          metadata: [...metadata.filter((d) => d[clonotypeParam] !== "NA")],
+          metadataOG: [...metadata],
         });
       });
   }, []);

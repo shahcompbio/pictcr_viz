@@ -19,7 +19,7 @@ import {
   TableRow,
   TableContainer,
 } from "@mui/material";
-import { ClearBox } from "./Filters";
+import { ClearBox } from "./SideDrawer/Filters";
 
 import { INFO } from "../config";
 const url = process.env.HOST ? process.env.HOST : "http://localhost:5000";

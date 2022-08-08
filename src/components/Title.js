@@ -33,7 +33,7 @@ const Title = ({ title }) => {
       style={{
         //  position: "fixed",
         width: "300px",
-        height: "100px",
+        //  height: "100px",
         display: "flex",
         //marginTop: 50,
         //  background: "white",

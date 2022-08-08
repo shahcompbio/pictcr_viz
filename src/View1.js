@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
 import _ from "lodash";
-import * as d3 from "d3";
 
 import ClonotypeUMAP from "./components/Umap";
 import ClonotypeExpansion from "./components/ClonotypeExpansion";
@@ -11,7 +10,6 @@ import PhenotypeUMAP from "./components/WebglUMAP.js";
 import ScrollBar from "./components/ScrollBar";
 import ViewButtons from "./components/ViewButtons";
 
-import Filters from "./components/Filters";
 import { Heatmap, ProbabilityHistogram } from "@shahlab/planetarium";
 
 import Grid from "@mui/material/Grid";
@@ -43,6 +41,11 @@ const PHENOTYPE_COLORS = [
   "#b2dbd6",
   "#ffd470",
 ];
+const parseData = (metadata, selectFilters) =>
+  selectFilters === null
+    ? metadata
+    : metadata.filter((datum) => datum[selectFilters[0]] === selectFilters[1]);
+
 const View1 = ({ view, setView }) => {
   const { clonotypeParam, subtypeParam, logProbParam, xParam, yParam } =
     CONSTANTS;
@@ -51,6 +54,7 @@ const View1 = ({ view, setView }) => {
     {
       metadata,
       filters,
+      settings,
       stats,
       inputRefMapping,
       selectPhenotype,
@@ -61,17 +65,21 @@ const View1 = ({ view, setView }) => {
       subset,
       selectSubset,
     },
-    dispatch,
   ] = useData();
 
   const inputRef = useRef([]);
 
-  const data =
+  const data = parseData(metadata, selectFilters);
+  console.log(data);
+  console.log(settings);
+  const statsData =
     selectFilters === null
-      ? metadata
-      : metadata.filter(
-          (datum) => datum[selectFilters[0]] === selectFilters[1]
-        );
+      ? stats
+      : data.reduce((final, d) => {
+          const clone = d[clonotypeParam];
+          final[clone] = final[clone] ? final[clone] + 1 : 1;
+          return final;
+        }, {});
 
   const {
     clonotypeCounts,
@@ -79,8 +87,8 @@ const View1 = ({ view, setView }) => {
     cloneColorScale,
     cloneHEXColorScale,
     clonotypeDataIsLoaded,
-  } = parseClonotypeData(data, stats);
-
+  } = parseClonotypeData(data, statsData, settings.filterNA);
+  console.log(clonotypeLabels);
   const { phenotypeColorScale, phenotypeValues } = parsePhenotypeData(
     data,
     subset
@@ -155,8 +163,8 @@ const View1 = ({ view, setView }) => {
         <StyledGridItem id="cloneumapRef">
           {clonotypeDataIsLoaded && (
             <ClonotypeUMAP
-              width={900}
-              height={600}
+              width={1000}
+              height={700}
               data={data}
               xParam={xParam}
               yParam={yParam}
@@ -179,6 +187,18 @@ const View1 = ({ view, setView }) => {
               disable={activeGraph !== null && activeGraph !== "cloneUMAP"}
             />
           )}
+        </StyledGridItem>
+        <StyledGridItem id="doughnutRef">
+          <Doughnut
+            data={highlightData || data}
+            type={"SUBTYPEDOUGH"}
+            colors={CLONOTYPE_COLORS}
+            colorScale={phenotypeColorScale}
+            width={450}
+            height={350}
+            otherSubsetParam={clonotypeParam}
+            subsetParam={subset}
+          />
         </StyledGridItem>
       </Grid>
     </span>

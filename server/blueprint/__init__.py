@@ -22,14 +22,13 @@ blueprint = Blueprint('blueprint', __name__)
 from flask import current_app
 
 config = dict(dotenv_values(".env"))
-port = "3004"
 MAX_RESPONSE_LENGTH = 10000
 COLUMNS = ['IR_VDJ_1_junction_aa','cell_type']
 
 
 def addHeaders(response):
     response.headers.add('Access-Control-Allow-Credentials', 'true')
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:"+port)
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:"+config['port'])
     return response
 
 @blueprint.route('/getFilterValuesByType/<type>-<int:rangestart>-<int:rangeend>')
@@ -68,7 +67,7 @@ def getStreamData():
         #    yield json.dumps(list(element))
     #flask.Response.headers.add('Access-Control-Allow-Credentials', 'true')
     #flask.Response.headers.add("Access-Control-Allow-Origin", "http://localhost:"+port)
-    headers = {"Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Origin":"http://localhost:"+port}
+    headers = {"Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Origin":"http://localhost:"+config['port']}
     return Response(stream_with_context(generate()),headers=headers, status="200")
 
 @blueprint.route('/getStats/')

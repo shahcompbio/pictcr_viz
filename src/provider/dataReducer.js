@@ -7,9 +7,10 @@ import React, {
 } from "react";
 
 import { CONSTANTS } from "../config";
-const { subtypeParam } = CONSTANTS;
+const { subtypeParam, clonotypeParam } = CONSTANTS;
 
 const initialState = {
+  metadataOG: null,
   metadata: null,
   filters: null,
 
@@ -20,6 +21,9 @@ const initialState = {
   selectSubset: null,
   selectFilters: null,
   selectPhenotype: null,
+
+  settings: { filterNA: true },
+
   inputRefMapping: {
     1: [
       { plotName: "Sunburst", refName: "sunburstRef" },
@@ -42,6 +46,7 @@ const initialState = {
   },
 };
 const dataReducer = (state, action) => {
+  console.log(state);
   switch (action.type) {
     case "initialSetup": {
       const initValues = action.values.reduce(
@@ -53,6 +58,19 @@ const dataReducer = (state, action) => {
         ...initValues,
       };
     }
+    case "setFilterNA": {
+      return {
+        ...state,
+        settings: { filterNA: !state.settings.filterNA },
+        metadata: !state.settings.filterNA
+          ? state.metadataOG.filter((d) => d[clonotypeParam] !== "NA")
+          : state.metadataOG,
+      };
+    }
+    case "setSettings": {
+      return { ...state, settings: { ...state.settings, ...action.value } };
+    }
+
     case "setSelectFilters": {
       return { ...state, selectFilters: action.value };
     }
@@ -68,21 +86,8 @@ const dataReducer = (state, action) => {
     default:
       return state;
   }
-  /*  return (state, action) => {
-    if (Array.isArray(action)) {
-      actions.forEach((action, i) => {
-        state = actions[action[i].type](state, action[i]);
-      });
-      return state;
-    } else if (actions[action.type]) {
-      return actions[action.type](state, action);
-    } else {
-      return state;
-    }
-  };*/
 };
 const actions = (action, state) => {
-  console.log(action);
   switch (action.type) {
     case "set-" + action.valueType: {
       return {

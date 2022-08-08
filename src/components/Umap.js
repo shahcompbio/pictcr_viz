@@ -17,6 +17,8 @@ import Title from "./Title.js";
 
 import { drawAxis, getLassoObj } from "./util/util";
 
+import { useData } from "../provider/dataContext";
+
 import { CONSTANTS } from "../config";
 
 import _ from "lodash";
@@ -90,6 +92,7 @@ const UMAP = ({
   onLegendClick,
   disable,
 }) => {
+  const [{ metadata }, dispatch] = useData();
   const [canvas, setCanvas] = useState(null);
   const [radiusRatio, setRadiusRatio] = useState(2);
   const canvasWidth = width - LEGEND_WIDTH - PADDING;
@@ -170,8 +173,8 @@ const UMAP = ({
       const context = canvas.getContext("2d");
       drawUMAPAxis({
         context,
-        xPos: AXIS_SPACE,
-        yPos: canvasHeight - AXIS_SPACE,
+        xPos: AXIS_SPACE / 2,
+        yPos: chartHeight + AXIS_SPACE,
         xLabel: xParam,
         yLabel: yParam,
       });
@@ -198,19 +201,28 @@ const UMAP = ({
     [highlightIDs, radiusRatio, lassoData, hoverClone, data]
   );
   const getDataWithAttributes = (
+    metadata,
     data,
     colorScale,
     subsetParam,
     xParam,
     yParam,
     highlighted,
-    radiusRatio
+    radiusRatio,
+    hoverClone
   ) => {
-    const subsetLabels = colorScale.domain();
-    const [subsetData, backgroundData] = _.partition(data, (datum) =>
-      subsetLabels.includes(datum[subsetParam])
+    console.log(hoverClone);
+    console.log(allLabels);
+    console.log(metadata);
+    const allLabels = colorScale.domain();
+    const [subsetData, backgroundData] = _.partition(metadata, (datum) =>
+      hoverClone
+        ? allLabels.includes(datum[subsetParam]) &&
+          hoverClone.includes(datum[subsetParam])
+        : allLabels.includes(datum[subsetParam])
     );
-    console.log(radiusRatio);
+    const subsetLabels = _.uniq(subsetData.map((d) => d[subsetParam]));
+
     const backgroundDataWithAttr = backgroundData.map((d) => ({
       ...d,
       color: GREY_VEC4,
@@ -243,7 +255,6 @@ const UMAP = ({
 
         return [...records, ...bin.map((record) => ({ ...record, freq }))];
       }, []);
-
       return [...records, ...freqData];
     }, []);
 
@@ -264,36 +275,19 @@ const UMAP = ({
       return { ...point, color: colour, pointSize: radiusScale(point["freq"]) };
     });
 
-    if (highlighted) {
-      //  context.globalAlpha = 1;
-      freqData
-        .filter((datum) => highlighted.includes(datum["cell_id"]))
-        .forEach((point) => {
-          /*  context.fillStyle = colorScale(point[subsetParam]);
-
-          context.beginPath();
-          context.arc(
-            xScale(point[xParam]),
-            yScale(point[yParam]),
-            radiusScale(point["freq"]),
-            0,
-            Math.PI * 2,
-            true
-          );
-          context.fill();*/
-        });
-    }
     return [...backgroundDataWithAttr, ...freqDataWithAttr];
   };
 
   const modifiedData = getDataWithAttributes(
+    metadata,
     data,
     colorScale,
     subsetParam,
     xParam,
     yParam,
     null,
-    radiusRatio
+    radiusRatio,
+    hoverClone
   );
   return (
     <Grid
@@ -326,8 +320,10 @@ const UMAP = ({
             fontFamily={{
               regular: "Noto Sans",
               bold: "Noto Sans",
-              labelOffset: -1,
+              fontSize: "20px",
+              labelOffset: 1,
             }}
+            squareSize={15}
             disable={disable}
           />
         </Grid>

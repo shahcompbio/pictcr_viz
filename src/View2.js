@@ -12,7 +12,6 @@ import PhenotypeUMAP from "./components/WebglUMAP.js";
 import ScrollBar from "./components/ScrollBar";
 import ViewButtons from "./components/ViewButtons";
 
-import Filters from "./components/Filters";
 import { Heatmap, ProbabilityHistogram, Sankey } from "@shahlab/planetarium";
 
 import Grid from "@mui/material/Grid";
@@ -164,9 +163,7 @@ const View2 = ({ metadata, filters, view, setView }) => {
           style={{ width: 400 }}
         >
           <ViewButtons view={view} setView={setView} />
-          <StyledGridItem id="filtersRef">
-            <Filters selected={selectFilters} filters={filters} />
-          </StyledGridItem>
+          <StyledGridItem id="filtersRef"></StyledGridItem>
         </Grid>
         <StyledGridItem id="sankeyRef">
           <Sankey

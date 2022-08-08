@@ -5,7 +5,7 @@ import View2 from "./View2.js";
 import { theme } from "./theme/theme";
 import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import SideDrawer from "./components/SideDrawer.js";
+import SideDrawer from "./components/SideDrawer/SideDrawer.js";
 import Box from "@mui/material/Box";
 
 import { useData } from "./provider/dataContext";

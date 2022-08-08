@@ -1,6 +1,4 @@
 import React, { useState, memo } from "react";
-import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
@@ -11,10 +9,8 @@ import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
-import ExpandLess from "@mui/icons-material/ExpandLess";
 import Checkbox from "@mui/material/Checkbox";
 import Paper from "@mui/material/Paper";
-
 import MenuList from "@mui/material/MenuList";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -22,8 +18,7 @@ import LayersClearIcon from "@mui/icons-material/LayersClear";
 import Chip from "@mui/material/Chip";
 
 import { styled } from "@mui/material/styles";
-import { createUseStyles } from "react-jss";
-import { useData } from "../provider/dataContext";
+import { useData } from "../../provider/dataContext";
 
 const filterMapping = {
   response: "Response",
@@ -36,7 +31,7 @@ const filterMapping = {
   timepoint: "Timepoint",
 };
 
-const Filters = ({}) => {
+const Filters = () => {
   const [{ selectFilters, filters }, dispatch] = useData();
   const [expanded, setExpanded] = useState(
     filters.reduce((final, curr) => {
@@ -161,7 +156,7 @@ export const AccordionSummary = styled((props) => (
   },
 }));
 const Chips = () => {
-  const [{ selectFilters, filters }, dispatch] = useData();
+  const [{ selectFilters }, dispatch] = useData();
 
   return selectFilters !== null ? (
     <Chip
@@ -182,10 +177,12 @@ const Chips = () => {
     />
   ) : null;
 };
-export const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+export const AccordionDetails = styled(MuiAccordionDetails, {
+  shouldForwardProp: (prop) => true,
+})(({ theme, background }) => ({
   padding: "0px 0px 8px 8px",
   borderTop: "1px solid rgba(0, 0, 0, .125)",
-  backgroundColor: "#f5f5f5",
+  backgroundColor: background ? background : "#f5f5f5",
 }));
 
 const FilterDropdown = ({
@@ -206,7 +203,7 @@ const FilterDropdown = ({
         <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
           <Typography>{filterMapping[title]}</Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails background={"white"}>
           {values.map((value, i) => (
             <ListItemButton
               sx={{

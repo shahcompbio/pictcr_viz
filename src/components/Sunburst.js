@@ -51,6 +51,7 @@ const Sunburst = ({
   cloneHEXColorScale,
   selectedCloneColor = null,
 }) => {
+  console.log(data);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const tooltipRef = useRef(null);
   const [hoverItem, setHoverItem] = useState(null);
